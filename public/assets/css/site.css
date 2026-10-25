@@ -4983,3 +4983,17 @@ main > section .section-header h2, main > section .section-head-row h2 { backgro
 .testi__nav { display:flex; justify-content:center; gap:12px; margin-top:4px; }
 .testi__countries { display:flex; flex-wrap:wrap; justify-content:center; gap:10px 22px; margin-top:26px; font-size:.82rem; font-weight:600; letter-spacing:.04em; color:#59647a; }
 @media(prefers-reduced-motion:reduce) { .testi__track { scroll-behavior:auto; } }
+
+/* Testimonials motion: cards rise in on a stagger, stars light up in sequence, quote mark drifts, cards lift on hover. */
+.testi.is-ready:not(.is-in) .testi-card { opacity:0; transform:translateY(28px) scale(.97); }
+.testi.is-ready .testi-card { transition:opacity .7s cubic-bezier(.2,.7,.2,1) calc(var(--i, 0) * 90ms), transform .7s cubic-bezier(.2,.7,.2,1) calc(var(--i, 0) * 90ms), box-shadow .3s ease, border-color .3s ease; }
+.testi.is-ready.is-in .testi-card:hover { transform:translateY(-6px); box-shadow:0 22px 44px hsl(var(--tc) / .22); transition-delay:0s; }
+.testi.is-in .testi-card::after { animation:testi-quote 7s ease-in-out infinite alternate; }
+.testi.is-in .testi-card__stars { background:linear-gradient(100deg, #d9962f 40%, #fff3c4 50%, #d9962f 60%) 0% 0 / 260% 100% no-repeat; -webkit-background-clip:text; background-clip:text; color:transparent; animation:testi-stars 5.5s ease-in-out calc(var(--i, 0) * 260ms + 800ms) infinite; }
+@keyframes testi-quote { from { transform:translate(0, 0) rotate(0); } to { transform:translate(-8px, 10px) rotate(-4deg); } }
+@keyframes testi-stars { 0%, 55% { background-position:0% 0; } 100% { background-position:100% 0; } }
+.testi__dots { display:flex; align-items:center; gap:6px; padding:0 8px; }
+.testi__dots i { width:7px; height:7px; border-radius:99px; background:#cdbfa8; transition:width .35s ease, background .35s ease; }
+.testi__dots i.is-on { width:26px; background:linear-gradient(90deg, #14305c, #0f766e); }
+.testi__nav { align-items:center; }
+@media(prefers-reduced-motion:reduce) { .testi.is-ready:not(.is-in) .testi-card { opacity:1; transform:none; } .testi-card::after, .testi-card__stars { animation:none !important; } .testi.is-in .testi-card__stars { color:#d9962f; background:none; } }
