@@ -248,7 +248,18 @@
   height: 44px;
 }
 
-.site-brand { display: flex; align-items: center; flex-shrink: 0; }
+.site-brand { position: relative; display: flex; align-items: center; flex-shrink: 0; }
+/* Corporate gold: a faint shadow separates the metal from the cream header, and a slow sheen crosses the letterforms. */
+.site-brand .brand-logo, .footer-logo img { filter: drop-shadow(0 1px 0.5px rgba(88, 62, 12, 0.35)); }
+.site-brand::after, .footer-logo::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  -webkit-mask: url('../assets/images/brand/swk-logo-dark.png') center / 100% 100% no-repeat;
+  mask: url('../assets/images/brand/swk-logo-dark.png') center / 100% 100% no-repeat;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 251, 232, 0.85) 50%, transparent 62%) -160% 0 / 220% 100% no-repeat;
+  animation: swk-logo-sheen 8s ease-in-out 2.5s infinite;
+}
+@keyframes swk-logo-sheen { 0%, 62% { background-position: -160% 0; } 100% { background-position: 160% 0; } }
+@media (prefers-reduced-motion: reduce) { .site-brand::after, .footer-logo::after { animation: none; display: none; } }
 .site-brand .brand-logo { height: 46px; width: auto; }
 
 /* ---- Glass panels ---- */
@@ -1564,7 +1575,7 @@
   .footer-col--brand, .footer-col:last-child { grid-column: auto; }
 }
 
-.footer-logo { display: inline-block; margin-bottom: var(--space-4); }
+.footer-logo { position: relative; display: inline-block; margin-bottom: var(--space-4); }
 .footer-logo img { height: 58px; width: auto; }
 .footer-col--brand p { max-width: 34ch; font-size: var(--fs-sm); }
 

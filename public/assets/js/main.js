@@ -317,14 +317,21 @@
 
     initTypewriter();
 
-    var spatial = /[?&](?:scene=3d|hold)\b/.test(location.search);
+    // The satellite-to-street WebGL journey is the default wherever WebGL is usable; ?scene=photo (or no WebGL,
+    // reduced motion, save-data) keeps the cinematic photograph with its scroll scrub.
+    var explicit3d = /[?&](?:scene=3d|hold)\b/.test(location.search);
+    var explicitPhoto = /[?&]scene=(?:photo|cinematic)\b/.test(location.search);
+    var canGL = wantsGL();
+    var spatial = explicit3d || (!explicitPhoto && canGL);
     var modeLinks = SWK.$$('[data-hero-mode]');
     modeLinks.forEach(function (link) { if ((link.getAttribute('data-hero-mode') === '3d') === spatial) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
     if (spatial) {
       hero.classList.add('is-spatial-mode');
-      var source = SWK.$('.hero__bg source', hero), poster = SWK.$('.hero__bg img', hero);
-      if (source) source.srcset = '/assets/images/hero/hero-scene-mobile-cinematic.webp';
-      if (poster) { poster.src = '/assets/images/hero/hero-scene-cinematic.webp'; poster.alt = 'Stylised Dubai skyline rendered in 3D'; }
+      if (explicit3d) {
+        var source = SWK.$('.hero__bg source', hero), poster = SWK.$('.hero__bg img', hero);
+        if (source) source.srcset = '/assets/images/hero/hero-scene-mobile-satellite.webp';
+        if (poster) { poster.src = '/assets/images/hero/hero-scene-satellite.webp'; poster.alt = 'Satellite view of a stylised Dubai street grid rendered in 3D'; }
+      }
     } else {
       hero.classList.add('is-photo-mode');
       if (wrap && !SWK.reduced && !/[?&]nowebgl\b/.test(location.search)) {
@@ -339,7 +346,7 @@
       } else if (wrap) wrap.classList.add('is-flat');
       return;
     }
-    var useGL = !!wrap && wantsGL();
+    var useGL = !!wrap && canGL;
     var canvas = SWK.$('.hero__gl', hero);
     if (!useGL || !canvas) {
       if (wrap) wrap.classList.add('is-flat');
@@ -347,7 +354,7 @@
     }
 
     var captions = SWK.$$('.hero__caption', hero);
-    var ranges = [[0.26, 0.52], [0.52, 0.78], [0.78, 1.2]];
+    var ranges = [[0.14, 0.44], [0.5, 0.78], [0.8, 1.2]];
     var progress = 0;
     var scene = null;
     var visible = true;
