@@ -266,7 +266,8 @@ def site_header(path):
     return (f'<header class="site-header" data-site-header><div class="site-header__inner container">'
             f'<a href="/" class="site-brand" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" class="brand-logo" width="338" height="275" decoding="async" fetchpriority="high"></a>'
             f'<nav class="site-nav" aria-label="Primary">{links}</nav>'
-            f'<a href="/contact/" class="btn btn-primary btn-sm site-header__cta">Book a consultation</a></div></header>')
+            f'<div class="site-header__actions"><a href="{WA_DEFAULT}" class="site-header__wa" target="_blank" rel="noopener noreferrer" aria-label="Chat with SWK on WhatsApp">{WHATSAPP}</a>'
+            f'<a href="/contact/" class="btn btn-primary btn-sm site-header__cta">Book a consultation<span class="site-header__go" aria-hidden="true">{ARROW}</span></a></div></div></header>')
 
 
 def dock(path):
@@ -306,19 +307,19 @@ ICON_SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 ICON_CHART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'
 ICON_HEADSET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="14" width="4" height="6" rx="1.5"/><rect x="17.5" y="14" width="4" height="6" rx="1.5"/><path d="M20 20c0 1.5-1.5 2-4 2h-2"/></svg>'
 ICON_HEART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-8-4.6-8-10.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8 2.5C20 15.4 12 20 12 20z"/></svg>'
-VALUE_ITEMS = [(ICON_SHIELD, "Radical Transparency", "Every fee, commission and clause disclosed upfront."),
-               (ICON_CHART, "Data Over Hype", "ROI projections built on transaction data."),
-               (ICON_HEADSET, "One Point of Contact", "The consultant who takes your first call sees it through."),
-               (ICON_HEART, "Long-Term Relationships", "Most new business comes from repeat clients and referrals.")]
+VALUE_ITEMS = [(ICON_SHIELD, "RERA-registered, fully disclosed", "Fees, commission and payment-plan clauses explained before you sign."),
+               (ICON_CHART, "Yields, not slogans", "Return projections built on registered UAE transaction data."),
+               (ICON_HEADSET, "One accountable consultant", "The adviser who takes your first call stays with you to handover."),
+               (ICON_HEART, "Built on referrals", "Most new clients arrive through repeat buyers and word of mouth.")]
 VALUES = ('<section class="value-strip" aria-labelledby="values-title"><h2 id="values-title" class="sr-only">Why SWK Properties</h2><div class="container value-strip__grid">' + "".join(
     f'<div class="value-item" data-reveal data-reveal-delay="{i * 70}"><span class="value-item__icon">{ic}</span><h3>{t}</h3><p>{d}</p></div>' for i, (ic, t, d) in enumerate(VALUE_ITEMS)) + "</div></section>")
 
 
-STATS = [("10", "+", "Years in Dubai"), ("100", "+", "Homes Sold"), ("40", "+", "Consultants"), ("100", "%", "Client Satisfaction")]
+STATS = [("10", "+", "Years in the UAE"), ("100", "+", "Homes Sold"), ("40", "+", "Consultants"), ("100", "%", "Client Satisfaction")]
 STORY = ('<section class="section container story ambient-glow-host">' + GLOW + '<div class="story__grid">'
          '<div class="story__media" data-reveal>' + img("assets/images/about/swk-office.webp", "SWK Properties office overlooking Business Bay", sizes="(min-width: 900px) 600px, 100vw") + '</div>'
          '<div class="story__copy" data-reveal><span class="eyebrow">Why SWK</span><h2>Built by agents, run for clients</h2>'
-         '<p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in Dubai could feel for outsiders. '
+         '<p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in the UAE could feel for outsiders. '
          'Every fee, every payment plan clause and every ROI figure gets explained in plain language before you sign anything.</p>'
          '<div class="story__stats">' + "".join(
              f'<div><div class="story__num" data-count="{n}" data-suffix="{sfx}">{n}{sfx}</div><div class="story__label">{lab}</div></div>' for n, sfx, lab in STATS) +
@@ -803,14 +804,14 @@ def build_home():
 
     body = f"""<div class="hero-cine"><section class="hero" aria-label="Introduction">
 <div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/dubai-cinema-home.webp">
-<img src="/assets/images/hero/dubai-cinema-home.webp" alt="AI-created cinematic Dubai architectural visualisation" width="1600" height="1067" fetchpriority="high" decoding="async"></picture></div>
+<img src="/assets/images/hero/dubai-cinema-home.webp" alt="AI-created cinematic UAE architectural visualisation" width="1600" height="1067" fetchpriority="high" decoding="async"></picture></div>
 <canvas class="hero__gl" aria-hidden="true"></canvas>
 <div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div><div class="hero__streak" aria-hidden="true"></div>
-<div class="hero__captions" aria-hidden="true"><p class="hero__caption">Dubai, <em>from above.</em></p><p class="hero__caption">Down to <em>the street.</em></p><p class="hero__caption">Find <em>yours.</em></p></div>
+<div class="hero__captions" aria-hidden="true"><p class="hero__caption">The UAE, <em>from above.</em></p><p class="hero__caption">Down to <em>the street.</em></p><p class="hero__caption">Find <em>yours.</em></p></div>
 <div class="hero__content container">
-<span class="hero__eyebrow">Dubai's Trusted Real Estate Partner</span>
-<h1 class="hero__title"><span class="sr-only">Dubai homes. A clearer perspective.</span><span data-typewriter aria-hidden="true">Dubai homes.<br><em>A clearer perspective.</em></span></h1>
-<p class="hero__subtitle">Off-plan and ready homes across Downtown, Dubai Marina, Palm Jumeirah and more, with full buying, mortgage and investment support.</p>
+<span class="hero__eyebrow">UAE Property Advisory · RERA-registered</span>
+<h1 class="hero__title"><span class="sr-only">The UAE is building its next decade. Own your place in it.</span><span data-typewriter aria-hidden="true">The UAE is building its next decade.<br><em>Own your place in it.</em></span></h1>
+<p class="hero__subtitle">Off-plan and ready homes across the UAE's freehold communities, with mortgage, payment-plan and rental-yield advisory from first shortlist to handover.</p>
 <div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Listings {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Talk to an advisor</a></div>
 <nav class="hero-mode-switch" aria-label="Hero viewing mode"><a href="/?scene=photo" data-hero-mode="cinematic" aria-current="page">Cinematic</a><a href="/" data-hero-mode="3d">Satellite to street</a></nav><div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
@@ -822,7 +823,7 @@ def build_home():
 
 <section class="section container arc-gallery ambient-glow-host" data-arc-gallery>{GLOW}
 <div class="section-header center"><span class="eyebrow">Portfolio</span>{h2_cascade("A closer look at our listings")}
-<p>Explore the architecture, interiors and neighbourhoods behind a Dubai property search.</p></div>
+<p>Explore the architecture, interiors and neighbourhoods behind a UAE property search.</p></div>
 <div class="fan-carousel-wrap" data-fan-carousel aria-label="Portfolio photo carousel" role="region">
 <div class="fan-layout" data-fan-track>{gallery}</div>
 <div class="fan-pagination"><button type="button" class="fan-arrow" data-fan-prev aria-label="Previous photos">{PREV}</button>
@@ -839,7 +840,7 @@ def build_home():
 {STORY}
 
 <section class="section ambient-glow-host" data-developers>{GLOW}<div class="container">
-<div class="section-header center"><span class="eyebrow">Trusted Partners</span>{h2_cascade("Backed by Dubai's leading developers")}
+<div class="section-header center"><span class="eyebrow">Trusted Partners</span>{h2_cascade("Backed by the UAE's leading developers")}
 <p>We work directly with the master developers behind the city's skyline, so pricing and payment plans come straight from source.</p></div>
 <div class="marquee" data-developer-marquee><div class="marquee__track">{one}{two}</div></div></div></section>
 
@@ -865,8 +866,8 @@ def build_home():
 
 {cta_section()}"""
     ld = [org_ld(), {"@context": "https://schema.org", "@type": "WebSite", "name": SITE["name"], "url": BASE + "/", "inLanguage": "en"}]
-    write("/", page("/", "SWK Properties | Luxury Real Estate in Dubai",
-                    "SWK Properties is a premium Dubai real estate agency — off-plan and ready homes across Downtown, Dubai Marina, Palm Jumeirah and more, with full buying, mortgage and investment support.",
+    write("/", page("/", "SWK Properties | UAE Property Advisory — Off-Plan and Ready Homes",
+                    "SWK Properties is a RERA-registered UAE property advisory — off-plan and ready homes in freehold communities, with mortgage, payment-plan and rental-yield advice from shortlist to handover.",
                     body, ld=ld,
                     preload=[("/assets/images/hero/dubai-cinema-home.webp", ' fetchpriority="high"')]))
 
@@ -962,7 +963,7 @@ def build_about():
     body = f"""{page_hero("Ten years of getting Dubai property right", "SWK Properties was founded on a simple idea: buying a home in Dubai — whether you live down the road or on the other side of the world — should feel transparent, not transactional.", trail, bg="about")}
 <section class="section container ambient-glow-host">{GLOW}<div class="split-block">{img("assets/images/about/swk-office.webp", "SWK Properties office overlooking Business Bay", sizes="(min-width: 900px) 600px, 100vw")}
 <div data-reveal><span class="eyebrow">Our Story</span><h2>Built by agents, run for clients</h2>
-<p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in Dubai could feel for outsiders. Today we're a full-service brokerage of over 40 consultants, but the founding principle hasn't changed: every fee, every payment plan clause, and every ROI figure gets explained in plain language before you sign anything.</p>
+<p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in the UAE could feel for outsiders. Today we're a full-service brokerage of over 40 consultants, but the founding principle hasn't changed: every fee, every payment plan clause, and every ROI figure gets explained in plain language before you sign anything.</p>
 <p style="margin-top:var(--space-4)">We work across off-plan and secondary sales, mortgage arrangement, and long-term property management — so the relationship doesn't end at handover.</p>
 <a href="/contact/" class="btn btn-dark" style="margin-top:var(--space-5)">Talk to our team</a></div></div></section>
 <section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Our Values</span><h2>What guides every deal we close</h2></div><div class="step-list">{steps}</div></div></section>

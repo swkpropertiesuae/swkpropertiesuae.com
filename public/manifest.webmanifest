@@ -1,7 +1,7 @@
 {
  "name": "SWK Properties",
  "short_name": "SWK",
- "description": "Luxury real estate in Dubai",
+ "description": "Property advisory across the UAE",
  "start_url": "/",
  "scope": "/",
  "display": "browser",
