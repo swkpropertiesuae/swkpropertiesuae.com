@@ -196,9 +196,6 @@ body { background: var(--grad-page), var(--color-bg); background-repeat: no-repe
 .site-header__cta { flex-shrink: 0; }
 @media (max-width: 639px) { .site-header__cta { display: none; } }
 
-/* The floating dock is the phone / tablet navigation; desktop uses the bar above. */
-@media (min-width: 1024px) { .dock-wrap { display: none; } }
-
 /* ---- Buttons ---- */
 
 .btn-gold { background: var(--grad-gold); color: var(--navy-950); box-shadow: 0 8px 22px rgba(176, 122, 56, 0.35); }

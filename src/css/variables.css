@@ -131,7 +131,7 @@
 
   /* ---- Layout ---- */
   --container-max: 1280px;
-  /* Clearance below the fixed top brand mark + floating dock (both small,
+  /* Clearance below the fixed top brand mark (small,
      overlaid elements now — there's no full-width navbar bar to size against). */
   --header-h: 88px;
   --header-h-scrolled: 88px;

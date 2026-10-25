@@ -435,5 +435,5 @@
 /* ---- Print ---- */
 
 @media print {
-  .site-brand, .dock-wrap, .dock-mobile, .whatsapp-float, .hero__scroll-cue, .hero__gl, .scroll-progress { display: none !important; }
+  .site-brand, .whatsapp-float, .hero__scroll-cue, .hero__gl, .scroll-progress { display: none !important; }
 }

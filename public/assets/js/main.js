@@ -110,46 +110,8 @@
   });
 })();
 
-// Floating dock: macOS-style magnification on fine pointers.
-(function () {
-  'use strict';
-  var SWK = window.SWK;
-
-  SWK.reg('dock', function () {
-    var dock = SWK.$('[data-dock]');
-    if (!dock || !SWK.fine || SWK.reduced) return;
-    var items = SWK.$$('.dock__item', dock);
-    var centers = [];
-    var small = window.matchMedia('(max-width: 767px)');
-
-    function measure() {
-      centers = items.map(function (el) {
-        var r = el.getBoundingClientRect();
-        return r.left + r.width / 2;
-      });
-    }
-    function reset() {
-      dock.classList.remove('is-magnifying');
-      items.forEach(function (el) { el.style.removeProperty('--mag'); });
-    }
-
-    dock.addEventListener('pointerenter', function () { if (!small.matches) measure(); });
-    dock.addEventListener('pointermove', function (ev) {
-      if (small.matches || ev.pointerType === 'touch') return;
-      if (!centers.length) measure();
-      dock.classList.add('is-magnifying');
-      items.forEach(function (el, i) {
-        var d = Math.abs(ev.clientX - centers[i]);
-        var m = 1 + 0.62 * Math.exp(-Math.pow(d / 54, 2));
-        el.style.setProperty('--mag', m.toFixed(3));
-      });
-    });
-    dock.addEventListener('pointerleave', reset);
-    window.addEventListener('resize', function () { centers = []; reset(); });
-  });
-})();
-
-// Top navigation bar: transparent over the hero, a frosted bar once the page scrolls.
+// Top navigation bar: a white bar that gains a shadow once the page scrolls.
+// Below 1024px the links, call/WhatsApp actions and chat live in a header menu.
 (function () {
   'use strict';
   var SWK = window.SWK;
@@ -160,6 +122,41 @@
     var update = SWK.raf(function () { bar.classList.toggle('is-scrolled', window.scrollY > 12); });
     window.addEventListener('scroll', update, { passive: true });
     update();
+  });
+
+  SWK.reg('mobile-menu', function () {
+    var btn = SWK.$('[data-menu-toggle]');
+    var menu = SWK.$('[data-mobile-menu]');
+    var scrim = SWK.$('[data-menu-scrim]');
+    if (!btn || !menu) return;
+    var wide = window.matchMedia('(min-width: 1024px)');
+
+    function set(open, returnFocus) {
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      menu.hidden = !open;
+      if (scrim) scrim.hidden = !open;
+      document.documentElement.classList.toggle('menu-open', open);
+      if (!open && returnFocus) btn.focus();
+    }
+
+    btn.addEventListener('click', function () { set(menu.hidden); });
+    if (scrim) scrim.addEventListener('click', function () { set(false); });
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && !menu.hidden) { ev.preventDefault(); set(false, true); }
+    });
+    // In-page links and the external actions all dismiss the menu.
+    menu.addEventListener('click', function (ev) { if (ev.target.closest('a')) set(false); });
+    var onResize = function () { if (wide.matches && !menu.hidden) set(false); };
+    if (wide.addEventListener) wide.addEventListener('change', onResize); else wide.addListener(onResize);
+
+    // The floating chat button is retired on small screens; the menu opens the same panel.
+    var chat = SWK.$('[data-menu-chat]');
+    if (chat) chat.addEventListener('click', function () {
+      set(false);
+      var toggle = SWK.$('[data-chat-toggle]');
+      if (toggle) toggle.click();
+    });
   });
 })();
 
@@ -848,6 +845,44 @@
 
     buildDots();
     render();
+  });
+})();
+
+// Single-row, swipeable carousels (Home: developers, spotlight). Native scroll-snap does the
+// movement, so touch, trackpad and keyboard focus all work; the buttons page by whole cards.
+(function () {
+  'use strict';
+  var SWK = window.SWK;
+
+  SWK.reg('row-carousel', function () {
+    SWK.$$('[data-row-carousel]').forEach(function (root) {
+      var track = SWK.$('[data-row-track]', root);
+      var prev = SWK.$('[data-row-prev]', root);
+      var next = SWK.$('[data-row-next]', root);
+      if (!track || !prev || !next) return;
+
+      function stride() {
+        var first = track.firstElementChild;
+        if (!first) return track.clientWidth;
+        var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+        return first.getBoundingClientRect().width + gap;
+      }
+      function page(dir) {
+        var cards = Math.max(1, Math.floor(track.clientWidth / stride()));
+        track.scrollBy({ left: dir * cards * stride(), behavior: SWK.reduced ? 'auto' : 'smooth' });
+      }
+      var update = SWK.raf(function () {
+        var max = track.scrollWidth - track.clientWidth - 2;
+        prev.disabled = track.scrollLeft <= 2;
+        next.disabled = track.scrollLeft >= max;
+      });
+
+      prev.addEventListener('click', function () { page(-1); });
+      next.addEventListener('click', function () { page(1); });
+      track.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
+    });
   });
 })();
 

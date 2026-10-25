@@ -95,7 +95,6 @@
 .toast--error { border-left-color: #e5694a; background: #3b1a14; }
 .toast__close { color: #fff; opacity: 0.7; font-size: 1.2rem; line-height: 1; }
 .toast__close:hover { opacity: 1; }
-@media (max-width: 719px) { .toasts { bottom: 5.8rem; } }
 
 /* ---- Back to top ---- */
 .back-top {
@@ -121,7 +120,7 @@
 
 /* ---- Print ---- */
 @media print {
-  .site-header, .dock-wrap, .announce, .cookie-banner, .toasts, .back-top, .whatsapp-float, .preloader, .footer-news, .scroll-progress, .dialog, .hero__gl { display: none !important; }
+  .site-header, .announce, .cookie-banner, .toasts, .back-top, .whatsapp-float, .preloader, .footer-news, .scroll-progress, .dialog, .hero__gl { display: none !important; }
   body { background: #fff !important; color: #000; }
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.8em; }
   .hero-cine { height: auto !important; }

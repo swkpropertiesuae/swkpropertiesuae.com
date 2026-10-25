@@ -289,16 +289,6 @@ PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=
 NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'
 WHATSAPP = ('<svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.52 0-10 4.48-10 10 0 1.77.46 3.45 1.27 4.9L2 22l5.24-1.38a9.96 9.96 0 0 0 4.8 1.22h.01c5.52 0 10-4.48 10-10s-4.49-9.84-10.01-9.84Zm5.8 14.2c-.24.68-1.4 1.3-1.93 1.38-.5.08-1.12.11-1.8-.11-.42-.14-.95-.3-1.64-.6-2.88-1.24-4.76-4.15-4.9-4.34-.14-.19-1.17-1.56-1.17-2.98 0-1.41.74-2.1 1-2.39.26-.28.58-.35.77-.35.19 0 .39 0 .55.01.18.01.42-.07.65.5.24.58.82 2 .89 2.15.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.16-.29.36-.42.48-.14.14-.28.29-.12.57.16.28.72 1.19 1.55 1.93 1.06.95 1.96 1.24 2.24 1.38.28.14.44.12.6-.07.16-.19.68-.79.86-1.06.18-.28.36-.23.6-.14.24.09 1.55.73 1.82.87.27.14.45.21.51.32.07.12.07.65-.17 1.33Z"/></svg>')
 
-DOCK = [
-    ("/", "Home", '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/>'),
-    ("/properties/", "Properties", '<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 21v-4h6v4M9 7h1M9 11h1M14 7h1M14 11h1"/>'),
-    ("/about/", "About", '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>'),
-    ("/services/", "Services", '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>'),
-    ("/mortgage/", "Mortgage", '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/>'),
-    ("/blog/", "Blog", '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/>'),
-    ("/contact/", "Contact", '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/>'),
-]
-
 SERVICE_ICONS = {
     "buying-selling": '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     "investment-advisory": '<path d="M3 17l6-6 4 4 8-9"/><path d="M15 6h6v6"/>',
@@ -355,25 +345,27 @@ NAV = [("/", "Home"), ("/properties/", "Properties"), ("/about/", "About"), ("/s
 
 
 def site_header(path):
+    def current(h):
+        return h == path or (h != "/" and path.startswith(h))
     links = "".join(
-        f"""<a href="{h}"{' aria-current="page"' if (h == path or (h != "/" and path.startswith(h))) else ""}>{l}</a>""" for h, l in NAV)
+        f"""<a href="{h}"{' aria-current="page"' if current(h) else ""}>{l}</a>""" for h, l in NAV)
+    menu_links = "".join(
+        f"""<a href="{h}"{' aria-current="page"' if current(h) else ""}><span>{l}</span>{ARROW}</a>""" for h, l in NAV)
+    menu_icon = '<span class="nav-toggle__bars" aria-hidden="true"><i></i><i></i><i></i></span>'
     return (f'<header class="site-header" data-site-header><div class="site-header__inner container">'
             f'<a href="/" class="site-brand" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" class="brand-logo" width="338" height="275" decoding="async" fetchpriority="high"></a>'
             f'<nav class="site-nav" aria-label="Primary">{links}</nav>'
             f'<div class="site-header__actions"><a href="{WA_DEFAULT}" class="site-header__wa" target="_blank" rel="noopener noreferrer" aria-label="Chat with SWK on WhatsApp">{WHATSAPP}</a>'
-            f'<a href="/contact/" class="btn btn-primary btn-sm site-header__cta">Book a consultation<span class="site-header__go" aria-hidden="true">{ARROW}</span></a></div></div></header>')
-
-
-def dock(path):
-    items = []
-    for href, label, d in DOCK:
-        cur = href == path or (href != "/" and path.startswith(href))
-        c = ' aria-current="page"' if cur else ""
-        items.append(
-            f'<a class="dock__item" href="{href}" aria-label="{label}"{c}>'
-            f'<span class="dock__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">{d}</svg></span>'
-            f'<span class="dock__tooltip" aria-hidden="true">{label}</span></a>')
-    return f'<nav class="dock-wrap" aria-label="Quick navigation"><div class="dock" data-dock>{"".join(items)}</div></nav>'
+            f'<a href="/contact/" class="btn btn-primary btn-sm site-header__cta">Book a consultation<span class="site-header__go" aria-hidden="true">{ARROW}</span></a>'
+            f'<button type="button" class="nav-toggle" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">{menu_icon}</button></div></div>'
+            f'<div class="menu-scrim" data-menu-scrim hidden></div>'
+            f'<div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>'
+            f'<nav class="mobile-menu__nav" aria-label="Mobile">{menu_links}</nav>'
+            f'<div class="mobile-menu__actions">'
+            f'<a href="/contact/" class="btn btn-primary mobile-menu__cta">Book a consultation</a>'
+            f'<a href="tel:{SITE["phone"]}" class="btn btn-outline-dark">{ICON_PHONE} Call</a>'
+            f'<a href="{WA_DEFAULT}" class="btn btn-outline-dark" target="_blank" rel="noopener noreferrer">{WHATSAPP} WhatsApp</a>'
+            f'<button type="button" class="btn btn-outline-dark mobile-menu__chat" data-menu-chat>Chat with SWK</button></div></div></header>')
 
 
 PRELOADER = """<div class="preloader" role="status" aria-live="polite">
@@ -638,7 +630,6 @@ def page(path, title, desc, body, *, image=PAGE_HERO_IMG, ld=None, og_type="webs
 <a class="skip-link" href="#main">Skip to content</a>
 {announce_bar()}
 {site_header(path)}
-{dock(path)}
 <main id="main">
 {body}
 </main>
@@ -724,10 +715,19 @@ def project_card(dev, proj, reveal=False):
 <a href="{href}" class="project-card__more">Project details {ARROW}</a></div></article>"""
 
 
-def dev_card(dev, i=0):
+def row_carousel(cards, label, noun):
+    """One horizontal, swipeable row of cards with previous/next controls (see 63-row-carousel.js)."""
+    return (f'<div class="row-carousel" data-row-carousel role="region" aria-roledescription="carousel" aria-label="{label}">'
+            f'<button type="button" class="row-carousel__btn row-carousel__btn--prev" data-row-prev aria-label="Previous {noun}">{PREV}</button>'
+            f'<div class="row-carousel__track" data-row-track>{cards}</div>'
+            f'<button type="button" class="row-carousel__btn row-carousel__btn--next" data-row-next aria-label="Next {noun}">{NEXT}</button></div>')
+
+
+def dev_card(dev, i=0, reveal=True):
     names = "".join(f"<li>{e(p['name'])}</li>" for p in dev["projects"][:3])
     mono = "".join(w[0] for w in dev["name"].replace("&", " ").split()[:2]).upper()
-    return f"""<a class="dev-card" href="/properties/{dev['slug']}/" data-reveal data-reveal-delay="{(i % 3) * 70}" style="--dc:{dev['hue']}" aria-label="{e(dev['name'])}: {len(dev['projects'])} featured projects">
+    rv = f' data-reveal data-reveal-delay="{(i % 3) * 70}"' if reveal else ""
+    return f"""<a class="dev-card" href="/properties/{dev['slug']}/"{rv} style="--dc:{dev['hue']}" aria-label="{e(dev['name'])}: {len(dev['projects'])} featured projects">
 <div class="dev-card__media">{project_media(dev, dev["projects"][0])}</div><div class="dev-card__brand">{dev_logo(dev) or f'<span class="dev-card__mono" aria-hidden="true">{mono}</span>'}</div><h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
 <ul>{names}</ul><span class="dev-card__count">{len(dev['projects'])} featured projects {ARROW}</span></a>"""
 
@@ -868,8 +868,8 @@ def build_home():
     spotlight = [(DEV_BY[sl], next(q for q in DEV_BY[sl]["projects"] if q["name"] == nm)) for sl, nm in
                  [("emaar", "Greencrest"), ("damac", "Chelsea Residences"), ("sobha", "Sobha SeaHaven"), ("omniyat", "ORLA, Dorchester Collection, Dubai"),
                   ("binghatti", "Mercedes-Benz Places"), ("nakheel", "Palm Jebel Ali")]]
-    feat_cards = "".join(project_card(d, q, reveal=True) for d, q in spotlight)
-    dev_cards = "".join(dev_card(d, i) for i, d in enumerate(DEVS))
+    feat_cards = "".join(project_card(d, q) for d, q in spotlight)
+    dev_cards = "".join(dev_card(d, i, reveal=False) for i, d in enumerate(DEVS))
 
     logos = [("01", "Arada"), ("02", "Dubai Properties"), ("03", "DAMAC"), ("04", "Samana Developers"), ("05", "Danube Properties"),
              ("06", "Binghatti"), ("07", "Azizi"), ("08", "Dubai Properties"), ("09", "Empire Developments"), ("10", "Sobha Realty")]
@@ -943,14 +943,14 @@ def build_home():
 <div class="arc-gallery__viewall"><a href="/properties/" class="btn btn-outline-dark">View all properties</a></div></section>
 
 <section class="section section--alt featured-section ambient-glow-host">{GLOW}<div class="container">
-<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Developers</span>{h2_cascade("Fifteen developers. One advisory desk.")}</div>
+<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Developers</span>{h2_cascade("Leading developers. One advisory desk.")}</div>
 <a href="/properties/" class="btn btn-outline-dark">All developers &amp; projects</a></div>
-<div class="dev-grid">{dev_cards}</div></div></section>
+{row_carousel(dev_cards, "UAE developers", "developers")}</div></section>
 
 <section class="section ambient-glow-host">{GLOW}<div class="container">
 <div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Spotlight</span>{h2_cascade("Projects worth a closer look")}</div>
 <a href="/properties/" class="btn btn-outline-dark">Browse all projects</a></div>
-<div class="project-grid">{feat_cards}</div>
+{row_carousel(feat_cards, "Spotlight projects", "projects")}
 <p class="listing-note">Project details come from each developer's public information and change often. Ask SWK for current availability, payment terms and brochures; none are published on this site.</p>
 </div></section>
 
