@@ -1,10 +1,12 @@
-// Cinematic hero: a procedural Dubai skyline in golden light rendered with Three.js.
+// Cinematic hero: a procedural Dubai street scene rendered with Three.js.
 //
+//  - The scroll journey starts as a Google-Earth style satellite view straight
+//    down on the city (street grid, lots, parks, desert and coastline, with
+//    long building shadows), descends over the boulevard, tilts toward the
+//    horizon and lands at street level to drive down the avenue.
 //  - One InstancedMesh holds every building (and the landmark tower tiers);
 //    a custom shader draws lit windows, rim light, height fog and the ember
 //    glow of a sunset sitting behind the skyline.
-//  - A camera path is scrubbed by page scroll (see hero-cine.js): the camera
-//    flies down the boulevard, weaving between towers, and rises above the roofs.
 //  - Everything is procedural, so there are no model or texture downloads.
 //
 // Loaded lazily (dynamic import) only when WebGL is available and the visitor
@@ -13,7 +15,9 @@
 
 import * as THREE from '/assets/vendor/three.module.min.js';
 
-const FOG_COLOR = new THREE.Color(0.96, 0.85, 0.72);
+const STREET_FOG = new THREE.Color(0.96, 0.85, 0.72);
+const ORBIT_FOG = new THREE.Color(0.80, 0.87, 0.94);
+const FOG_COLOR = STREET_FOG.clone();
 
 function mulberry32(seed) {
   let a = seed >>> 0;
@@ -176,6 +180,7 @@ const SKY_VERT = /* glsl */ `
 
 const SKY_FRAG = /* glsl */ `
   uniform float uTime;
+  uniform float uHigh;
   varying vec3 vDir;
   float hash(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -198,7 +203,7 @@ const SKY_FRAG = /* glsl */ `
     float y = d.y;
     vec3 zenith = vec3(0.15, 0.33, 0.62);
     vec3 mid    = vec3(0.60, 0.74, 0.88);
-    vec3 hor    = vec3(0.98, 0.82, 0.60);
+    vec3 hor    = mix(vec3(0.98, 0.82, 0.60), vec3(0.80, 0.88, 0.95), uHigh);
     vec3 col = mix(hor, mid, smoothstep(0.0, 0.2, y));
     col = mix(col, zenith, smoothstep(0.16, 0.8, y));
 
@@ -217,7 +222,7 @@ const SKY_FRAG = /* glsl */ `
     cloud += vec3(1.0, 0.85, 0.55) * pow(max(sd, 0.0), 4.0) * 0.25;
     col = mix(col, cloud, cm * 0.92);
 
-    col = mix(col, vec3(0.96, 0.85, 0.72), smoothstep(0.0, -0.2, y));
+    col = mix(col, mix(vec3(0.96, 0.85, 0.72), vec3(0.80, 0.87, 0.94), uHigh), smoothstep(0.0, -0.2, y));
     gl_FragColor = vec4(col, 1.0);
   }
 `;
@@ -239,27 +244,138 @@ const GROUND_FRAG = /* glsl */ `
   uniform float uFogDensity;
   varying vec3 vWorld;
   varying float vFogDepth;
+
+  float hash(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
+  }
+  float vnoise(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+               mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+  }
+  float fbm(vec2 p) {
+    float a = 0.5, s = 0.0;
+    for (int i = 0; i < 4; i++) { s += a * vnoise(p); p = p * 2.03 + 17.1; a *= 0.5; }
+    return s;
+  }
+
   void main() {
-    float ax = abs(vWorld.x);
+    vec2 xz = vWorld.xz;
+    float ax = abs(xz.x);
+    float fine = 1.0 - smoothstep(70.0, 420.0, vFogDepth);   // fine detail fades with range so it never shimmers
+
+    // ---- Satellite layer -------------------------------------------------
+    // City blocks sit on a 26 m grid (matching the building lattice): asphalt streets on the
+    // cell edges, wider arterials every fourth street, and each lot paved, planted or parked.
+    const float CELL = 26.0;
+    vec2 cu = (xz + 13.0) / CELL;
+    vec2 cf = fract(cu);
+    vec2 cid = floor(cu);
+    vec2 dEdge = min(cf, 1.0 - cf) * CELL;
+    float minor = max(1.0 - smoothstep(1.5, 2.3, dEdge.x), 1.0 - smoothstep(1.5, 2.3, dEdge.y));
+    vec2 da = abs(fract((xz + 13.0) / (CELL * 4.0) + 0.5) - 0.5) * CELL * 4.0;
+    float arterial = max(1.0 - smoothstep(3.6, 4.6, da.x), 1.0 - smoothstep(3.6, 4.6, da.y));
+    float streets = max(minor * 0.92, arterial);
+
+    float h = hash(cid);
+    vec3 lot = vec3(0.80, 0.72, 0.58);                       // sandstone
+    lot = mix(lot, vec3(0.72, 0.70, 0.66), step(0.55, h));   // concrete
+    lot = mix(lot, vec3(0.86, 0.80, 0.68), step(0.78, h));   // pale stone
+    vec2 inLot = (cf - 0.5) * CELL;
+    float stripes = step(0.5, fract(inLot.x / 2.6)) * fine * 0.10;
+    lot = mix(lot, vec3(0.38, 0.38, 0.40) + stripes, step(0.22, h) * (1.0 - step(0.36, h)));  // car parks
+    vec3 turf = mix(vec3(0.27, 0.40, 0.21), vec3(0.36, 0.48, 0.27), vnoise(xz * 0.35));
+    lot = mix(lot, turf, 1.0 - step(0.22, h));               // parks and landscaping
+    lot *= 0.94 + 0.12 * vnoise(xz * 0.9) * fine + 0.06 * fbm(xz * 0.05);
+
+    vec3 asphalt = vec3(0.30, 0.30, 0.32) * (0.92 + 0.14 * vnoise(xz * 0.6) * fine);
+    float centre = (1.0 - smoothstep(0.12, 0.3, min(da.x, da.y))) * step(0.5, fract((da.x < da.y ? xz.y : xz.x) / 10.0)) * fine;
+    vec3 city = mix(lot, asphalt, streets);
+    city = mix(city, vec3(0.93, 0.92, 0.86), centre * arterial * 0.8);
+
+    // Desert and the Gulf beyond the lattice.
+    vec3 sand = mix(vec3(0.84, 0.73, 0.54), vec3(0.74, 0.60, 0.40), fbm(xz * 0.012));
+    sand *= 0.96 + 0.07 * vnoise(xz * 0.4) * fine;
+    float shore = 400.0 + 38.0 * sin(xz.y * 0.011) + 26.0 * fbm(xz * 0.02);
+    float sd = xz.x - shore;
+    float wet = smoothstep(-14.0, 0.0, sd);
+    vec3 shallow = vec3(0.40, 0.76, 0.74);
+    vec3 deep = vec3(0.04, 0.27, 0.45);
+    vec3 sea = mix(shallow, deep, smoothstep(0.0, 230.0, sd));
+    sea += 0.045 * vnoise(vec2(xz.x * 0.05, xz.y * 0.09)) * fine;
+    vec3 land = mix(sand, sand * 0.8, wet * (1.0 - step(0.0, sd)));
+    vec3 outside = mix(land, sea, smoothstep(-0.6, 1.2, sd));
+    outside = mix(outside, vec3(0.97, 0.97, 0.94), (1.0 - smoothstep(0.0, 5.0, abs(sd - 1.0))) * 0.55);  // surf line
+
+    float inX = 1.0 - smoothstep(312.0, 338.0, ax);
+    float inZ = smoothstep(-652.0, -620.0, xz.y) * (1.0 - smoothstep(104.0, 140.0, xz.y));
+    vec3 satellite = mix(outside, city, inX * inZ);
+
+    // ---- Street layer (unchanged): stone forecourt and the boulevard ------
     float road = 1.0 - smoothstep(7.0, 8.0, ax);
-    // Warm sandstone plaza either side of a cool asphalt boulevard.
     float far = smoothstep(10.0, 150.0, ax);
     vec3 plaza = mix(vec3(0.95, 0.91, 0.83), vec3(0.88, 0.87, 0.84), far * 0.55);
-    // Thin paving joints, faded with distance so they never band.
-    float joint = max(smoothstep(0.0, 0.05, abs(fract(vWorld.z / 12.0) - 0.5) - 0.45),
-                      smoothstep(0.0, 0.05, abs(fract(vWorld.x / 12.0) - 0.5) - 0.45));
+    float joint = max(smoothstep(0.0, 0.05, abs(fract(xz.y / 12.0) - 0.5) - 0.45),
+                      smoothstep(0.0, 0.05, abs(fract(xz.x / 12.0) - 0.5) - 0.45));
     plaza *= 1.0 - joint * 0.05 * (1.0 - smoothstep(30.0, 160.0, vFogDepth));
-    vec3 col = mix(plaza, vec3(0.56, 0.53, 0.55), road);
-    float dash = step(0.5, fract(vWorld.z / 8.0)) * (1.0 - smoothstep(0.12, 0.22, ax));
+    float halfRoad = mix(78.0, 15.0, smoothstep(20.0, 220.0, -xz.y));
+    // Landscaped forecourt: lawns in the cells either side of the boulevard, trees are instanced in JS.
+    vec2 lc = (cf - 0.5) * CELL;
+    float lawnCell = step(0.5, abs(cid.x)) * step(abs(cid.x), 2.5) * step(-1.5, cid.y) * step(cid.y, 4.5);
+    float lawn = lawnCell * (1.0 - smoothstep(9.0, 9.7, max(abs(lc.x), abs(lc.y))));
+    vec3 grass = mix(vec3(0.24, 0.39, 0.19), vec3(0.36, 0.51, 0.27), vnoise(xz * 0.45)) * (0.94 + 0.12 * fbm(xz * 0.09));
+    float hedge = lawnCell * (1.0 - smoothstep(0.0, 0.5, abs(max(abs(lc.x), abs(lc.y)) - 9.2)));
+    plaza = mix(plaza, grass, lawn);
+    plaza = mix(plaza, vec3(0.14, 0.27, 0.13), hedge * 0.85);
+    float forecourt = (1.0 - smoothstep(halfRoad - 3.0, halfRoad + 1.0, ax)) * inZ;
+    vec3 col = mix(satellite, plaza, forecourt);
+    col = mix(col, vec3(0.56, 0.53, 0.55), road);
+    float dash = step(0.5, fract(xz.y / 8.0)) * (1.0 - smoothstep(0.12, 0.22, ax));
     col = mix(col, vec3(1.0, 0.98, 0.92), dash * road * 0.9);
     float edge = smoothstep(6.5, 6.75, ax) * (1.0 - smoothstep(6.75, 7.0, ax));
     col = mix(col, vec3(0.95, 0.74, 0.25), edge * 0.95);
+
     float ff = 1.0 - exp(-pow(vFogDepth * uFogDensity, 2.0));
     col = mix(col, uFogColor, clamp(ff * 1.05, 0.0, 1.0));
     gl_FragColor = vec4(col, 1.0);
   }
 `;
 
+
+const TREE_VERT = /* glsl */ `
+  varying vec3 vWorld;
+  varying vec3 vNormalW;
+  varying float vFogDepth;
+  void main() {
+    vec4 wp = modelMatrix * instanceMatrix * vec4(position, 1.0);
+    vWorld = wp.xyz;
+    vNormalW = normalize(mat3(modelMatrix * instanceMatrix) * normal);
+    vec4 mv = viewMatrix * wp;
+    vFogDepth = -mv.z;
+    gl_Position = projectionMatrix * mv;
+  }
+`;
+
+const TREE_FRAG = /* glsl */ `
+  uniform vec3 uColor;
+  uniform vec3 uFogColor;
+  uniform float uFogDensity;
+  varying vec3 vWorld;
+  varying vec3 vNormalW;
+  varying float vFogDepth;
+  void main() {
+    vec3 N = normalize(vNormalW);
+    float diff = clamp(dot(N, normalize(vec3(0.55, 0.62, 0.56))), 0.0, 1.0);
+    float v = fract(sin(dot(floor(vWorld.xz * 0.5), vec2(12.9898, 78.233))) * 43758.5453);
+    vec3 col = uColor * (0.9 + 0.22 * v) * (0.62 + 0.7 * diff) * (0.84 + 0.3 * clamp(vWorld.y / 8.0, 0.0, 1.0));
+    float ff = 1.0 - exp(-pow(vFogDepth * uFogDensity, 2.0));
+    col = mix(col, uFogColor, clamp(ff, 0.0, 1.0));
+    gl_FragColor = vec4(col, 1.0);
+  }
+`;
 
 const VEH_VERT = /* glsl */ `
   attribute float aPart;
@@ -452,6 +568,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     uFogColor: { value: FOG_COLOR },
     uFogDensity: { value: 0.0023 },
     uPx: { value: pixelRatio },
+    uHigh: { value: 0 },
   };
 
   // ---- Sky (follows the camera so it never parallaxes)
@@ -460,7 +577,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     new THREE.ShaderMaterial({
       vertexShader: SKY_VERT,
       fragmentShader: SKY_FRAG,
-      uniforms: { uTime: uniforms.uTime },
+      uniforms: { uTime: uniforms.uTime, uHigh: uniforms.uHigh },
       side: THREE.BackSide,
       depthWrite: false,
       depthTest: false,
@@ -472,7 +589,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
 
   // ---- Ground
   const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(1400, 1400),
+    new THREE.PlaneGeometry(2600, 2600),
     new THREE.ShaderMaterial({
       vertexShader: GROUND_VERT,
       fragmentShader: GROUND_FRAG,
@@ -480,7 +597,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     })
   );
   ground.rotation.x = -Math.PI / 2;
-  ground.position.set(0, 0, -240);
+  ground.position.set(0, 0, -240);   // spans x -1300..1300 so the satellite view always has desert and sea to the edge
   scene.add(ground);
 
   // ---- Buildings (single instanced draw call)
@@ -490,7 +607,11 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
   const beacons = [];
   const CELL = 26;
 
-  const push = (x, y, z, w, h, d, ry, seed) => parts.push({ x, y, z, w, h, d, ry, seed });
+  const casters = [];
+  const push = (x, y, z, w, h, d, ry, seed) => {
+    parts.push({ x, y, z, w, h, d, ry, seed });
+    if (y === 0 && h > 8 && w < 40) casters.push([x, z, w, d, h]);
+  };
 
   const smoothstepJS = (a, b, x) => smooth(clamp((x - a) / (b - a), 0, 1));
   for (let gx = -12; gx <= 12; gx++) {
@@ -552,6 +673,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
       const t = i / (tiers - 1);
       push(lx, i * 13.5, lz, lerp(22, 4.5, Math.pow(t, 0.9)), 14.2, lerp(22, 4.5, Math.pow(t, 0.9)), i * 0.22, 0.37);
     }
+    casters.push([lx, lz, 12, 12, tiers * 13.5 + 44]);
     push(lx, tiers * 13.5, lz, 1.1, 44, 1.1, 0, 5.5);
     beacons.push([lx, tiers * 13.5 + 46, lz, 0.4]);
   }
@@ -561,6 +683,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     for (let i = 0; i < tiers; i++) {
       push(lx, i * 7, lz, 22 - i * 0.15, 7.2, 22 - i * 0.15, i * 0.075, 0.61);
     }
+    casters.push([lx, lz, 20, 20, tiers * 7]);
     beacons.push([lx, tiers * 7 + 1, lz, 2.2]);
   }
   // A hazy backdrop row that closes the far end of the boulevard (no hard gap of raw sky).
@@ -607,6 +730,29 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
   buildings.instanceMatrix.needsUpdate = true;
   buildings.frustumCulled = false;
   scene.add(buildings);
+
+  // ---- Long afternoon shadows, cast away from the sun (+x, +z): every caster's footprint swept along
+  // the shadow vector, as a hexagon. From above this is what makes the city read as satellite imagery.
+  {
+    const SHADOW = 0.5;                       // horizontal shadow length per metre of height
+    const verts = [];
+    casters.forEach(([x, z, w, d, h]) => {
+      const dx = -h * SHADOW * 0.9, dz = -h * SHADOW * 0.92;
+      const x0 = x - w / 2, x1 = x + w / 2, z0 = z - d / 2, z1 = z + d / 2;
+      const hex = [[x1, z1], [x1, z0], [x1 + dx, z0 + dz], [x0 + dx, z0 + dz], [x0 + dx, z1 + dz], [x0, z1]];
+      for (let i = 1; i < 5; i++) {
+        [hex[0], hex[i], hex[i + 1]].forEach((v) => verts.push(v[0], 0.07, v[1]));
+      }
+    });
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(verts), 3));
+    const shadows = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+      color: 0x0b1020, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide,
+    }));
+    shadows.frustumCulled = false;
+    shadows.renderOrder = 1;
+    scene.add(shadows);
+  }
 
 
   // Illuminated developer wordmarks on a stylised Dubai skyline, not a geographic map.
@@ -662,6 +808,33 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
       }
     }
     [lamps, bulbs].forEach((o) => { o.frustumCulled = false; scene.add(o); });
+  }
+
+  // ---- Trees: a double row along the boulevard and clusters on the forecourt lawns
+  {
+    const spots = [];
+    for (let z = 92; z > -44; z -= 12) { spots.push([-10.4, z, 1.0], [10.4, z, 1.0]); }
+    for (const gx of [-2, -1, 1, 2]) {
+      for (let gz = -1; gz <= 4; gz++) {
+        const cx = gx * CELL, cz = gz * CELL;
+        spots.push([cx, cz, 1.25]);
+        [[-5.6, -5.6], [5.6, -5.6], [-5.6, 5.6], [5.6, 5.6]].forEach(([ox, oz]) => spots.push([cx + ox + (rand() - 0.5), cz + oz + (rand() - 0.5), 0.8 + rand() * 0.4]));
+      }
+    }
+    const crownGeo = new THREE.IcosahedronGeometry(1, 1); crownGeo.translate(0, 1, 0);
+    const trunkGeo = new THREE.CylinderGeometry(0.16, 0.24, 1, 6); trunkGeo.translate(0, 0.5, 0);
+    const mat = (color) => new THREE.ShaderMaterial({
+      vertexShader: TREE_VERT, fragmentShader: TREE_FRAG,
+      uniforms: { uColor: { value: new THREE.Color(color) }, uFogColor: uniforms.uFogColor, uFogDensity: uniforms.uFogDensity },
+    });
+    const crowns = new THREE.InstancedMesh(crownGeo, mat(0x68a83f), spots.length);
+    const trunks = new THREE.InstancedMesh(trunkGeo, mat(0x6b4f35), spots.length);
+    const tm = new THREE.Matrix4(), tq = new THREE.Quaternion(), tp = new THREE.Vector3(), ts = new THREE.Vector3();
+    spots.forEach(([x, z, k], i) => {
+      tp.set(x, 0, z); ts.set(0.32 * k, 2.8 * k, 0.32 * k); tm.compose(tp, tq, ts); trunks.setMatrixAt(i, tm);
+      tp.set(x, 2.2 * k, z); ts.set(2.0 * k, 1.7 * k, 2.0 * k); tm.compose(tp, tq, ts); crowns.setMatrixAt(i, tm);
+    });
+    [trunks, crowns].forEach((o) => { o.frustumCulled = false; scene.add(o); });
   }
 
   // ---- Realistic traffic: instanced sedans and SUVs (white-heavy UAE fleet) with lit head/tail lamps
@@ -854,25 +1027,51 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     camera.updateProjectionMatrix();
   }
 
+  // Scroll journey: 0..SPLIT is the satellite descent (straight down at ORBIT_Y, levelling out as the
+  // altitude falls to street height above the boulevard); SPLIT..1 drives down the avenue.
+  const SPLIT = 0.52, ORBIT_Y = 820, STREET_Y = 15;
+  const ORBIT_FOV = 40;
+
   function placeCamera(dt) {
     const k = 1 - Math.exp(-dt * 7.5);
     cur.p += (state.p - cur.p) * k;
     cur.px += (state.px - cur.px) * (1 - Math.exp(-dt * 3));
     cur.py += (state.py - cur.py) * (1 - Math.exp(-dt * 3));
-    introT = Math.min(1, introT + dt / 2.2);
+    introT = Math.min(1, introT + dt / 2.6);
     const ie = easeOutCubic(introT);
     const p = clamp(cur.p, 0, 1);
-    const e = easeInOutSine(p);
-    const x = Math.sin(p * Math.PI * 1.25) * 7.5 + cur.px * 2.6 + Math.sin(clock * 0.13) * 0.9;
-    const y = lerp(16, 70, Math.pow(p, 1.15)) + cur.py * 1.6 - 5 * (1 - ie) + Math.sin(clock * 0.21) * 0.35;
-    const z = lerp(95, -170, e) + 48 * (1 - ie);
-    camera.position.set(clamp(x, -9.5, 9.5), y, z);
-    const lookY = lerp(52, 12, Math.pow(p, 0.9)) + cur.py * 2;
-    camera.lookAt(clamp(x * 0.35 + cur.px * 7, -14, 14), lookY, z - 220);
-    camera.rotation.z += Math.sin(p * Math.PI * 2) * 0.03 + cur.px * -0.012 + Math.sin(clock * 0.9) * 0.0025;
+    const d = clamp(p / SPLIT, 0, 1);
+    const de = easeInOutSine(d);
+    const t = clamp((p - SPLIT) / (1 - SPLIT), 0, 1);
+
+    // Altitude falls exponentially so the zoom feels constant, like a satellite app.
+    let y = STREET_Y * Math.pow(ORBIT_Y / STREET_Y, 1 - de) + lerp(0, 19, Math.pow(t, 1.1));
+    y *= 1 + 0.16 * (1 - ie);                                   // opening drift: settle in from a touch higher
+    const z = p < SPLIT ? lerp(-110, 95, easeInOutSine(Math.pow(d, 0.92))) : lerp(95, -170, easeInOutSine(t));
+
+    const street = smooth(clamp(1 - (y - 18) / 320, 0, 1));    // 0 in orbit .. 1 at street level
+    const sway = Math.sin(p * Math.PI * 1.25) * 7.5 * (0.25 + 0.75 * street);
+    const x = clamp(sway + cur.px * lerp(30, 2.6, street) + Math.sin(clock * 0.13) * 0.9 * street, -(9.5 + 30 * (1 - street)), 9.5 + 30 * (1 - street));
+    camera.position.set(x, y + cur.py * 1.6 * street + Math.sin(clock * 0.21) * 0.35 * street, z);
+
+    const pitch = (-87 + 83 * Math.pow(de, 1.7) - 4 * t - cur.py * 1.4) * Math.PI / 180;
+    const yaw = -cur.px * 0.03 * street;
+    const dir = new THREE.Vector3(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch));
+    camera.lookAt(camera.position.clone().addScaledVector(dir, 300));
+    camera.rotation.z += (Math.sin(p * Math.PI * 2) * 0.03 + cur.px * -0.012 + Math.sin(clock * 0.9) * 0.0025) * street;
+
     const baseFov = camera.userData.portrait ? 70 : 56;
-    const fov = baseFov + 12 * p - 5 * (1 - ie);
-    if (Math.abs(camera.fov - fov) > 0.01) { camera.fov = fov; camera.updateProjectionMatrix(); }
+    const fov = lerp(ORBIT_FOV, baseFov, smooth(de)) + 10 * t;
+    const near = clamp(camera.position.y * 0.018, 0.5, 16);       // keeps depth precision for the ground-level shadows from orbit
+    if (Math.abs(camera.fov - fov) > 0.01 || Math.abs(camera.near - near) > 0.05) { camera.fov = fov; camera.near = near; camera.updateProjectionMatrix(); }
+
+    // Thin, bluish air from orbit; warm and dense at street level.
+    const density = lerp(0.00032, 0.0023, street);
+    uniforms.uFogDensity.value = density;
+    uniforms.uHigh.value = 1 - street;
+    FOG_COLOR.lerpColors(ORBIT_FOG, STREET_FOG, street);
+    scene.fog.density = density;
+    scene.fog.color.copy(FOG_COLOR);
     sky.position.copy(camera.position);
   }
 

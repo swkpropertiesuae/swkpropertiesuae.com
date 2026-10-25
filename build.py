@@ -453,7 +453,7 @@ def ui_markup():
 
 def chat_markup():
     return f'''<aside class="swk-chat" aria-label="SWK property assistant">
-<button class="swk-chat__launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="swk-chat-panel">SWK <span>Chat with us</span></button>
+<button class="swk-chat__launcher" type="button" data-chat-toggle aria-label="Chat with SWK" aria-expanded="false" aria-controls="swk-chat-panel"><img src="/assets/images/brand/swk-mark.png" alt="" width="676" height="464" loading="lazy" decoding="async"><span>Chat with SWK</span></button>
 <section id="swk-chat-panel" class="swk-chat__panel" aria-label="SWK assistant" hidden>
 <header><div><strong>SWK Concierge</strong><small>Property assistant & SWK Live Chat</small></div><button type="button" data-chat-close aria-label="Close chat">×</button></header>
 <div class="swk-chat__tabs"><button type="button" data-chat-tab="assistant" aria-pressed="true">Property assistant</button><button type="button" data-chat-tab="live" aria-pressed="false">SWK Live Chat</button></div><div data-assistant-view><div class="swk-chat__messages" data-chat-log role="log" aria-live="polite" aria-relevant="additions"><p class="swk-chat__message">Welcome to SWK. I’m the website assistant. Choose a topic or tell me what you’re looking for. For a personal reply, connect with our team on WhatsApp.</p></div>
@@ -806,13 +806,13 @@ def build_home():
 <img src="/assets/images/hero/dubai-cinema-home.webp" alt="AI-created cinematic Dubai architectural visualisation" width="1600" height="1067" fetchpriority="high" decoding="async"></picture></div>
 <canvas class="hero__gl" aria-hidden="true"></canvas>
 <div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div><div class="hero__streak" aria-hidden="true"></div>
-<div class="hero__captions" aria-hidden="true"><p class="hero__caption">Dubai. <em>In golden light.</em></p><p class="hero__caption">Every tower, <em>a story.</em></p><p class="hero__caption">Find <em>yours.</em></p></div>
+<div class="hero__captions" aria-hidden="true"><p class="hero__caption">Dubai, <em>from above.</em></p><p class="hero__caption">Down to <em>the street.</em></p><p class="hero__caption">Find <em>yours.</em></p></div>
 <div class="hero__content container">
 <span class="hero__eyebrow">Dubai's Trusted Real Estate Partner</span>
 <h1 class="hero__title"><span class="sr-only">Dubai homes. A clearer perspective.</span><span data-typewriter aria-hidden="true">Dubai homes.<br><em>A clearer perspective.</em></span></h1>
 <p class="hero__subtitle">Off-plan and ready homes across Downtown, Dubai Marina, Palm Jumeirah and more, with full buying, mortgage and investment support.</p>
 <div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Listings {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Talk to an advisor</a></div>
-<nav class="hero-mode-switch" aria-label="Hero viewing mode"><a href="/" data-hero-mode="cinematic" aria-current="page">Cinematic</a><a href="/?scene=3d" data-hero-mode="3d">Interactive 3D</a></nav><div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
+<nav class="hero-mode-switch" aria-label="Hero viewing mode"><a href="/?scene=photo" data-hero-mode="cinematic" aria-current="page">Cinematic</a><a href="/" data-hero-mode="3d">Satellite to street</a></nav><div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
 <span class="hero-art-credit">AI-created architectural visualisation</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
