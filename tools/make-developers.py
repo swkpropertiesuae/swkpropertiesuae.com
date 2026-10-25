@@ -8,8 +8,9 @@ from pathlib import Path
 
 W, B, M, U, V, G, I = ("Waterfront", "Branded residences", "Master communities", "Urban towers", "Villas & townhouses", "Golf & parks", "Islands")
 
-def P(name, community, collection, blurb, tags, url=None):
-    return dict(name=name, community=community, collection=collection, blurb=blurb, tags=tags, url=url)
+def P(name, community, collection, blurb, tags, url=None, video=None):
+    """video: YouTube id of an official film, shown as a direct watch link (otherwise a YouTube search link)."""
+    return dict(name=name, community=community, collection=collection, blurb=blurb, tags=tags, url=url, video=video)
 
 D = []
 def dev(slug, name, hue, site, tagline, about, known, projects):
@@ -55,14 +56,14 @@ dev("azizi", "Azizi Developments", "276 40% 42%", "https://www.azizidevelopments
      P("Riviera", "Meydan", W, "A beachfront community with a crystal lagoon at the heart of Meydan, close to Downtown Dubai and everyday amenities.", ["Crystal lagoon", "Close to Downtown", "Promenade living"], "https://www.azizidevelopments.com/dubai/meydan/riviera"),
      P("Mina", "Palm Jumeirah", W, "A waterfront project on Palm Jumeirah that gives buyers the island address with marina frontage and sea views.", ["Palm address", "Marina frontage", "Sea outlook"], "https://www.azizidevelopments.com/dubai/palm-jumeirah/mina"),
      P("Azizi Wasel", "Dubai Islands", I, "A residential development on Dubai Islands, the new man-made archipelago off the Deira coast with beaches and marinas.", ["Island coastline", "New archipelago", "Beach access"], "https://www.azizidevelopments.com/projects"),
-     P("Azizi Milan", "Dubai Land", M, "A multi-building residential community in Dubai Land, positioned near Global Village and the city's growing south-eastern corridor.", ["Dubai Land location", "Near Global Village", "Family community"], "https://www.azizidevelopments.com/dubai/dubai-land/azizi-milan"),
+     P("Azizi Milan", "Dubai Land", M, "A multi-building residential community in Dubai Land, positioned near Global Village and the city's growing south-eastern corridor.", ["Dubai Land location", "Near Global Village", "Family community"], "https://www.azizidevelopments.com/dubai/dubai-land/azizi-milan", "onkkdzajCv8"),
      P("Azizi Raffi", "Al Furjan", U, "A mid-rise building in Al Furjan, a well-connected suburb with Metro access and an established retail and school ecosystem.", ["Metro-linked suburb", "Established amenities", "Mid-rise scale"], "https://www.azizidevelopments.com/dubai/al-furjan/azizi-raffi"),
      P("Azizi Florence", "Sharjah", U, "Azizi's newest release and its entry into Sharjah, bringing the developer's apartment format to the neighbouring emirate.", ["Sharjah debut", "New release", "Commuter-friendly"], "https://www.azizidevelopments.com/projects")])
 
 dev("imtiaz", "Imtiaz Developments", "150 48% 31%", "https://imtiaz.ae", "Design-led towers with a point of view.",
     "Imtiaz has built a long list of mid-rise residences, now moving into more concept-driven projects, from a wellness-focused tower to a Zaha Hadid Architects-designed building. It works in Dubai Islands, Dubailand, Meydan Horizon and Jumeirah Village Circle.",
     "Concept-led residences",
-    [P("KORE by Imtiaz", "Dubai Land Residence Complex", U, "A residence conceived around human performance and longevity, drawing its name from the body's core and built around movement and recovery.", ["Wellness concept", "Performance-led amenities", "Dubai Land setting"], "https://imtiaz.ae/property/kore-by-imtiaz"),
+    [P("KORE by Imtiaz", "Dubai Land Residence Complex", U, "A residence conceived around human performance and longevity, drawing its name from the body's core and built around movement and recovery.", ["Wellness concept", "Performance-led amenities", "Dubai Land setting"], "https://imtiaz.ae/property/kore-by-imtiaz", "aV88VxPyObY"),
      P("The Archive by Imtiaz", "Dubai Land Residence Complex", U, "A building organised around reading and quiet, where the common spaces are designed for slow hours rather than loud ones.", ["Reading-centred design", "Quiet common areas", "Dubai Land setting"], "https://imtiaz.ae/property/the-archive-by-imtiaz"),
      P("Raw District II", "Downtown Jebel Ali", U, "The second phase of an urban district off Sheikh Zayed Road, built to be used rather than admired, with spaces that overlap and connect.", ["Urban district format", "Sheikh Zayed Road corridor", "Mixed-use feel"], "https://imtiaz.ae/property/raw-district-ii-by-imtiaz"),
      P("Sea Cliff by Imtiaz", "Dubai Islands", I, "An island address on Dubai Islands, laid out between shaded pathways and open-water views.", ["Open-water outlook", "Shaded island paths", "Island lifestyle"], "https://imtiaz.ae/property/sea-cliff"),
@@ -85,7 +86,7 @@ dev("binghatti", "Binghatti", "16 72% 46%", "https://www.binghatti.com", "Archit
     "Binghatti is recognised by its sculptural, geometric facades and by collaborations with Jacob & Co, Mercedes-Benz and Bugatti. Its towers cluster in Business Bay, Downtown Dubai, Al Jaddaf and Jumeirah Village Circle.",
     "Sculptural facades and brand partnerships",
     [P("Burj Binghatti Jacob & Co Residences", "Business Bay", B, "A super-tall tower in Business Bay in partnership with the watch and jewellery house Jacob & Co, advancing through its upper levels.", ["Jacob & Co partnership", "Super-tall silhouette", "Business Bay skyline"], None),
-     P("Mercedes-Benz Places", "Downtown Dubai", B, "A Mercedes-Benz-branded residential tower rising in Downtown Dubai, with design detailing drawn from the car marque.", ["Mercedes-Benz brand", "Downtown address", "Penthouse collection"], None),
+     P("Mercedes-Benz Places", "Downtown Dubai", B, "A Mercedes-Benz-branded residential tower rising in Downtown Dubai, with design detailing drawn from the car marque.", ["Mercedes-Benz brand", "Downtown address", "Penthouse collection"], None, "AtHdATGze0g"),
      P("Bugatti Residences by Binghatti", "Business Bay", B, "A tower that carries the Bugatti name and design cues in Business Bay, aimed at collectors of the brand and of the skyline.", ["Bugatti partnership", "Business Bay", "Automotive design cues"], None),
      P("Binghatti Hills", "Dubai Science Park", M, "A multi-building project in Dubai Science Park with distinctive geometric facades and access to the Al Barsha corridor.", ["Geometric facades", "Science Park setting", "Al Barsha access"], None),
      P("Binghatti Skyrise", "Business Bay", U, "A Business Bay high-rise whose angled facade is a signature of the developer's recent skyline projects.", ["Angled facade", "Canal district", "Central location"], None),
