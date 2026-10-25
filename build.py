@@ -987,7 +987,7 @@ def build_properties():
     cards = "".join(project_card(d, q) for d in DEVS for q in d["projects"])
     devs = "".join(dev_card(d, i) for i, d in enumerate(DEVS))
     trail = [("Home", "/"), ("Developers & Projects", None)]
-    body = f"""{page_hero("UAE Developers & Projects", "Fifteen of the UAE's most active developers, with the launches and communities worth knowing. Ask SWK for current availability and terms.", trail, bg="properties")}
+    body = f"""{page_hero("UAE Developers & Projects", "The UAE's most active developers, with the launches and communities worth knowing. Ask SWK for current availability and terms.", trail, bg="properties")}
 <section class="section container ambient-glow-host">{GLOW}
 <div class="section-header center"><span class="eyebrow">Developers</span><h2>Choose a developer</h2><p>Each profile covers who they are, what they are known for and a closer look at their latest and best-known projects.</p></div>
 <div class="dev-grid">{devs}</div></section>
@@ -1008,7 +1008,7 @@ def build_properties():
     ld = [breadcrumb_ld(trail), {"@context": "https://schema.org", "@type": "ItemList", "itemListElement": [
         {"@type": "ListItem", "position": i + 1, "url": f"{BASE}/properties/{d['slug']}/", "name": d["name"]} for i, d in enumerate(DEVS)]}]
     write("/properties/", page("/properties/", "UAE Developers & Projects | SWK Properties",
-                               "Explore fifteen leading UAE developers, including Emaar, DAMAC, Sobha, Aldar and Nakheel, and their latest projects, with advisory from SWK Properties.", body, ld=ld))
+                               "Explore leading UAE developers, including Emaar, DAMAC, Sobha, Aldar and Nakheel, and their latest projects, with advisory from SWK Properties.", body, ld=ld))
 
 
 def build_developer(d):
