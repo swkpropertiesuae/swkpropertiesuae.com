@@ -6,7 +6,7 @@
   var SWK = window.SWK;
 
   var SCRUB = [
-    '.section-header', '.section-head-row', '.calculator', '.feature-slider', '.fan-carousel-wrap',
+    '.section-header', '.section-head-row', '.calculator', '.feature-slider',
     '.testimonials-carousel', '.marquee', '.split-block', '.stat-ribbon'
   ].join(',');
 

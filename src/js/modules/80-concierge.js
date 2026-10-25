@@ -41,7 +41,7 @@
   });
   S.reg('premium-pointer',function(){
     if(S.reduced||!S.fine)return;
-    S.$$('.fan-card,.service-card').forEach(function(card){
+    S.$$('.service-card').forEach(function(card){
       var point={clientX:0,clientY:0}; var update=S.raf(function(){var e=point;var r=card.getBoundingClientRect();card.style.setProperty('--image-x',((e.clientX-r.left)/r.width-.5)*-12+'px');card.style.setProperty('--image-y',((e.clientY-r.top)/r.height-.5)*-12+'px');card.style.setProperty('--spot-x',e.clientX-r.left+'px');card.style.setProperty('--spot-y',e.clientY-r.top+'px');}); card.addEventListener('pointermove',function(e){point.clientX=e.clientX;point.clientY=e.clientY;update();});
       card.addEventListener('pointerleave',function(){card.style.setProperty('--image-x','0px');card.style.setProperty('--image-y','0px');});
     });
