@@ -1,7 +1,7 @@
 /* ==========================================================================
    SWK Properties — Cinematic layer
    WebGL hero stage, scroll-scrubbed fly-through, film overlays, 3D tilt,
-   dock magnification and perspective reveals. Everything here is additive:
+   perspective reveals. Everything here is additive:
    with JS disabled or prefers-reduced-motion, the original static look stays.
    ========================================================================== */
 
@@ -283,42 +283,6 @@
   .hero__scroll-cue .line { animation: none; }
   .hero__content { transform: none; opacity: 1; }
   .hero__captions { display: none; }
-}
-
-/* ---- Floating dock: magnification (macOS-style) ---- */
-
-.dock__item {
-  transform: scale(var(--mag, 1));
-  transform-origin: 50% 0;
-  will-change: transform;
-  transition: transform 0.18s var(--ease-luxury), background var(--duration-fast) var(--ease-luxury), color var(--duration-fast) var(--ease-luxury);
-}
-.dock.is-magnifying .dock__item { z-index: 1; }
-.dock__item:focus-visible { outline-offset: 2px; }
-.dock__tooltip { pointer-events: none; z-index: 2; }
-.dock__item:focus-visible .dock__tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* On phones the dock moves to the bottom edge, thumb-reachable, with
-   touch-sized targets (the old 21px icons were below the 24px WCAG minimum). */
-@media (max-width: 1023px) {
-  .dock-wrap {
-    top: auto;
-    bottom: max(14px, env(safe-area-inset-bottom));
-  }
-  .dock {
-    height: auto;
-    gap: 4px;
-    padding: 6px;
-    align-items: center;
-  }
-  .dock__item {
-    width: min(40px, calc((100vw - 64px) / 7));
-    height: min(40px, calc((100vw - 64px) / 7));
-    transform: none;
-  }
-  .dock__tooltip { display: none; }
-  .whatsapp-float { bottom: calc(max(14px, env(safe-area-inset-bottom)) + 68px); right: var(--space-4); }
-  body { padding-bottom: 76px; }
 }
 
 /* ---- 3D tilt ---- */

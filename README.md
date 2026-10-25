@@ -1,6 +1,6 @@
 # SWK Properties UAE — static site
 
-Warm light theme (cream canvas, deep navy ink, tan/gold accents), serif display type, satellite-to-street WebGL hero, scroll-driven 3D depth, dock navigation, fan gallery, glow listing cards.
+Warm light theme (cream canvas, deep navy ink, tan/gold accents), serif display type, satellite-to-street WebGL hero, scroll-driven 3D depth, header navigation, fan gallery, glow listing cards.
 No runtime dependencies. Output is plain static files in `public/`.
 
 ## Build
@@ -20,7 +20,7 @@ node tools/dev-server.js 8765      # serves public/, draws SVG placeholders for 
 PLAYWRIGHT_PATH=/opt/node22/lib/node_modules/playwright node tools/qa.js
 ```
 
-`tools/qa.js` checks every page (console errors, SEO tags, links, alt text, overflow, axe), the hero scroll scrub, dock, slider, fan, lightbox, filters, calculator maths, forms, a 320–1920px layout sweep, reduced motion, `?nowebgl` and no-JS. Optional: `AXE_PATH` (axe-core file), `SHOTS` (screenshot dir).
+`tools/qa.js` checks every page (console errors, SEO tags, links, alt text, overflow, axe), the hero scroll scrub, slider, fan, lightbox, filters, calculator maths, forms, a 320–1920px layout sweep, reduced motion, `?nowebgl` and no-JS. Optional: `AXE_PATH` (axe-core file), `SHOTS` (screenshot dir).
 
 ## 3D hero
 
@@ -54,12 +54,12 @@ Add new files under `src/assets/`, never directly in `public/` (the build delete
 ## Theme and motion
 
 - Colours and fonts are tokens in `src/css/variables.css`. Navy bands (CTA, newsletter, stats, lightbox) re-scope the tokens via `.on-dark`, so components inside them need no overrides.
-- Navigation: a top bar on desktop (`.site-header`), the floating dock on tablet and phone. `src/css/theme.css` (loaded last) holds page transitions, skeleton loaders and scroll-scrubbed 3D entrances; `src/js/modules/35-scroll3d.js` drives them. Everything is off under `prefers-reduced-motion`.
+- Navigation: a top bar on desktop (`.site-header`); on tablet and phone the same header carries a menu button (links, consultation, call, WhatsApp, chat), so there are no floating buttons at the bottom of the screen. `src/css/theme.css` (loaded last) holds page transitions, skeleton loaders and scroll-scrubbed 3D entrances; `src/js/modules/35-scroll3d.js` drives them. Everything is off under `prefers-reduced-motion`.
 - Loading: the main fonts are preloaded, `<img>` tags get intrinsic `width`/`height` read from the files at build time, images show a skeleton until decoded, and the preloader only appears on slow loads.
 
 ## Notes
 
-- Mobile dock sits at the bottom of the screen so touch targets stay large.
+- Home developers and spotlight are single-row, swipeable carousels (`row_carousel` in `build.py`, `src/js/modules/63-row-carousel.js`); other pages keep grids.
 - An earlier audit counted "14 listings" as a bug. That was real pagination (9 per page). It also said split-text headings lacked accessible text; the original already used sr-only text with `aria-hidden` letters.
 
 ## Site-wide UI, SEO and compliance

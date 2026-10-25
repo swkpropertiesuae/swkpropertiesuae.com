@@ -123,24 +123,17 @@ function pagesFromSitemap() {
   await page.evaluate(() => scrollTo(0, 0));
   ok(L.clean(msgs).length === 0, 'home console clean after scrub: ' + JSON.stringify(L.clean(msgs)));
 
-  sect('Home: nav bar, dock magnification, tilt, slider, fan, lightbox');
+  sect('Home: nav bar, tilt, slider, fan, lightbox');
   await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(500);
-  // Desktop uses the top navigation bar (the dock is hidden there); the dock is the tablet/phone nav.
+  // Desktop uses the top navigation bar; tablet/phone use the header menu (no floating bottom buttons).
   const navInfo = await page.evaluate(() => { const h = document.querySelector('.site-header'), n = [...document.querySelectorAll('.site-nav a')]; const cur = n.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent);
-    return { links: n.map((a) => a.textContent), cur, headerH: Math.round(h.getBoundingClientRect().height), dockShown: getComputedStyle(document.querySelector('.dock-wrap')).display !== 'none' }; });
-  ok(navInfo.links.length === 7 && navInfo.cur.join() === 'Home' && !navInfo.dockShown, `desktop nav bar ${JSON.stringify(navInfo)}`);
+    return { links: n.map((a) => a.textContent), cur, headerH: Math.round(h.getBoundingClientRect().height), menuToggleShown: getComputedStyle(document.querySelector('.nav-toggle')).display !== 'none' }; });
+  ok(navInfo.links.length === 7 && navInfo.cur.join() === 'Home' && !navInfo.menuToggleShown, `desktop nav bar ${JSON.stringify(navInfo)}`);
   const heroBox = await page.evaluate(() => { const t = document.querySelector('.hero__title').getBoundingClientRect(), h = document.querySelector('.site-header').getBoundingClientRect(), s = document.querySelector('.hero__search-wrap').getBoundingClientRect(); return { titleBelowHeader: t.top > h.bottom + 40, searchInView: s.bottom <= innerHeight }; });
   ok(heroBox.titleBelowHeader && heroBox.searchInView, `hero text clears the header and search fits ${JSON.stringify(heroBox)}`);
   await page.evaluate(() => scrollTo({ top: 400, behavior: 'instant' })); await page.waitForTimeout(500);
   ok(await page.evaluate(() => document.querySelector('.site-header').classList.contains('is-scrolled')), 'header turns into a frosted bar on scroll');
   await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(400);
-  await page.setViewportSize({ width: 1000, height: 800 }); await page.waitForTimeout(500);
-  const dockItems = await page.$$('.dock__item');
-  const bb = await dockItems[3].boundingBox();
-  await page.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2, { steps: 4 });
-  await page.waitForTimeout(300);
-  const mags = await page.evaluate(() => [...document.querySelectorAll('.dock__item')].map((e) => parseFloat(e.style.getPropertyValue('--mag') || 1)));
-  ok(mags[3] > 1.5 && mags[0] < mags[3] && mags[6] < mags[3], `dock magnify ${mags.map((m) => m.toFixed(2))}`);
   await page.mouse.move(10, 400);
   await page.setViewportSize({ width: 1440, height: 900 }); await page.waitForTimeout(400);
 
@@ -294,10 +287,10 @@ function pagesFromSitemap() {
   await shot(m.page, 'mobile-top');
   const mo = await m.page.evaluate(() => {
     const r = (s) => { const e = document.querySelector(s); return e && e.getBoundingClientRect(); };
-    const dk = r('.dock'), bar = r('.search-bar'), btn = r('.search-bar button');
-    return { overflow: document.documentElement.scrollWidth > innerWidth + 1, dockBottom: dk && Math.round(innerHeight - dk.bottom), dockItem: Math.round(r('.dock__item').width), searchInView: bar && bar.bottom <= innerHeight && bar.top >= 0, btnInView: btn && btn.bottom <= innerHeight, gl: !!document.querySelector('.hero.is-gl') };
+    const bar = r('.search-bar'), btn = r('.search-bar button');
+    return { overflow: document.documentElement.scrollWidth > innerWidth + 1, menuToggle: (() => { const t = r('.nav-toggle'); return !!t && t.width >= 40 && t.height >= 40; })(), bottomButtons: ['.whatsapp-float', '.back-top'].filter((q) => getComputedStyle(document.querySelector(q)).display !== 'none'), searchInView: bar && bar.bottom <= innerHeight && bar.top >= 0, btnInView: btn && btn.bottom <= innerHeight, gl: !!document.querySelector('.hero.is-gl') };
   });
-  ok(!mo.overflow, 'no horizontal overflow'); ok(mo.dockBottom < 40 && mo.dockItem >= 36, `dock at bottom with touch targets ${JSON.stringify(mo)}`);
+  ok(!mo.overflow, 'no horizontal overflow'); ok(mo.menuToggle && mo.bottomButtons.length === 0, `header menu button with touch target, no floating bottom buttons ${JSON.stringify(mo)}`);
   ok(mo.searchInView && mo.btnInView, `search bar fits first screen ${JSON.stringify(mo)}`);
   ok(L.clean(m.msgs).length === 0, 'mobile console clean ' + JSON.stringify(L.clean(m.msgs)));
   for (const u of ['/properties/', '/mortgage/', '/contact/', '/about/', '/properties/golf-fields/']) {
