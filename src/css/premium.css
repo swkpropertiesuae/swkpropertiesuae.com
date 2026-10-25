@@ -192,3 +192,21 @@ main > section .section-header h2, main > section .section-head-row h2 { backgro
 /* Interior page headers share the home headline scale and type so every page reads as one system. */
 .page-hero__title { font-family:'Clash Display','General Sans',sans-serif; font-weight:600; font-size:clamp(1.9rem, 1.1rem + 2.1vw, 3.3rem); line-height:1.1; letter-spacing:-.035em; max-width:24ch; text-wrap:balance; }
 @media(max-width:767px) { .page-hero__title { font-size:clamp(1.8rem, 7.4vw, 2.2rem); } }
+
+/* ---- Testimonials: snap-scrolling cards, one hue per card, country chips ---- */
+.testi { position:relative; }
+.testi__track { display:flex; gap:20px; overflow-x:auto; scroll-snap-type:x mandatory; padding:8px 4px 28px; scrollbar-width:none; outline-offset:4px; }
+.testi__track::-webkit-scrollbar { display:none; }
+.testi-card { --tc:215 70% 38%; flex:0 0 min(380px, 86%); scroll-snap-align:start; margin:0; padding:26px 26px 22px; display:flex; flex-direction:column; gap:18px; border-radius:22px; background:#fff; border:1px solid hsl(var(--tc) / .18); border-top:4px solid hsl(var(--tc)); box-shadow:0 14px 34px hsl(var(--tc) / .12); position:relative; overflow:hidden; text-align:left; }
+.testi-card::after { content:'\201C'; position:absolute; right:18px; top:-6px; font-family:'Instrument Serif',serif; font-size:7.5rem; line-height:1; color:hsl(var(--tc) / .1); pointer-events:none; }
+.testi-card__top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.testi-card__country { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px; font-size:.78rem; font-weight:600; color:hsl(var(--tc)); background:hsl(var(--tc) / .1); }
+.testi-card__stars { color:#d9962f; letter-spacing:.12em; font-size:.95rem; }
+.testi-card blockquote { margin:0; font-family:'Instrument Serif',serif; font-size:1.42rem; line-height:1.38; color:#1d2a44; flex:1; }
+.testi-card figcaption { display:flex; align-items:center; gap:12px; padding-top:16px; border-top:1px solid hsl(var(--tc) / .15); }
+.testi-card__avatar { display:grid; place-items:center; width:44px; height:44px; border-radius:50%; font-weight:700; font-size:.9rem; color:#fff; background:linear-gradient(135deg, hsl(var(--tc)), hsl(var(--tc) / .7)); flex:none; }
+.testi-card figcaption strong { display:block; font-size:.95rem; color:#14213a; }
+.testi-card figcaption small { display:block; color:#59647a; font-size:.8rem; line-height:1.4; }
+.testi__nav { display:flex; justify-content:center; gap:12px; margin-top:4px; }
+.testi__countries { display:flex; flex-wrap:wrap; justify-content:center; gap:10px 22px; margin-top:26px; font-size:.82rem; font-weight:600; letter-spacing:.04em; color:#59647a; }
+@media(prefers-reduced-motion:reduce) { .testi__track { scroll-behavior:auto; } }

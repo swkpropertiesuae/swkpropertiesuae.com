@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Client full name as approved by them",
+    "country": "India",
+    "flag": "IN",
+    "context": "Bought a 2-bed in Business Bay, 2025",
+    "quote": "The client's own words, approved in writing.",
+    "rating": 5,
+    "approved": true
+  }
+]

@@ -750,6 +750,38 @@ def org_ld():
 
 # ---------------------------------------------------------------- pages
 
+def flag_emoji(code):
+    c = (code or "").upper()
+    return "".join(chr(0x1F1E6 + ord(ch) - 65) for ch in c) if len(c) == 2 and c.isalpha() else ""
+
+
+def testimonials_markup(reviews):
+    """Snap-scrolling testimonial cards. Only entries with approved=true in data/testimonials.json are shown."""
+    hues = ["215 70% 38%", "180 62% 30%", "16 72% 46%", "38 86% 40%", "276 40% 42%", "150 48% 31%"]
+    cards = ""
+    for i, r in enumerate(reviews):
+        rating = max(1, min(5, int(r.get("rating", 5))))
+        initials = "".join(w[0] for w in r["name"].split()[:2]).upper()
+        country = r.get("country", "")
+        cards += (f'<figure class="testi-card" style="--tc:{hues[i % 6]}"><div class="testi-card__top">'
+                  f'<span class="testi-card__country"><span aria-hidden="true">{flag_emoji(r.get("flag", ""))}</span> {e(country)}</span>'
+                  f'<span class="testi-card__stars" role="img" aria-label="{rating} out of 5">{"★" * rating}{"☆" * (5 - rating)}</span></div>'
+                  f'<blockquote>{e(r["quote"])}</blockquote>'
+                  f'<figcaption><span class="testi-card__avatar" aria-hidden="true">{e(initials)}</span>'
+                  f'<span><strong>{e(r["name"])}</strong><small>{e(r.get("context", ""))}</small></span></figcaption></figure>')
+    seen, tags = set(), ""
+    for r in reviews:
+        k = r.get("country", "")
+        if k and k not in seen:
+            seen.add(k)
+            tags += f'<span>{flag_emoji(r.get("flag", ""))} {e(k)}</span>'
+    return (f'<div class="testi" data-testi><div class="testi__track" data-testi-track tabindex="0" role="region" aria-label="Client testimonials">{cards}</div>'
+            f'<div class="testi__nav"><button type="button" class="tc-arrow" data-testi-prev aria-label="Previous testimonials">{PREV}</button>'
+            f'<button type="button" class="tc-arrow" data-testi-next aria-label="Next testimonials">{NEXT}</button></div>'
+            f'<div class="testi__countries" aria-label="Where our clients are from">{tags}</div></div>')
+
+
+
 def build_home():
     comm_opts, type_opts, budget_opts, status_opts = filter_options()
     search = (select("s-community", "community", "Community", comm_opts, "Any community")
@@ -782,9 +814,9 @@ def build_home():
 <svg class="service-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a></div>
 <div class="service-card__decor" aria-hidden="true">{service_icon(s['id'])}</div></div>"""
 
-    reviews = load("testimonials")
+    reviews = [r for r in load("testimonials") if r.get("approved") is True]
     if reviews:
-        slides = "".join(f'<figure class="review-slide" data-review-slide {"hidden" if i else ""}><blockquote>{e(r["quote"])}</blockquote><figcaption>{e(r["name"])} · {e(r["context"])}</figcaption></figure>' for i, r in enumerate(reviews))
+        slides = testimonials_markup(reviews)
         review_heading = "What our clients say"
         review_intro = "In their own words, shared with permission."
     else:
@@ -800,7 +832,10 @@ def build_home():
         slides = "".join(f'<figure class="review-slide" data-review-slide {"hidden" if i else ""}><blockquote>{e(text)}</blockquote><figcaption>{e(title)}</figcaption></figure>' for i, (title, text) in enumerate(commitments))
         review_heading = "What you can expect from SWK"
         review_intro = "Our service commitments. Client reviews will appear here once verified and approved."
-    team = f'''<div class="review-carousel" data-review-carousel aria-label="{review_heading}">{slides}<div class="review-controls"><button type="button" class="tc-arrow" data-review-prev aria-label="Previous story">{PREV}</button><span data-review-count>1 / {len(reviews) if reviews else 8}</span><button type="button" class="tc-arrow" data-review-next aria-label="Next story">{NEXT}</button><button type="button" class="review-pause" data-review-pause aria-pressed="false">Pause</button></div></div>'''
+    if reviews:
+        team = slides
+    else:
+      team = f'''<div class="review-carousel" data-review-carousel aria-label="{review_heading}">{slides}<div class="review-controls"><button type="button" class="tc-arrow" data-review-prev aria-label="Previous story">{PREV}</button><span data-review-count>1 / {len(reviews) if reviews else 8}</span><button type="button" class="tc-arrow" data-review-next aria-label="Next story">{NEXT}</button><button type="button" class="review-pause" data-review-pause aria-pressed="false">Pause</button></div></div>'''
 
     body = f"""<div class="hero-cine"><section class="hero" aria-label="Introduction">
 <div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/dubai-cinema-home.webp">
