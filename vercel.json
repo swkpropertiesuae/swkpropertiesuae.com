@@ -8,14 +8,22 @@
   "redirects": [
     {
       "source": "/property-details.html",
-      "has": [
-        {
-          "type": "query",
-          "key": "id",
-          "value": "(?<id>.*)"
-        }
-      ],
-      "destination": "/properties/:id/",
+      "destination": "/properties/",
+      "permanent": true
+    },
+    {
+      "source": "/properties/:id(river-cove-residences|raw-district-2|golf-fields|villa-sanctuary|hills-grove-townhouse|islands-2|rise-by-athlon|arabian-ranches-courtyard-villa|marina-sky-penthouse|creek-harbour-waterside-townhouse|business-bay-executive-tower|hills-estate-golf-mansion|jvc-boulevard-residences|palm-garden-homes)",
+      "destination": "/properties/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/research/:path*",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/:slug(.+-residential-sales)",
+      "destination": "/blog/",
       "permanent": true
     },
     {

@@ -11,6 +11,7 @@ import base64
 import hashlib
 import gzip
 import html
+import random
 import json
 import re
 import shutil
@@ -33,14 +34,12 @@ def load(name):
 
 
 SITE = load("site")
-PROPS = load("properties")
+DEVS = load("developers")
 COMMUNITIES = load("communities")
 SERVICES = load("services")
 FAQ = load("faq")
 TEAM = load("team")
 POSTS = sorted(load("blog"), key=lambda p: p["date"], reverse=True)
-RESEARCH = load("research")
-RESEARCH_SOURCE = load("research-source")
 
 BASE = SITE["url"]
 TODAY = datetime.now(ZoneInfo("Asia/Dubai")).date()
@@ -88,16 +87,87 @@ def asset(path):
     return "/" + path.lstrip("/")
 
 
-def prop_images(p):
-    return [f"assets/images/properties/{p['id']}-{n}.{p['imageExt']}" for n in p["imageOrder"]]
+def slugify(text):
+    return re.sub(r"[^a-z0-9]+", "-", text.lower().replace("&", "and")).strip("-")
 
 
-def location(p):
-    return f"{p['community']}, {p.get('emirate') or 'Dubai'}"
+for _d in DEVS:
+    for _p in _d["projects"]:
+        _p["slug"] = slugify(_p["name"])
+        _p["dev"] = _d["slug"]
+DEV_BY = {d["slug"]: d for d in DEVS}
+ALL_PROJECTS = [p for d in DEVS for p in d["projects"]]
+COLLECTIONS = sorted({p["collection"] for p in ALL_PROJECTS})
+PROJECT_COMMUNITIES = sorted({p["community"] for p in ALL_PROJECTS})
 
 
-def count_in(community):
-    return sum(1 for p in PROPS if p["community"] == community)
+def project_art(dev, proj):
+    """Web path of the project image: a licensed raster dropped in src/assets/images/projects/<dev>/<slug>.* wins,
+    otherwise an original SWK illustration (SVG) is generated for the card."""
+    for ext in ("webp", "jpg", "png"):
+        if (SRC / "assets" / "images" / "projects" / dev["slug"] / f"{proj['slug']}.{ext}").exists():
+            return f"assets/images/projects/{dev['slug']}/{proj['slug']}.{ext}", True
+    seed = int(hashlib.sha1(proj["name"].encode()).hexdigest()[:8], 16)
+    rnd = random.Random(seed)
+    hue = int(dev["hue"].split()[0])
+    coll = proj["collection"]
+    top, mid, hor = f"hsl({hue} 42% 20%)", f"hsl({(hue + 20) % 360} 55% 46%)", f"hsl({(hue + 38) % 360} 82% 78%)"
+    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="Illustration of {e(proj["name"])}"><defs>'
+             f'<linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{top}"/><stop offset=".55" stop-color="{mid}"/><stop offset="1" stop-color="{hor}"/></linearGradient>'
+             f'<linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="hsl({hue} 55% 40%)"/><stop offset="1" stop-color="hsl({hue} 60% 16%)"/></linearGradient>'
+             f'<pattern id="g" width="10" height="14" patternUnits="userSpaceOnUse"><rect width="10" height="14" fill="none"/><rect x="2" y="3" width="5" height="7" fill="rgba(255,236,190,.55)"/></pattern></defs>'
+             '<rect width="800" height="520" fill="url(#s)"/>',
+             f'<circle cx="{rnd.randint(150, 650)}" cy="{rnd.randint(110, 190)}" r="{rnd.randint(46, 70)}" fill="hsl({(hue + 40) % 360} 95% 88%)" opacity=".85"/>']
+    horizon = 360
+    for layer, (alpha, hmax) in enumerate(((.35, 150), (.6, 220))):
+        x = -20
+        while x < 820:
+            w = rnd.randint(34, 74); h = rnd.randint(50, hmax)
+            parts.append(f'<rect x="{x}" y="{horizon - h}" width="{w}" height="{h + 4}" fill="hsl({hue} 38% {24 + layer * 8}%)" opacity="{alpha}"/>')
+            x += w + rnd.randint(0, 10)
+    if coll in ("Branded residences", "Urban towers"):
+        tx = rnd.randint(280, 480); tw = rnd.randint(78, 104); th = rnd.randint(250, 310)
+        parts.append(f'<rect x="{tx}" y="{horizon - th}" width="{tw}" height="{th + 10}" fill="hsl({hue} 30% 12%)"/><rect x="{tx}" y="{horizon - th}" width="{tw}" height="{th + 10}" fill="url(#g)" opacity=".7"/>')
+        parts.append(f'<rect x="{tx + tw / 2 - 1.5}" y="{horizon - th - 46}" width="3" height="46" fill="hsl({hue} 30% 12%)"/>')
+        parts.append(f'<rect x="{tx - 54}" y="{horizon - th * .62}" width="{tw * .6}" height="{th * .62 + 10}" fill="hsl({hue} 28% 16%)"/><rect x="{tx - 54}" y="{horizon - th * .62}" width="{tw * .6}" height="{th * .62 + 10}" fill="url(#g)" opacity=".6"/>')
+    elif coll == "Villas & townhouses":
+        for i in range(6):
+            vx = 40 + i * 125 + rnd.randint(-10, 10)
+            parts.append(f'<path d="M{vx} {horizon} v-70 l55 -34 l55 34 v70z" fill="hsl({hue} 28% {14 + (i % 2) * 4}%)"/><rect x="{vx + 18}" y="{horizon - 44}" width="14" height="18" fill="rgba(255,226,160,.7)"/><rect x="{vx + 70}" y="{horizon - 44}" width="14" height="18" fill="rgba(255,226,160,.7)"/>')
+    else:
+        for i in range(3):
+            tx = rnd.randint(80, 640); tw = rnd.randint(70, 96); th = rnd.randint(170, 270)
+            parts.append(f'<rect x="{tx}" y="{horizon - th}" width="{tw}" height="{th + 10}" fill="hsl({hue} 30% {12 + i * 3}%)"/><rect x="{tx}" y="{horizon - th}" width="{tw}" height="{th + 10}" fill="url(#g)" opacity=".7"/>')
+    if coll in ("Waterfront", "Islands"):
+        parts.append(f'<rect y="{horizon}" width="800" height="{520 - horizon}" fill="url(#w)"/>')
+        for i in range(9):
+            parts.append(f'<rect x="{rnd.randint(0, 700)}" y="{horizon + 14 + i * 16}" width="{rnd.randint(60, 190)}" height="2.5" fill="rgba(255,236,190,.45)"/>')
+    elif coll == "Golf & parks":
+        parts.append(f'<ellipse cx="260" cy="{horizon + 70}" rx="420" ry="90" fill="hsl(135 38% 28%)"/><ellipse cx="620" cy="{horizon + 90}" rx="380" ry="80" fill="hsl(140 42% 34%)"/><rect y="{horizon + 120}" width="800" height="60" fill="hsl(135 40% 22%)"/>')
+    else:
+        parts.append(f'<rect y="{horizon}" width="800" height="{520 - horizon}" fill="hsl({hue} 24% 18%)"/><rect y="{horizon + 8}" width="800" height="3" fill="rgba(255,236,190,.35)"/>')
+        for i in range(7):
+            cx = 40 + i * 118 + rnd.randint(-12, 12)
+            parts.append(f'<circle cx="{cx}" cy="{horizon + 40}" r="{rnd.randint(16, 26)}" fill="hsl(138 36% {26 + (i % 3) * 5}%)"/>')
+    parts.append("</svg>")
+    out = OUT / "assets" / "images" / "projects" / dev["slug"]
+    out.mkdir(parents=True, exist_ok=True)
+    (out / f"{proj['slug']}.svg").write_text("".join(parts), encoding="utf-8")
+    return f"assets/images/projects/{dev['slug']}/{proj['slug']}.svg", False
+
+
+def project_media(dev, proj, lazy=True, cls=""):
+    path, raster = project_art(dev, proj)
+    if raster:
+        return img(path, f"{proj['name']} — {proj['community']}", cls, lazy=lazy, sizes="(min-width: 900px) 50vw, 100vw")
+    load_attr = ' loading="lazy"' if lazy else ""
+    cls_attr = f' class="{cls}"' if cls else ""
+    alt = e(f"Illustration of {proj['name']} in {proj['community']}")
+    return f'<img src="{asset(path)}" alt="{alt}" width="800" height="520"{load_attr} decoding="async"{cls_attr}>'
+
+
+def film_url(dev, proj):
+    return "https://www.youtube.com/results?search_query=" + quote(f"{proj['name']} {dev['name']} official")
 
 
 _SIZES = {}
@@ -327,8 +397,8 @@ STORY = ('<section class="section container story ambient-glow-host">' + GLOW + 
 
 
 def footer():
-    comm_links = [c for c in COMMUNITIES if count_in(c["name"]) > 0][:6]
-    clinks = "".join(f'<li><a href="/properties/?community={quote(c["name"])}">{e(c["name"])}</a></li>' for c in comm_links)
+    comm_links = DEVS[:6]
+    clinks = "".join(f'<li><a href="/properties/{d["slug"]}/">{e(d["name"])}</a></li>' for d in comm_links)
     ids = [SITE["rera"]]
     if SITE.get("brn"):
         ids.append(f"BRN {SITE['brn']}")
@@ -351,7 +421,7 @@ def footer():
 </form></div>
 <div class="footer-grid">
 <div class="footer-col footer-col--brand"><a href="/" class="footer-logo" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" width="338" height="275" loading="lazy" decoding="async"></a>
-<p>A premium Dubai real estate agency helping investors and homeowners buy, sell and manage property with confidence.</p>
+<p>A UAE property advisory helping investors and homeowners buy, sell and manage property with confidence.</p>
 <div class="social-row">
 <a href="{SITE['instagram']}" target="_blank" rel="noopener noreferrer" aria-label="SWK Properties on Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
 <a href="{SITE['linkedin']}" target="_blank" rel="noopener noreferrer" aria-label="SWK Properties on LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 10v7M7 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg></a>
@@ -620,37 +690,22 @@ def page_hero(title, lead, trail, bg=None, local=None):
 <h1 class="page-hero__title">{e(title)}</h1><p>{e(lead)}</p></div>{credit}</section>"""
 
 
-def badges(p):
-    return f'<span class="badge badge-navy">{e(p["status"])}</span>' + (f'<span class="badge badge-gold">{roi(p)}</span>' if p.get("roiPercent") else "")
+def project_card(dev, proj, reveal=False):
+    rv = " data-reveal" if reveal else ""
+    href = f"/properties/{dev['slug']}/#{proj['slug']}"
+    return f"""<article class="project-card"{rv} data-developer="{dev['slug']}" data-community="{e(proj['community'])}" data-collection="{e(proj['collection'])}" style="--dc:{dev['hue']}">
+<a href="{href}" class="project-card__media" aria-label="{e(proj['name'])} by {e(dev['name'])}">{project_media(dev, proj)}<span class="project-card__dev">{e(dev['name'])}</span></a>
+<div class="project-card__body"><span class="project-card__collection">{e(proj['collection'])}</span><h3><a href="{href}">{e(proj['name'])}</a></h3>
+<p class="project-card__loc">{PIN} {e(proj['community'])}</p><p class="project-card__blurb">{e(proj['blurb'])}</p>
+<a href="{href}" class="project-card__more">Project details {ARROW}</a></div></article>"""
 
 
-def feature_card(p, i):
-    theme = FEATURE_THEMES[i % len(FEATURE_THEMES)]
-    cover = prop_images(p)[0]
-    return f"""<article class="property-card property-card--feature" data-reveal data-reveal-delay="{min(i, 3) * 70}" data-tilt="9" style="--theme-color:{theme}">
-<a href="/properties/{p['id']}/" class="property-card__feature-link" aria-label="View details for {e(p['title'])}">
-{img(cover, "", "property-card__feature-bg")}
-<div class="property-card__feature-overlay"></div>
-<div class="property-card__badges property-card__badges--feature">{badges(p)}</div>
-<div class="property-card__feature-content"><h3 class="property-card__feature-title">{e(p['title'])}</h3>
-<div class="property-card__feature-location">{PIN} {e(location(p))}</div>
-<div class="property-card__feature-price"><span class="label">Starting Price</span>{money(p['price'])}</div>
-<div class="property-card__explore"><span>Explore Now</span><svg class="property-card__explore-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div></div>
-</a></article>"""
-
-
-def prop_card(p, reveal=False):
-    cover = prop_images(p)[0]
-    rv = ' data-reveal' if reveal else ""
-    return f"""<article class="property-card"{rv} data-tilt="6" data-community="{e(p['community'])}" data-type="{e(p['type'])}" data-status="{e(p['status'])}" data-price="{p['price']}">
-<a href="/properties/{p['id']}/" class="property-card__link" aria-label="View details for {e(p['title'])}">
-<div class="property-card__media"><div class="property-card__badges">{badges(p)}</div>{img(cover, f"{p['title']} in {p['community']}")}</div>
-<div class="property-card__body"><div class="property-card__price">{money(p['price'])} <span>starting</span></div>
-<h3 class="property-card__title">{e(p['title'])}</h3><div class="property-card__location">{PIN} {e(location(p))}</div>
-<div class="property-card__meta"><div class="property-card__meta-item"><span class="label">Developer</span><span class="value">{e(p['developer'])}</span></div>
-<div class="property-card__meta-item"><span class="label">Payment plan</span><span class="value">{e(p['paymentPlan'])}</span></div>
-<div class="property-card__meta-item"><span class="label">Handover</span><span class="value">{e(p['handover'])}</span></div></div></div>
-</a></article>"""
+def dev_card(dev, i=0):
+    names = "".join(f"<li>{e(p['name'])}</li>" for p in dev["projects"][:3])
+    mono = "".join(w[0] for w in dev["name"].replace("&", " ").split()[:2]).upper()
+    return f"""<a class="dev-card" href="/properties/{dev['slug']}/" data-reveal data-reveal-delay="{(i % 3) * 70}" style="--dc:{dev['hue']}" aria-label="{e(dev['name'])}: {len(dev['projects'])} featured projects">
+<span class="dev-card__mono" aria-hidden="true">{mono}</span><h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
+<ul>{names}</ul><span class="dev-card__count">{len(dev['projects'])} featured projects {ARROW}</span></a>"""
 
 
 def blog_filters():
@@ -681,12 +736,6 @@ def blog_card(p, i=0):
 def select(id_, name, label, options, any_label, cls=""):
     opts = f'<option value="">{any_label}</option>' + "".join(f'<option value="{e(v)}">{e(t)}</option>' for v, t in options)
     return f'<div class="search-field {cls}"><label for="{id_}">{label}</label><select id="{id_}" name="{name}">{opts}</select></div>'
-
-
-def filter_options():
-    comm = sorted({p["community"] for p in PROPS})
-    types = sorted({p["type"] for p in PROPS})
-    return ([(c, c) for c in comm], [(t, t) for t in types], BUDGETS, [("Ready", "Ready"), ("Off-Plan", "Off-Plan"), ("Under Construction", "Under Construction")])
 
 
 def calculator(analyze_href, analyze_label="Analyze"):
@@ -785,17 +834,18 @@ def testimonials_markup(reviews):
 
 
 def build_home():
-    comm_opts, type_opts, budget_opts, status_opts = filter_options()
-    search = (select("s-community", "community", "Community", comm_opts, "Any community")
-              + select("s-type", "type", "Property type", type_opts, "Any type")
-              + select("s-budget", "budget", "Budget", budget_opts, "Any budget")
-              + select("s-status", "status", "Status", status_opts, "Any status"))
+    search = (select("s-developer", "developer", "Developer", [(d["slug"], d["name"]) for d in DEVS], "Any developer")
+              + select("s-community", "community", "Community", [(c, c) for c in PROJECT_COMMUNITIES], "Any community")
+              + select("s-collection", "collection", "Collection", [(c, c) for c in COLLECTIONS], "Any collection"))
     gallery = "".join(
         f'<button type="button" class="fan-card" data-fan-card="{i}" aria-label="Open photo {i + 1} of 25">'
         f'{img(f"assets/images/gallery/image{i + 1}.webp", "", "", lazy=i >= 7, sizes="(min-width: 700px) 20vw, 45vw")}</button>' for i in range(25))
     dots = "".join(f'<span class="fan-dot" data-fan-dot="{i}"></span>' for i in range(25))
-    featured = [p for p in PROPS if p["featured"]][:6] or PROPS[:6]
-    feat_cards = "".join(feature_card(p, i) for i, p in enumerate(featured))
+    spotlight = [(DEV_BY[sl], next(q for q in DEV_BY[sl]["projects"] if q["name"] == nm)) for sl, nm in
+                 [("emaar", "Greencrest"), ("damac", "Chelsea Residences"), ("sobha", "Sobha SeaHaven"), ("omniyat", "ORLA, Dorchester Collection, Dubai"),
+                  ("binghatti", "Mercedes-Benz Places"), ("nakheel", "Palm Jebel Ali")]]
+    feat_cards = "".join(project_card(d, q, reveal=True) for d, q in spotlight)
+    dev_cards = "".join(dev_card(d, i) for i, d in enumerate(DEVS))
 
     logos = [("01", "Arada"), ("02", "Dubai Properties"), ("03", "DAMAC"), ("04", "Samana Developers"), ("05", "Danube Properties"),
              ("06", "Binghatti"), ("07", "Azizi"), ("08", "Dubai Properties"), ("09", "Empire Developments"), ("10", "Sobha Realty")]
@@ -804,9 +854,9 @@ def build_home():
 
     comm_cards = ""
     for i, c in enumerate(COMMUNITIES):
-        n = count_in(c["name"])
-        label = f"{n} listing{'s' if n != 1 else ''}" if n else "Ask about availability"
-        comm_cards += f"""<a class="community-card" data-reveal data-reveal-delay="{(i % 4) * 70}" href="/properties/?community={quote(c['name'])}" aria-label="View properties in {e(c['name'])}">
+        n = sum(1 for q in ALL_PROJECTS if q["community"] == c["name"])
+        label = f"{n} featured project{'s' if n != 1 else ''}" if n else "Ask about launches"
+        comm_cards += f"""<a class="community-card" data-reveal data-reveal-delay="{(i % 4) * 70}" href="/properties/?community={quote(c['name'])}" aria-label="View projects in {e(c['name'])}">
 {img(c['image'], f"{c['name']}, Dubai", sizes="(min-width: 1100px) 290px, (min-width: 640px) 25vw, 50vw")}<div class="community-card__overlay"><h3>{e(c['name'])}</h3><span class="community-card__count">{label}</span></div></a>"""
 
     svc_cards = ""
@@ -849,7 +899,7 @@ def build_home():
 <span class="hero__eyebrow">UAE Property Advisory · RERA-registered</span>
 <h1 class="hero__title"><span class="sr-only">Invest where the UAE is heading. Live where it already shines.</span><span data-typewriter aria-hidden="true">Invest where the UAE is heading.<br><em>Live where it already shines.</em></span></h1>
 <p class="hero__subtitle">Off-plan and ready homes across the UAE's freehold communities, with mortgage, payment-plan and rental-yield advisory from first shortlist to handover.</p>
-<div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Listings {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Talk to an advisor</a></div>
+<div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Talk to an advisor</a></div>
 <div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
@@ -868,10 +918,15 @@ def build_home():
 <div class="arc-gallery__viewall"><a href="/properties/" class="btn btn-outline-dark">View all properties</a></div></section>
 
 <section class="section section--alt featured-section ambient-glow-host">{GLOW}<div class="container">
-<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Featured</span>{h2_cascade("Featured listings this month")}</div>
-<a href="/properties/" class="btn btn-outline-dark">View all properties</a></div>
-<div class="feature-slider" data-feature-slider><div class="feature-slider__viewport"><div class="feature-slider__track" data-featured-grid>{feat_cards}</div></div><div class="feature-slider__nav"></div></div>
-<p class="listing-note">ROI figures are estimates based on current market rents and are not guaranteed. Prices and availability are subject to change.</p>
+<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Developers</span>{h2_cascade("Fifteen developers. One advisory desk.")}</div>
+<a href="/properties/" class="btn btn-outline-dark">All developers &amp; projects</a></div>
+<div class="dev-grid">{dev_cards}</div></div></section>
+
+<section class="section ambient-glow-host">{GLOW}<div class="container">
+<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Spotlight</span>{h2_cascade("Projects worth a closer look")}</div>
+<a href="/properties/" class="btn btn-outline-dark">Browse all projects</a></div>
+<div class="project-grid">{feat_cards}</div>
+<p class="listing-note">Project details come from each developer's public information and change often. Ask SWK for current availability, payment terms and brochures; none are published on this site.</p>
 </div></section>
 
 {STORY}
@@ -910,79 +965,72 @@ def build_home():
 
 
 def build_properties():
-    comm, types, budgets, stats = filter_options()
-
     def sel(name, label, opts, any_label):
         o = f'<option value="">{any_label}</option>' + "".join(f'<option value="{e(v)}">{e(t)}</option>' for v, t in opts)
         return f'<label>{label}<select name="{name}" data-filter="{name}">{o}</select></label>'
 
-    filters = (sel("community", "Community", comm, "All communities") + sel("type", "Property type", types, "All types")
-               + sel("budget", "Budget", budgets, "Any budget") + sel("status", "Status", stats, "Any status"))
-    cards = "".join(prop_card(p) for p in PROPS)
-    trail = [("Home", "/"), ("Properties", None)]
-    body = f"""{page_hero("Properties for Sale in Dubai", "Off-plan and ready homes across Dubai's most sought-after communities, updated as new listings launch.", trail, bg="properties")}
+    filters = (sel("developer", "Developer", [(d["slug"], d["name"]) for d in DEVS], "All developers")
+               + sel("community", "Community", [(c, c) for c in PROJECT_COMMUNITIES], "All communities")
+               + sel("collection", "Collection", [(c, c) for c in COLLECTIONS], "All collections"))
+    cards = "".join(project_card(d, q) for d in DEVS for q in d["projects"])
+    devs = "".join(dev_card(d, i) for i, d in enumerate(DEVS))
+    trail = [("Home", "/"), ("Developers & Projects", None)]
+    body = f"""{page_hero("UAE Developers & Projects", "Fifteen of the UAE's most active developers, with the launches and communities worth knowing. Ask SWK for current availability and terms.", trail, bg="properties")}
 <section class="section container ambient-glow-host">{GLOW}
-<form class="filter-bar" data-filters aria-label="Filter properties" novalidate>{filters}
+<div class="section-header center"><span class="eyebrow">Developers</span><h2>Choose a developer</h2><p>Each profile covers who they are, what they are known for and a closer look at their latest and best-known projects.</p></div>
+<div class="dev-grid">{devs}</div></section>
+<section class="section section--alt container ambient-glow-host" id="projects">{GLOW}
+<div class="section-header center"><span class="eyebrow">All projects</span><h2>{len(ALL_PROJECTS)} projects across the UAE</h2></div>
+<form class="filter-bar" data-filters aria-label="Filter projects" novalidate>{filters}
 <button type="button" class="btn btn-outline-dark btn-sm" data-filters-reset>Reset</button>
-<span class="results-count" data-results-count role="status" aria-live="polite">{len(PROPS)} properties found</span></form>
-<h2 class="sr-only">Listings</h2>
-<div class="property-grid" data-properties-grid data-reveal>{cards}</div>
-<div class="empty-state" data-empty-state hidden><p>No properties match those filters yet. Try widening your search, or
-<a href="{wa("Hi, I couldn't find a property matching my search — could you help me find something similar?")}" target="_blank" rel="noopener noreferrer">ask a consultant on WhatsApp</a>.</p></div>
-<nav class="pagination" data-pagination aria-label="Listing pages"></nav>
-<p class="listing-note">ROI figures are estimates based on current market rents and are not guaranteed. Prices and availability are subject to change.</p>
+<span class="results-count" data-results-count role="status" aria-live="polite">{len(ALL_PROJECTS)} projects</span></form>
+<div class="project-grid" data-properties-grid>{cards}</div>
+<div class="empty-state" data-empty-state hidden><p>No projects match those filters. Try widening your search, or
+<a href="{wa("Hi, I couldn't find a project matching my search. Could you help me find something similar?")}" target="_blank" rel="noopener noreferrer">ask a consultant on WhatsApp</a>.</p></div>
+<div class="center" style="margin-top:var(--space-6)"><button type="button" class="btn btn-outline-dark" data-projects-more hidden>Show more projects</button></div>
+<p class="listing-note">Project names and locations are taken from each developer's public information. Images on this site are SWK illustrations; official renders, films and brochures are available from the developers and through SWK on request. Prices and availability are not published here.</p>
 </section>
-<section class="section section--alt ambient-glow-host" style="text-align:center">{GLOW}<div class="container"><h2>Can't find exactly what you're after?</h2>
-<p style="max-width:52ch; margin:var(--space-4) auto 0">Tell us your budget, community and must-haves — we'll send a shortlist within 24 hours, including off-market listings.</p>
+<section class="section ambient-glow-host" style="text-align:center">{GLOW}<div class="container"><h2>Not sure which developer fits?</h2>
+<p style="max-width:52ch; margin:var(--space-4) auto 0">Tell us your location, timeline and what the home needs to do. We will shortlist the projects that fit and explain the trade-offs.</p>
 <div class="hero__ctas" style="justify-content:center; margin-top:var(--space-6)"><a href="/contact/" class="btn btn-primary btn-lg">Request a Shortlist</a></div></div></section>"""
     ld = [breadcrumb_ld(trail), {"@context": "https://schema.org", "@type": "ItemList", "itemListElement": [
-        {"@type": "ListItem", "position": i + 1, "url": f"{BASE}/properties/{p['id']}/", "name": p["title"]} for i, p in enumerate(PROPS)]}]
-    write("/properties/", page("/properties/", "Properties for Sale in Dubai | SWK Properties",
-                               f"Browse {len(PROPS)} off-plan and ready homes across Dubai — filter by community, type, budget and status to find your next address.", body, ld=ld))
+        {"@type": "ListItem", "position": i + 1, "url": f"{BASE}/properties/{d['slug']}/", "name": d["name"]} for i, d in enumerate(DEVS)]}]
+    write("/properties/", page("/properties/", "UAE Developers & Projects | SWK Properties",
+                               "Explore fifteen leading UAE developers, including Emaar, DAMAC, Sobha, Aldar and Nakheel, and their latest projects, with advisory from SWK Properties.", body, ld=ld))
 
 
-def build_property(p):
-    images = prop_images(p)
-    tiles = ""
-    for i, src in enumerate(images):
-        alt = f"{p['title']} — photo {i + 1}"
-        tiles += (f'<button type="button" class="pd-bento-gallery__item" data-lightbox-index="{i}" data-full="{asset(src)}" aria-label="Open photo {i + 1} of {len(images)}">'
-                  f'{img(src, alt, lazy=i > 2, sizes="(min-width: 1024px) 50vw, 100vw")}<span class="pd-bento-gallery__overlay"><span class="pd-bento-gallery__caption">Photo {i + 1}</span></span></button>')
-    facts = [("Type", p["type"]), ("Bedrooms", p["bedrooms"]), ("Bathrooms", str(p["bathrooms"])), ("Area", f"{num(p['areaSqft'])} sqft"),
-             ("Payment plan", p["paymentPlan"]), ("Handover", p["handover"]), ("Developer", p["developer"]), ("Est. ROI", f"{p['roiPercent']:g}%")]
-    facts_html = "".join(f'<div class="fact"><div class="label">{k}</div><div class="value">{e(v)}</div></div>' for k, v in facts)
-    amen = "".join(f"<li>{e(a)}</li>" for a in p["amenities"])
-    similar = sorted((q for q in PROPS if q["id"] != p["id"]), key=lambda q: (q["status"] != p["status"], q["community"] != p["community"]))[:3]
-    trail = [("Home", "/"), ("Properties", "/properties/"), (p["title"], None)]
-    body = f"""<section class="page-hero page-hero--photo"><div class="page-hero__bg" aria-hidden="true">{img(prop_images(p)[0], "", lazy=False, sizes="100vw")}</div><div class="container">{crumbs(trail)}
-<div class="pd-head">{badges(p)}</div><h1 class="page-hero__title">{e(p['title'])}</h1>
-<p>{PIN} {e(location(p))} · by {e(p['developer'])}</p></div></section>
-<section class="section container ambient-glow-host">{GLOW}
-<div class="pd-bento-gallery" data-gallery aria-label="{e(p['title'])} photo gallery">{tiles}</div>
-<div class="pd-layout"><div>
-<div class="pd-facts">{facts_html}</div>
-<h2 class="pd-section-title">Overview</h2><p>{e(p['description'])}</p>
-<h2 class="pd-section-title">Amenities</h2><ul class="amenity-list">{amen}</ul>
-<p class="pd-note">Prices, availability and payment plans are indicative and may change without notice. ROI is an estimate based on current market rents and is not guaranteed. Contact us for the current price list, floor plans and payment schedule.</p>
-</div>
-<aside class="pd-sidebar" aria-label="Enquire about {e(p['title'])}">
-<div class="pd-agent-card"><div class="pd-price"><small>Starting price</small><br>{money(p['price'])}</div>
-<div class="pd-cta" style="margin-top:var(--space-5)"><a href="/contact/?property={p['id']}" class="btn btn-primary btn-block">Request details</a>
-<a href="{wa(f"Hello SWK Properties, I'd like details on {p['title']}.")}" class="btn btn-whatsapp btn-block" target="_blank" rel="noopener noreferrer">Ask on WhatsApp</a>
-<button type="button" class="btn btn-gold btn-block" data-open-viewing>Book a viewing</button>
-<button type="button" class="btn btn-outline-dark btn-block" data-open-callback>Request a callback</button>
-<button type="button" class="btn btn-outline-dark btn-block" data-save-listing="{p['id']}" aria-pressed="false">Save listing</button>
-<button type="button" class="btn btn-outline-dark btn-block" data-share>Share this listing</button></div></div>
-<div class="pd-agent-card">{img("assets/images/team/mohd-shahid-khan.webp", "Mohd Shahid Khan")}<p class="pd-agent-name">Mohd Shahid Khan</p><p>Your point of contact for this listing</p></div>
-</aside></div></section>
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header"><span class="eyebrow">You may also like</span><h2>Similar properties</h2></div>
-<div class="property-grid">{"".join(prop_card(q) for q in similar)}</div></div></section>"""
-    cover = prop_images(p)[0].replace("assets/images/", "")
-    ld = [breadcrumb_ld(trail), {"@context": "https://schema.org", "@type": "RealEstateListing", "name": p["title"], "description": p["description"],
-          "url": f"{BASE}/properties/{p['id']}/", "image": f"{BASE}/assets/og/{p['id']}.jpg",
-          "offers": {"@type": "Offer", "price": p["price"], "priceCurrency": p["currency"]}}]
-    desc = f"{p['title']} in {location(p)} by {p['developer']} — {money(p['price'])}, {p['bedrooms']} bed, {p['status']}. {p['paymentPlan']} payment plan, handover {p['handover']}."
-    write(f"/properties/{p['id']}/", page(f"/properties/{p['id']}/", f"{p['title']} | SWK Properties", desc, body, image=f"og/{p['id']}.jpg", ld=ld))
+def build_developer(d):
+    trail = [("Home", "/"), ("Developers & Projects", "/properties/"), (d["name"], None)]
+    rows = ""
+    for i, q in enumerate(d["projects"]):
+        tags = "".join(f"<li>{e(t)}</li>" for t in q["tags"])
+        official = q["url"] or d["site"]
+        official_label = "Official project page" if q["url"] else f"{d['name']} website"
+        msg = wa(f"Hello SWK Properties, I'd like current availability and brochure details for {q['name']} by {d['name']}.")
+        rows += f"""<article class="project-feature{' project-feature--flip' if i % 2 else ''}" id="{q['slug']}" style="--dc:{d['hue']}" data-reveal>
+<div class="project-feature__media">{project_media(d, q, lazy=i > 0)}<span class="project-feature__note">SWK illustration · official renders on request</span></div>
+<div class="project-feature__copy"><span class="eyebrow">{e(q['collection'])}</span><h3>{e(q['name'])}</h3>
+<p class="project-feature__loc">{PIN} {e(q['community'])}</p><p>{e(q['blurb'])}</p><ul class="project-feature__tags">{tags}</ul>
+<div class="project-feature__actions"><a href="{msg}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Ask SWK about this project</a>
+<a href="{e(official)}" class="btn btn-outline-dark btn-sm" target="_blank" rel="noopener noreferrer">{official_label} ↗</a>
+<a href="{film_url(d, q)}" class="project-feature__film" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">▶</span> Watch official films</a></div></div></article>"""
+    jump = "".join(f'<a href="#{q["slug"]}">{e(q["name"])}</a>' for q in d["projects"])
+    others = [x for x in DEVS if x["slug"] != d["slug"]][:3]
+    more = "".join(dev_card(x, i) for i, x in enumerate(others))
+    body = f"""{page_hero(d['name'], d['tagline'], trail, bg="properties")}
+<section class="section container ambient-glow-host" style="--dc:{d['hue']}">{GLOW}
+<div class="dev-intro"><div><span class="eyebrow">About the developer</span><h2>{e(d['name'])}: {e(d['knownFor'].lower())}</h2><p>{e(d['about'])}</p></div>
+<aside class="dev-intro__card"><span>Known for</span><strong>{e(d['knownFor'])}</strong><span>Featured here</span><strong>{len(d['projects'])} projects</strong>
+<a href="{e(d['site'])}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-sm">Developer website ↗</a></aside></div>
+<nav class="dev-jump" aria-label="Projects by {e(d['name'])}">{jump}</nav></section>
+<section class="section section--alt ambient-glow-host">{GLOW}<div class="container project-features">{rows}
+<p class="listing-note">Project names and locations come from {e(d['name'])}'s public information; check the developer's own pages for the latest status. Images on this page are SWK illustrations. Prices, unit details and availability are shared by SWK on enquiry and are not published here.</p></div></section>
+<section class="section container ambient-glow-host">{GLOW}<div class="section-header center"><span class="eyebrow">Keep exploring</span><h2>Other developers</h2></div><div class="dev-grid">{more}</div></section>
+{cta_section("Want the current brief on " + d["name"] + "?", "Tell us what you are looking for. A consultant will send availability, brochures and a straight view of the trade-offs.")}"""
+    ld = [breadcrumb_ld(trail), {"@context": "https://schema.org", "@type": "ItemList", "name": f"{d['name']} projects", "itemListElement": [
+        {"@type": "ListItem", "position": i + 1, "name": q["name"], "url": f"{BASE}/properties/{d['slug']}/#{q['slug']}"} for i, q in enumerate(d["projects"])]}]
+    write(f"/properties/{d['slug']}/", page(f"/properties/{d['slug']}/", f"{d['name']} Projects in the UAE | SWK Properties",
+                                            f"{d['name']}: {d['tagline']} A closer look at {', '.join(q['name'] for q in d['projects'][:3])} and more, with advisory from SWK Properties.", body, ld=ld))
 
 
 def build_about():
@@ -1090,56 +1138,6 @@ def build_contact():
                             "Get in touch with SWK Properties — book a consultation, ask about a listing, or reach us on WhatsApp, phone or email.", body, ld=[breadcrumb_ld(trail), org_ld()]))
 
 
-def research_card(p):
-    m = p["metrics"]
-    return f'''<article class="research-card"><a href="/blog/{p['slug']}/"><div class="research-card__top"><span>{p['period']}</span><span>Residential sales</span></div><h3>{e(p['area'])}</h3><div class="research-card__value">AED {m['median']:,.0f}<small>median per sq ft</small></div><p>{m['count']:,} qualifying registrations</p><span class="research-card__link">Read the evidence →</span></a></article>'''
-
-
-def research_table(rows, heading, label):
-    body = "".join(f'<tr><th scope="row">{e(str(r[label]))}</th><td>{r["count"]:,}</td><td>{"Small sample" if r["count"] < 10 else "AED " + format(r["median"], ",.0f")}</td></tr>' for r in rows)
-    return f'<div class="research-table"><table><caption>{e(heading)}</caption><thead><tr><th scope="col">Group</th><th scope="col">Records</th><th scope="col">Median / sq ft</th></tr></thead><tbody>{body}</tbody></table></div>' if rows else '<p>No disclosed records for this breakdown.</p>'
-
-
-def build_research():
-    by_year = {y: [p for p in RESEARCH if p["period"] == y] for y in range(2011, 2027)}
-    years = "".join(f'<a class="research-year" href="/blog/research/{y}/"><strong>{y}</strong><span>26 area reports {"· partial year" if y == 2026 else ""}</span></a>' for y in reversed(by_year))
-    methodology = f'''<div class="research-method"><span class="eyebrow">Read the methodology</span><h2>Evidence with its limits in view</h2><p>416 reports cover the 26 most active eligible registered areas in each year from 2011 to 2026. Each cohort has at least 50 qualifying residential registrations. Selection changes by year; absence from this collection does not mean an area had no sales.</p><p>Source: Dubai Real Estate Data, based on Dubai Land Department open data, licensed CC BY 4.0. This independent snapshot ends on <strong>5 October 2026</strong>. It is not a live official feed. All reports were published on 24 October 2026 as retrospective analysis; they were not published in the historical years shown.</p><p>Filters: upstream quality flag 0, residential usage, Unit or Villa type and positive price per sq ft. Counts and total value describe this filtered sample only. Medians are calculated from individual registrations. Land, whole buildings and commercial properties are excluded. Missing bedrooms remain unknown; price cells with fewer than 10 records are labelled small sample. Quarter-to-quarter differences can reflect the homes sold, not changes in the same home’s value.</p><p>Generated statistical analysis by SWK; no human author or official endorsement is implied. Use these reports for research, not as a valuation, forecast or investment recommendation. The source has not been independently reconciled to a complete official DLD extract.</p><a href="/assets/data/research-source.json">Source manifest and file checksum</a> · <a href="https://huggingface.co/datasets/dubairealestatedata/dubai-real-estate-sales-transactions" target="_blank" rel="noopener noreferrer">Licensed source</a> · <a href="https://dubailand.gov.ae/en/open-data/real-estate-data/" target="_blank" rel="noopener noreferrer">DLD open data</a></div>'''
-    search = '''<div class="research-search" data-research-search><label for="research-query">Find a registered area or year</label><input id="research-query" type="search" placeholder="For example, Business Bay or 2014" autocomplete="off"><p data-research-status role="status">Browse all 16 years below, or search the 416 reports.</p><div class="research-grid" data-research-results></div><button type="button" class="btn btn-outline-dark" data-research-more hidden>Show more results</button></div>'''
-    trail = [("Home", "/"), ("Journal", "/blog/"), ("Research archive", None)]
-    body = page_hero("Dubai property, in the records", "416 residential sales reports across 2011–2026. Registered prices, transaction mix and sample sizes — with the limitations beside the numbers.", trail) + f'<section class="section container">{search}<h2>Explore by year</h2><div class="research-years">{years}</div>{methodology}</section>'
-    write("/blog/research/", page("/blog/research/", "Dubai Property Research 2011–2026 | SWK", "Explore 416 historical Dubai residential sales reports: registered-area prices, sample counts and off-plan versus ready transaction mix, with source methodology.", body, ld=[breadcrumb_ld(trail)]))
-    for year, reports in by_year.items():
-        trail = [("Home", "/"), ("Journal", "/blog/"), ("Research", "/blog/research/"), (str(year), None)]
-        note = "Partial-year snapshot through 5 October 2026." if year == 2026 else "Complete calendar-year window within the source snapshot."
-        nav = "".join(f'<a href="/blog/research/{y}/" {"aria-current=page" if y == year else ""}>{y}</a>' for y in reversed(by_year))
-        body = page_hero(f"{year}: Dubai residential sales", f"26 registered-area reports. {note} Published as retrospective statistical analysis on 24 October 2026.", trail) + f'<section class="section container"><nav class="research-year-nav" aria-label="Research years">{nav}</nav><div class="research-grid">{"".join(research_card(p) for p in reports)}</div><p class="listing-note">Counts describe qualifying residential records, not all Dubai registrations. <a href="/blog/research/">Read the methodology and source disclosure.</a></p></section>'
-        path = f"/blog/research/{year}/"
-        write(path, page(path, f"Dubai Residential Sales {year}: Area Reports | SWK", f"Explore 26 Dubai registered-area residential sales reports for {year}, including price medians, transaction counts and registration mix. {note}", body, ld=[breadcrumb_ld(trail)]))
-    for p in RESEARCH:
-        m = p["metrics"]
-        trail = [("Home", "/"), ("Research", "/blog/research/"), (str(p["period"]), f'/blog/research/{p["period"]}/'), (p["area"], None)]
-        summary = "".join(f'<div><dt>{e(k)}</dt><dd>{e(v)}</dd></div>' for k, v in [("Qualifying records", f'{m["count"]:,}'), ("Median / sq ft", f'AED {m["median"]:,.0f}'), ("Middle 50% / sq ft", f'AED {m["q1"]:,.0f}–{m["q3"]:,.0f}'), ("Off-plan share", f'{m["offplan"]/m["count"]*100:.1f}%')])
-        content = ""
-        for i, section in enumerate(p["sections"]):
-            content += f'<section><h2>{e(section["title"])}</h2><p>{e(section["text"])}</p>'
-            if i == 2: content += research_table(p["registration"], "Registration types in the qualifying sample", "label")
-            if i == 3: content += research_table([dict(q, label=f'Q{q["quarter"]}' + (' · through 5 Oct' if p['period'] == 2026 and q['quarter'] == 4 else '')) for q in p["quarters"]], "Quarterly evidence", "label")
-            if i == 4: content += research_table(p["rooms"], "Disclosed bedroom groups", "label")
-            content += '</section>'
-        period = '1 January–5 October 2026 (partial year)' if p['period'] == 2026 else f'1 January–31 December {p["period"]}'
-        body = page_hero(p["title"], f'{period}. Retrospective statistical analysis · Published 24 October 2026 · {p["readTime"]}', trail)
-        body += f'<article class="section container"><dl class="research-metrics">{summary}</dl><div class="prose"><p class="article-answer">{e(p["content"])}</p>{content}<aside class="research-method"><h2>Source and reproducibility</h2><p>SWK calculations from the licensed Dubai Real Estate Data snapshot of DLD-derived sales. Data cutoff: 5 October 2026. Registered area: {e(p["area"])}. Upstream quality flag 0; residential Unit/Villa records only; no land, buildings or commercial usage. This is programmatic analysis, not an official DLD report. <a href="/blog/research/">Full methodology and limitations</a>.</p><a href="/assets/data/research/{p["slug"]}.json">Download this report’s aggregate data</a><p>Source attribution: Dubai Real Estate Data (dubairealestatedata.com), based on Dubai Land Department open data. <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p></aside><p><a href="/blog/research/{p["period"]}/">More registered areas from {p["period"]} →</a></p></div></article>'
-        path = f'/blog/{p["slug"]}/'
-        ld = [breadcrumb_ld(trail), {"@context": "https://schema.org", "@type": "Article", "headline": p["title"], "datePublished": p["date"], "dateModified": p["updated"], "description": p["excerpt"], "mainEntityOfPage": BASE + path, "author": {"@type": "Organization", "name": "SWK Properties Research"}, "publisher": {"@type": "Organization", "name": SITE["name"]}, "citation": [q["url"] for q in p["sources"]]}]
-        write(path, page(path, p["seoTitle"], p["excerpt"][:195], body, ld=ld, og_type="article"))
-    data_dir = OUT / 'assets' / 'data'
-    (data_dir / 'research').mkdir(parents=True, exist_ok=True)
-    (data_dir / 'research-source.json').write_text(json.dumps(RESEARCH_SOURCE, ensure_ascii=False), encoding='utf-8')
-    (data_dir / 'research-index.json').write_text(json.dumps([dict(slug=p['slug'], area=p['area'], year=p['period'], count=p['metrics']['count'], median=p['metrics']['median']) for p in RESEARCH], ensure_ascii=False), encoding='utf-8')
-    for p in RESEARCH:
-        (data_dir / 'research' / (p['slug'] + '.json')).write_text(json.dumps({k:p[k] for k in ['area','period','date','metrics','quarters','rooms','registration','sources']}, ensure_ascii=False), encoding='utf-8')
-
-
 def build_chat_inbox():
     body = '''<section class="section container inbox-shell"><div class="section-header"><span class="eyebrow">SWK Workspace</span><h1>Live chat inbox</h1><p>Private operator access. Only authorised SWK team members may sign in.</p></div>
 <p data-inbox-status role="status"></p><form class="inbox-login ui-card" data-inbox-login><label for="inbox-password">Inbox password</label><input id="inbox-password" type="password" autocomplete="current-password" required><button type="submit" class="btn btn-primary">Sign in</button></form>
@@ -1149,13 +1147,12 @@ def build_chat_inbox():
 
 def build_blog():
     trail = [("Home", "/"), ("Journal", None)]
-    body = f"""{page_hero("The SWK Journal", "Market insight, buyer guides and community spotlights from our consultants on the ground in Dubai.", trail, bg="blog")}
-<section class="section container ambient-glow-host">{GLOW}<div class="research-banner"><div><span class="eyebrow">The evidence archive</span><h2>2011–2026. 416 area reports.</h2><p>Explore registered residential sales from 2011–2026. Every report shows its sample, sources and limits.</p></div><a href="/blog/research/" class="btn btn-primary">Explore the research →</a></div><h2 class="sr-only">All articles</h2>
-{blog_filters()}
+    body = f"""{page_hero("The SWK Journal", "Buyer guides and market notes for UAE property, written by SWK's consultants. Specific questions, plain answers.", trail, bg="blog")}
+<section class="section container ambient-glow-host">{GLOW}<h2 class="sr-only">All articles</h2>{blog_filters()}
 {blog_feature(POSTS[0])}
 <div class="blog-grid" data-blog-grid>{"".join(blog_card(p, i) for i, p in enumerate(POSTS[1:]))}</div></section>
 <section class="section section--alt ambient-glow-host" style="text-align:center">{GLOW}<div class="container"><h2>Want market updates in your inbox?</h2>
-<p style="max-width:52ch; margin:var(--space-4) auto var(--space-5)">Subscribe for monthly insight on Dubai pricing trends, new launches and yield opportunities.</p>
+<p style="max-width:52ch; margin:var(--space-4) auto var(--space-5)">Subscribe for monthly notes on UAE launches, buying rules and payment-plan changes.</p>
 <form class="nl-inline" data-form="newsletter" data-endpoint="{e(SITE['formEndpoint'])}" aria-label="Blog newsletter signup" novalidate>
 <div class="nl-inline__row"><label for="nl-blog" class="sr-only">Email address</label><input type="email" id="nl-blog" name="email" placeholder="Your email address" autocomplete="email" required>
 <button type="submit" class="btn btn-primary">Subscribe</button></div>
@@ -1163,7 +1160,7 @@ def build_blog():
 <label class="form-check"><input type="checkbox" name="consent" required><span>I agree to receive market updates and accept the <a href="/privacy/">Privacy Policy</a>.</span></label>
 <p class="form-status" role="status" aria-live="polite" hidden></p></form></div></section>"""
     write("/blog/", page("/blog/", "Journal | SWK Properties",
-                         "Market insights, buyer guides and community spotlights from SWK Properties — everything you need to know about buying and investing in Dubai real estate.", body, ld=[breadcrumb_ld(trail)]))
+                         "Market insights, buyer guides and community spotlights from SWK Properties — clear answers on buying and investing in UAE real estate.", body, ld=[breadcrumb_ld(trail)]))
     for p in POSTS:
         others = [q for q in POSTS if q["slug"] != p["slug"]]
         tr = [("Home", "/"), ("Journal", "/blog/"), (p["title"], None)]
@@ -1180,12 +1177,12 @@ def build_blog():
 <div class="blog-grid">{"".join(blog_card(q, i) for i, q in enumerate(others))}</div></div></section>
 {cta_section()}"""
         ld = [breadcrumb_ld(tr), {"@context": "https://schema.org", "@type": "Article", "headline": p["title"], "datePublished": p["date"], "dateModified": p.get("updated", p["date"]),
-              "description": p["excerpt"], "image": f"{BASE}/assets/og/blog-{p['slug']}.jpg", "mainEntityOfPage": f"{BASE}/blog/{p['slug']}/",
+              "description": p["excerpt"], "image": f"{BASE}/assets/{p.get('og', 'og/blog-' + p['slug'] + '.jpg')}", "mainEntityOfPage": f"{BASE}/blog/{p['slug']}/",
               "author": {"@type": "Organization", "name": SITE["name"]},
               "publisher": {"@type": "Organization", "name": SITE["name"], "logo": {"@type": "ImageObject", "url": f"{BASE}/assets/images/brand/swk-logo.png"}}}]
         long_title = f"{p['title']} | SWK Properties"
         write(f"/blog/{p['slug']}/", page(f"/blog/{p['slug']}/", long_title if len(long_title) < 70 else p.get("seoTitle", p["title"][:66]), p["excerpt"], b,
-                                           image=f"og/blog-{p['slug']}.jpg", ld=ld, og_type="article"))
+                                           image=p.get("og", f"og/blog-{p['slug']}.jpg"), ld=ld, og_type="article"))
 
 
 def legal(path, title, desc, sections):
@@ -1233,10 +1230,8 @@ def build_404():
 def build_meta_files():
     pages = ["/", "/properties/", "/about/", "/services/", "/mortgage/", "/blog/", "/contact/", "/privacy/", "/terms/", "/cookies/"]
     entries = [(u, TODAY.isoformat(), []) for u in pages]
-    entries += [(f"/properties/{p['id']}/", TODAY.isoformat(), [f"{BASE}/assets/og/{p['id']}.jpg"]) for p in PROPS]
-    entries += [(f"/blog/{p['slug']}/", p.get("updated", p["date"]), [f"{BASE}/assets/og/blog-{p['slug']}.jpg"]) for p in POSTS]
-    entries += [(f"/blog/{p['slug']}/", p['updated'], []) for p in RESEARCH]
-    entries += [("/blog/research/", TODAY.isoformat(), [])] + [(f"/blog/research/{y}/", TODAY.isoformat(), []) for y in range(2011, 2027)]
+    entries += [(f"/properties/{d['slug']}/", TODAY.isoformat(), []) for d in DEVS]
+    entries += [(f"/blog/{p['slug']}/", p.get("updated", p["date"]), [f"{BASE}/assets/{p.get('og', 'og/blog-' + p['slug'] + '.jpg')}"]) for p in POSTS]
     xml = ['<?xml version="1.0" encoding="UTF-8"?>',
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">']
     for u, lm, imgs in entries:
@@ -1253,7 +1248,7 @@ def build_meta_files():
         f"<description>{e(p['excerpt'])}</description></item>" for p in POSTS)
     (OUT / "feed.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>'
-        f"<title>{e(SITE['name'])} Journal</title><link>{BASE}/blog/</link><description>Dubai property market insight, buyer guides and community spotlights.</description>"
+        f"<title>{e(SITE['name'])} Journal</title><link>{BASE}/blog/</link><description>UAE property buyer guides and market notes.</description>"
         f'<language>en-ae</language><atom:link href="{BASE}/feed.xml" rel="self" type="application/rss+xml"/>{items}</channel></rss>', encoding="utf-8")
 
     # Web app manifest and security.txt
@@ -1274,9 +1269,9 @@ def main():
     OUT.mkdir()
     build_assets()
     build_home(); build_properties(); build_about(); build_services(); build_mortgage()
-    build_contact(); build_blog(); build_research(); build_chat_inbox(); build_legal(); build_404(); build_meta_files()
-    for p in PROPS:
-        build_property(p)
+    build_contact(); build_blog(); build_chat_inbox(); build_legal(); build_404(); build_meta_files()
+    for d in DEVS:
+        build_developer(d)
     print(f"Built {sum(1 for _ in OUT.rglob('*.html'))} pages, assets v{ASSET_V}, into {OUT}")
 
 

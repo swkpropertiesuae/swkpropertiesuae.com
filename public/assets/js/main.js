@@ -851,31 +851,24 @@
   });
 })();
 
-// Properties page: filters (community, type, budget, status) + pagination.
-// All cards are in the server-rendered HTML; JS only hides/shows them, so
-// crawlers and no-JS visitors still get every listing.
+// Developers & Projects page: filters (developer, community, collection) and a "show more" pager.
+// Every card is in the server-rendered HTML; JS only hides and shows them, so crawlers and
+// no-JS visitors still get every project.
 (function () {
   'use strict';
   var SWK = window.SWK;
-  var PAGE_SIZE = 9;
-
-  function matchesBudget(price, key) {
-    if (!key) return true;
-    var parts = key.split('-').map(Number);
-    var min = parts[0], max = parts[1];
-    return max ? price >= min && price <= max : price >= min;
-  }
+  var PAGE = 12;
 
   SWK.reg('listings', function () {
     var grid = SWK.$('[data-properties-grid]');
     var bar = SWK.$('[data-filters]');
     if (!grid || !bar) return;
-    var cards = SWK.$$('.property-card', grid);
+    var cards = SWK.$$('.project-card', grid);
     var countEl = SWK.$('[data-results-count]');
     var emptyEl = SWK.$('[data-empty-state]');
-    var pager = SWK.$('[data-pagination]');
-    var fields = ['community', 'type', 'budget', 'status'];
-    var page = 1;
+    var more = SWK.$('[data-projects-more]');
+    var fields = ['developer', 'community', 'collection'];
+    var shown = PAGE;
 
     var params = new URLSearchParams(location.search);
     fields.forEach(function (name) {
@@ -883,55 +876,34 @@
       var v = params.get(name);
       if (sel && v && Array.prototype.some.call(sel.options, function (o) { return o.value === v; })) sel.value = v;
     });
-    page = Math.max(1, parseInt(params.get('page'), 10) || 1);
 
-    function draw(scroll) {
+    function draw() {
       var f = {};
       fields.forEach(function (name) { f[name] = bar.elements[name] ? bar.elements[name].value : ''; });
       var matched = cards.filter(function (c) {
-        if (f.community && c.dataset.community !== f.community) return false;
-        if (f.type && c.dataset.type !== f.type) return false;
-        if (f.status && c.dataset.status !== f.status) return false;
-        return matchesBudget(Number(c.dataset.price), f.budget);
+        return (!f.developer || c.dataset.developer === f.developer) && (!f.community || c.dataset.community === f.community) && (!f.collection || c.dataset.collection === f.collection);
       });
-      var pages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
-      page = Math.min(page, pages);
-      var from = (page - 1) * PAGE_SIZE;
+      var filtered = !!(f.developer || f.community || f.collection);
+      var limit = filtered ? matched.length : shown;
       cards.forEach(function (c) { c.hidden = true; });
-      matched.slice(from, from + PAGE_SIZE).forEach(function (c) { c.hidden = false; });
-      if (countEl) countEl.textContent = matched.length + ' propert' + (matched.length === 1 ? 'y' : 'ies') + ' found';
-      if (emptyEl) emptyEl.hidden = matched.length !== 0;
-
-      if (pager) {
-        pager.innerHTML = '';
-        if (pages > 1) {
-          for (var i = 1; i <= pages; i++) {
-            var b = document.createElement('button');
-            b.type = 'button';
-            b.textContent = String(i);
-            b.setAttribute('aria-label', 'Page ' + i);
-            if (i === page) { b.className = 'is-active'; b.setAttribute('aria-current', 'page'); }
-            (function (k) { b.addEventListener('click', function () { page = k; draw(true); }); })(i);
-            pager.appendChild(b);
-          }
-        }
-      }
-
-      var qs = new URLSearchParams();
-      fields.forEach(function (name) { if (f[name]) qs.set(name, f[name]); });
-      if (page > 1) qs.set('page', String(page));
-      history.replaceState(null, '', qs.toString() ? '?' + qs : location.pathname);
-      if (scroll) grid.scrollIntoView({ behavior: SWK.reduced ? 'auto' : 'smooth', block: 'start' });
+      matched.slice(0, limit).forEach(function (c) { c.hidden = false; });
+      if (countEl) countEl.textContent = matched.length + (matched.length === 1 ? ' project' : ' projects');
+      if (emptyEl) emptyEl.hidden = matched.length > 0;
+      if (more) more.hidden = filtered || shown >= matched.length;
     }
 
-    bar.addEventListener('change', function () { page = 1; draw(false); });
-    bar.addEventListener('submit', function (ev) { ev.preventDefault(); });
-    var reset = SWK.$('[data-filters-reset]', bar);
-    if (reset) reset.addEventListener('click', function () {
-      fields.forEach(function (name) { if (bar.elements[name]) bar.elements[name].value = ''; });
-      page = 1; draw(false);
+    fields.forEach(function (name) {
+      var sel = bar.elements[name];
+      if (sel) sel.addEventListener('change', function () { shown = PAGE; draw(); });
     });
-    draw(false);
+    var reset = SWK.$('[data-filters-reset]', bar);
+    if (reset) reset.addEventListener('click', function () { bar.reset(); shown = PAGE; draw(); });
+    if (more) more.addEventListener('click', function () { shown += PAGE; draw(); });
+    draw();
+    if (params.get('developer') || params.get('community') || params.get('collection')) {
+      var target = document.getElementById('projects');
+      if (target && target.scrollIntoView) target.scrollIntoView({ behavior: SWK.reduced ? 'auto' : 'smooth' });
+    }
   });
 })();
 
@@ -1210,10 +1182,10 @@
       });
     });
 
-    // Prefill from ?property=<id>
+    // Prefill from ?project=<slug> (or the legacy ?property=<slug>)
     var cf = SWK.$('#contact-form');
     if (cf) {
-      var prop = new URLSearchParams(location.search).get('property');
+      var qs = new URLSearchParams(location.search); var prop = qs.get('project') || qs.get('property');
       if (prop && cf.elements.message && !cf.elements.message.value) {
         var title = prop.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
         cf.elements.message.value = 'Hello, I\'d like more details on ' + title + '.';
@@ -1778,11 +1750,6 @@
     request({action:'threads'}).then(enter).catch(fail);
   });
 })();
-
-(function(){'use strict';var S=window.SWK;S.reg('research-search',function(){var root=S.$('[data-research-search]');if(!root)return;var input=S.$('#research-query'),status=S.$('[data-research-status]'),results=S.$('[data-research-results]'),more=S.$('[data-research-more]'),rows=null,matches=[],shown=0,loading=null;
-function cards(){var frag=document.createDocumentFragment();matches.slice(shown,shown+12).forEach(function(r){var card=document.createElement('article');card.className='research-card';var link=document.createElement('a');link.href='/blog/'+r.slug+'/';var heading=document.createElement('h3');heading.textContent=r.area;var year=document.createElement('p');year.textContent=String(r.year)+(r.year===2026?' · through 5 October':'');var value=document.createElement('strong');value.className='research-card__value';value.textContent='AED '+Math.round(r.median).toLocaleString('en-AE')+' / sq ft';var count=document.createElement('p');count.textContent=r.count.toLocaleString('en-AE')+' qualifying records';link.append(year,heading,value,count);card.append(link);frag.append(card);});shown=Math.min(shown+12,matches.length);results.append(frag);more.hidden=shown>=matches.length;status.textContent=matches.length+' reports found. Showing '+shown+'.';}
-function filter(){var q=input.value.trim().toLowerCase();results.replaceChildren();shown=0;if(!q){more.hidden=true;status.textContent='Browse all 16 years below, or search the 416 reports.';return;}matches=rows.filter(function(r){return (r.area+' '+r.year).toLowerCase().includes(q);});cards();}
-input.addEventListener('input',function(){if(rows){filter();return;}if(loading)return;status.textContent='Loading the research index…';loading=fetch('/assets/data/research-index.json').then(function(r){if(!r.ok)throw Error();return r.json();}).then(function(data){rows=data;filter();}).catch(function(){status.textContent='Search is temporarily unavailable. Browse by year below.';}).finally(function(){loading=null;});});more.addEventListener('click',cards);});})();
 
 // Testimonials: staggered reveal, gentle auto-advance (pausable), arrow/keyboard paging and progress dots.
 (function () {

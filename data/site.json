@@ -22,15 +22,15 @@
  "announcement": {
   "enabled": true,
   "id": "launches-2026-q4",
-  "text": "New off-plan launches this month with flexible payment plans from AED 680K.",
-  "linkText": "View listings",
+  "text": "New launches from the UAE's leading developers. Ask SWK for the current brief.",
+  "linkText": "Explore developers",
   "href": "/properties/"
  },
  "popup": {
   "enabled": true,
   "delaySeconds": 30,
-  "title": "Get the off-plan watchlist",
-  "text": "One email a month: new Dubai launches, price moves and payment-plan changes. No spam, unsubscribe any time."
+  "title": "Get the launch watchlist",
+  "text": "One email a month: new UAE launches, buying-rule updates and payment-plan changes. No spam, unsubscribe any time."
  },
  "analytics": {
   "ga4": "",

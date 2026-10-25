@@ -13,10 +13,13 @@ RewriteRule ^ https://www.swkpropertiesuae.com%{REQUEST_URI} [R=301,L]
 
 # Old URLs -> new clean URLs
 RewriteCond %{QUERY_STRING} (?:^|&)id=([^&]+)
-RewriteRule ^property-details\.html$ /properties/%1/? [R=301,L]
+RewriteRule ^property-details\.html$ /properties/? [R=301,L]
 RewriteCond %{QUERY_STRING} (?:^|&)slug=([^&]+)
 RewriteRule ^blog-post\.html$ /blog/%1/? [R=301,L]
 RewriteRule ^index\.html$ / [R=301,L]
+RewriteRule ^properties/(river-cove-residences|raw-district-2|golf-fields|villa-sanctuary|hills-grove-townhouse|islands-2|rise-by-athlon|arabian-ranches-courtyard-villa|marina-sky-penthouse|creek-harbour-waterside-townhouse|business-bay-executive-tower|hills-estate-golf-mansion|jvc-boulevard-residences|palm-garden-homes)/?$ /properties/ [R=301,L]
+RewriteRule ^blog/research/ /blog/ [R=301,L]
+RewriteRule ^blog/.+-residential-sales/?$ /blog/ [R=301,L]
 RewriteRule ^(properties|about|services|mortgage|blog|contact)\.html$ /$1/ [R=301,L]
 </IfModule>
 

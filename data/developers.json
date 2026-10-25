@@ -1,0 +1,1331 @@
+[
+ {
+  "slug": "emaar",
+  "name": "Emaar",
+  "hue": "215 70% 38%",
+  "site": "https://www.emaar.com",
+  "tagline": "The master-planner behind Downtown Dubai.",
+  "about": "Emaar builds whole districts rather than single towers, so its launches arrive with parks, retail, schools and transport already designed in. Its current pipeline stretches from Dubai Creek Harbour and Dubai Hills Estate to Emaar South beside Al Maktoum airport.",
+  "knownFor": "Master-planned districts",
+  "projects": [
+   {
+    "name": "Greencrest",
+    "community": "Dubai Hills Estate",
+    "collection": "Master communities",
+    "blurb": "A residential cluster in Dubai Hills Estate that pairs clean architecture with landscaped courtyards and parkland, aimed at households that want a calm daily rhythm close to the city.",
+    "tags": [
+     "Park-facing planning",
+     "Established community",
+     "Family routines"
+    ],
+    "url": "https://www.emaar.com/en/properties/greencrest-at-dubai-hills-estate"
+   },
+   {
+    "name": "Grove Ridge",
+    "community": "Emaar South",
+    "collection": "Villas & townhouses",
+    "blurb": "Low-rise family living inside Emaar South, built around shared greens and walkable streets for neighbours to meet rather than pass.",
+    "tags": [
+     "Family-first layout",
+     "Shared green streets",
+     "Near Al Maktoum airport"
+    ],
+    "url": "https://www.emaar.com/en/properties/grove-ridge-at-emaar-south"
+   },
+   {
+    "name": "Golf Vale",
+    "community": "Emaar South",
+    "collection": "Golf & parks",
+    "blurb": "A golf-course address in Emaar South where homes are arranged to borrow the fairway landscape, with sports and leisure close by.",
+    "tags": [
+     "Golf outlook",
+     "Landscaped setting",
+     "Resort-style leisure"
+    ],
+    "url": "https://www.emaar.com/en/properties/golf-vale-at-emaar-south"
+   },
+   {
+    "name": "Creek Haven",
+    "community": "Dubai Creek Harbour",
+    "collection": "Waterfront",
+    "blurb": "A waterfront launch on the creek in Dubai Creek Harbour, the district Emaar is shaping as a second city centre beside the Ras Al Khor sanctuary.",
+    "tags": [
+     "Creek and skyline views",
+     "Waterfront promenade",
+     "New city centre"
+    ],
+    "url": null
+   },
+   {
+    "name": "Terra Woods",
+    "community": "Expo Living",
+    "collection": "Master communities",
+    "blurb": "Part of Emaar's residential offer around Expo City Dubai, a post-Expo district designed for walking, cycling and shared public space.",
+    "tags": [
+     "Expo City setting",
+     "Car-light planning",
+     "Public realm focus"
+    ],
+    "url": null
+   },
+   {
+    "name": "Avarra by Palace",
+    "community": "Business Bay",
+    "collection": "Branded residences",
+    "blurb": "A branded residential tower in Business Bay carrying the Palace hospitality name, for buyers who want hotel-grade service in a central location.",
+    "tags": [
+     "Hospitality brand",
+     "Central address",
+     "Canal-side district"
+    ],
+    "url": "https://www.emaar.com/en/properties/avarra-by-palace-at-business-bay"
+   },
+   {
+    "name": "Rashid Yachts & Marina",
+    "community": "Rashid Yachts & Marina",
+    "collection": "Waterfront",
+    "blurb": "A marina district with a working yacht harbour, where residences sit beside the waterline and the leisure economy of the port.",
+    "tags": [
+     "Yacht harbour",
+     "Marina promenade",
+     "Waterfront retail"
+    ],
+    "url": null
+   }
+  ]
+ },
+ {
+  "slug": "damac",
+  "name": "DAMAC",
+  "hue": "16 72% 46%",
+  "site": "https://www.damacproperties.com",
+  "tagline": "Branded living, from towers to lagoon villages.",
+  "about": "DAMAC is known for pairing its homes with fashion, automotive and sporting names, and for large resort-style communities. The portfolio ranges from Business Bay towers to the lagoon-centred districts of DAMAC Lagoons.",
+  "knownFor": "Branded and resort-style living",
+  "projects": [
+   {
+    "name": "Chelsea Residences",
+    "community": "Dubai Maritime City",
+    "collection": "Branded residences",
+    "blurb": "A waterfront development created in collaboration with Chelsea Football Club, combining sea and skyline views with sport and wellness amenities.",
+    "tags": [
+     "Football-club partnership",
+     "Sea and skyline views",
+     "Wellness amenities"
+    ],
+    "url": null
+   },
+   {
+    "name": "DAMAC Casa",
+    "community": "Al Sufouh",
+    "collection": "Urban towers",
+    "blurb": "A residential tower in Al Sufouh, between Dubai Marina and Palm Jumeirah, for buyers who want the coast and the Marina's dining close at hand.",
+    "tags": [
+     "Coastal location",
+     "Near Marina and Palm",
+     "High-floor views"
+    ],
+    "url": null
+   },
+   {
+    "name": "Reva Residences",
+    "community": "Business Bay",
+    "collection": "Urban towers",
+    "blurb": "A Business Bay tower close to the canal and Downtown, suited to professionals who want the central business district on the doorstep.",
+    "tags": [
+     "Canal district",
+     "Downtown proximity",
+     "Urban amenities"
+    ],
+    "url": null
+   },
+   {
+    "name": "DAMAC Prive",
+    "community": "Business Bay",
+    "collection": "Urban towers",
+    "blurb": "A premium Business Bay launch from DAMAC's higher-end collection, with a design language aimed at more discerning city buyers.",
+    "tags": [
+     "Premium positioning",
+     "Central location",
+     "Skyline outlook"
+    ],
+    "url": null
+   },
+   {
+    "name": "DAMAC Lagoons",
+    "community": "DAMAC Lagoons",
+    "collection": "Waterfront",
+    "blurb": "A master community of Mediterranean-style neighbourhoods arranged around large lagoons, with townhouses and villas themed on European coastal towns.",
+    "tags": [
+     "Lagoon centrepieces",
+     "Themed neighbourhoods",
+     "Family community"
+    ],
+    "url": null
+   },
+   {
+    "name": "DAMAC Islands",
+    "community": "Dubailand",
+    "collection": "Islands",
+    "blurb": "A tropical island-themed community in Dubailand, with villas and townhouses grouped around water features and landscaped islets.",
+    "tags": [
+     "Island-style planning",
+     "Water features",
+     "Villas and townhouses"
+    ],
+    "url": null
+   },
+   {
+    "name": "Park Greens",
+    "community": "DAMAC Hills 2",
+    "collection": "Villas & townhouses",
+    "blurb": "Suburban villas within DAMAC Hills 2, a community that has grown around parks, a golf course and everyday family amenities.",
+    "tags": [
+     "Suburban setting",
+     "Parks and trails",
+     "Family villas"
+    ],
+    "url": null
+   }
+  ]
+ },
+ {
+  "slug": "sobha",
+  "name": "Sobha Realty",
+  "hue": "180 62% 30%",
+  "site": "https://sobharealty.com",
+  "tagline": "Backward integration, built to be seen up close.",
+  "about": "Sobha controls much of its own construction chain, from design to finishing, and markets that as the reason its buildings look tightly detailed up close. Its flagship is Sobha Hartland, with the eight-million-square-foot Hartland II rising beside it in Mohammed Bin Rashid City.",
+  "knownFor": "In-house construction and detail",
+  "projects": [
+   {
+    "name": "Sobha SeaHaven",
+    "community": "Dubai Harbour",
+    "collection": "Waterfront",
+    "blurb": "A seafront high-rise at Dubai Harbour, set to look out across the Gulf with marina and yacht-club neighbours.",
+    "tags": [
+     "Seafront tower",
+     "Harbour district",
+     "Gulf views"
+    ],
+    "url": null
+   },
+   {
+    "name": "Sobha Skyscape",
+    "community": "Sobha Hartland II",
+    "collection": "Master communities",
+    "blurb": "A tower within Sobha Hartland II, designed around open green space and canal edges in a district planned for walking.",
+    "tags": [
+     "Green-space planning",
+     "Canal edges",
+     "New district"
+    ],
+    "url": null
+   },
+   {
+    "name": "Sobha Skyvue",
+    "community": "Sobha Hartland II",
+    "collection": "Master communities",
+    "blurb": "A residential tower in the Hartland II masterplan, which devotes more than a third of its land to open and green areas.",
+    "tags": [
+     "Open-space masterplan",
+     "Skyline outlook",
+     "School and park access"
+    ],
+    "url": null
+   },
+   {
+    "name": "360 Riverside Crescent",
+    "community": "Sobha Hartland II",
+    "collection": "Waterfront",
+    "blurb": "Residences arranged on a crescent beside the Hartland II waterway, built around river-side landscaping and promenades.",
+    "tags": [
+     "Waterway frontage",
+     "Crescent layout",
+     "Landscaped promenade"
+    ],
+    "url": null
+   },
+   {
+    "name": "Waves Opulence",
+    "community": "Sobha Hartland",
+    "collection": "Waterfront",
+    "blurb": "A waterfront project inside the original Sobha Hartland, where towers face a lagoon and the Burj Khalifa skyline.",
+    "tags": [
+     "Lagoon frontage",
+     "Established community",
+     "Skyline view"
+    ],
+    "url": null
+   },
+   {
+    "name": "Sobha One",
+    "community": "Ras Al Khor",
+    "collection": "Urban towers",
+    "blurb": "A multi-tower complex beside the Ras Al Khor wildlife sanctuary, with the creek on one side and the city on the other.",
+    "tags": [
+     "Wildlife sanctuary outlook",
+     "Creek-side",
+     "Multi-tower plaza"
+    ],
+    "url": null
+   },
+   {
+    "name": "Sobha Sanctuary",
+    "community": "Dubailand",
+    "collection": "Villas & townhouses",
+    "blurb": "A villa community in Dubailand, planned around green belts and low-density streets for family living away from the towers.",
+    "tags": [
+     "Low density",
+     "Green belts",
+     "Villa community"
+    ],
+    "url": null
+   }
+  ]
+ },
+ {
+  "slug": "azizi",
+  "name": "Azizi Developments",
+  "hue": "276 40% 42%",
+  "site": "https://www.azizidevelopments.com",
+  "tagline": "High volume, with a new district every year.",
+  "about": "Azizi has built a reputation on pace, with many projects launched across Dubai and a first step into Sharjah. Its portfolio runs from beachfront Riviera in Meydan to Palm Jumeirah and Dubai Islands.",
+  "knownFor": "Volume and breadth of locations",
+  "projects": [
+   {
+    "name": "Azizi Venice",
+    "community": "Dubai South",
+    "collection": "Waterfront",
+    "blurb": "A lagoon-led community in Dubai South, designed with waterways, boulevards and a central water body as its organising idea.",
+    "tags": [
+     "Lagoon centrepiece",
+     "Dubai South growth area",
+     "Mixed housing types"
+    ],
+    "url": "https://www.azizidevelopments.com/dubai/dubai-south/azizi-venice"
+   },
+   {
+    "name": "Riviera",
+    "community": "Meydan",
+    "collection": "Waterfront",
+    "blurb": "A beachfront community with a crystal lagoon at the heart of Meydan, close to Downtown Dubai and everyday amenities.",
+    "tags": [
+     "Crystal lagoon",
+     "Close to Downtown",
+     "Promenade living"
+    ],
+    "url": "https://www.azizidevelopments.com/dubai/meydan/riviera"
+   },
+   {
+    "name": "Mina",
+    "community": "Palm Jumeirah",
+    "collection": "Waterfront",
+    "blurb": "A waterfront project on Palm Jumeirah that gives buyers the island address with marina frontage and sea views.",
+    "tags": [
+     "Palm address",
+     "Marina frontage",
+     "Sea outlook"
+    ],
+    "url": "https://www.azizidevelopments.com/dubai/palm-jumeirah/mina"
+   },
+   {
+    "name": "Azizi Wasel",
+    "community": "Dubai Islands",
+    "collection": "Islands",
+    "blurb": "A residential development on Dubai Islands, the new man-made archipelago off the Deira coast with beaches and marinas.",
+    "tags": [
+     "Island coastline",
+     "New archipelago",
+     "Beach access"
+    ],
+    "url": "https://www.azizidevelopments.com/projects"
+   },
+   {
+    "name": "Azizi Milan",
+    "community": "Dubai Land",
+    "collection": "Master communities",
+    "blurb": "A multi-building residential community in Dubai Land, positioned near Global Village and the city's growing south-eastern corridor.",
+    "tags": [
+     "Dubai Land location",
+     "Near Global Village",
+     "Family community"
+    ],
+    "url": "https://www.azizidevelopments.com/dubai/dubai-land/azizi-milan"
+   },
+   {
+    "name": "Azizi Raffi",
+    "community": "Al Furjan",
+    "collection": "Urban towers",
+    "blurb": "A mid-rise building in Al Furjan, a well-connected suburb with Metro access and an established retail and school ecosystem.",
+    "tags": [
+     "Metro-linked suburb",
+     "Established amenities",
+     "Mid-rise scale"
+    ],
+    "url": "https://www.azizidevelopments.com/dubai/al-furjan/azizi-raffi"
+   },
+   {
+    "name": "Azizi Florence",
+    "community": "Sharjah",
+    "collection": "Urban towers",
+    "blurb": "Azizi's newest release and its entry into Sharjah, bringing the developer's apartment format to the neighbouring emirate.",
+    "tags": [
+     "Sharjah debut",
+     "New release",
+     "Commuter-friendly"
+    ],
+    "url": "https://www.azizidevelopments.com/projects"
+   }
+  ]
+ },
+ {
+  "slug": "imtiaz",
+  "name": "Imtiaz Developments",
+  "hue": "150 48% 31%",
+  "site": "https://imtiaz.ae",
+  "tagline": "Design-led towers with a point of view.",
+  "about": "Imtiaz has built a long list of mid-rise residences, now moving into more concept-driven projects, from a wellness-focused tower to a Zaha Hadid Architects-designed building. It works in Dubai Islands, Dubailand, Meydan Horizon and Jumeirah Village Circle.",
+  "knownFor": "Concept-led residences",
+  "projects": [
+   {
+    "name": "KORE by Imtiaz",
+    "community": "Dubai Land Residence Complex",
+    "collection": "Urban towers",
+    "blurb": "A residence conceived around human performance and longevity, drawing its name from the body's core and built around movement and recovery.",
+    "tags": [
+     "Wellness concept",
+     "Performance-led amenities",
+     "Dubai Land setting"
+    ],
+    "url": "https://imtiaz.ae/property/kore-by-imtiaz"
+   },
+   {
+    "name": "The Archive by Imtiaz",
+    "community": "Dubai Land Residence Complex",
+    "collection": "Urban towers",
+    "blurb": "A building organised around reading and quiet, where the common spaces are designed for slow hours rather than loud ones.",
+    "tags": [
+     "Reading-centred design",
+     "Quiet common areas",
+     "Dubai Land setting"
+    ],
+    "url": "https://imtiaz.ae/property/the-archive-by-imtiaz"
+   },
+   {
+    "name": "Raw District II",
+    "community": "Downtown Jebel Ali",
+    "collection": "Urban towers",
+    "blurb": "The second phase of an urban district off Sheikh Zayed Road, built to be used rather than admired, with spaces that overlap and connect.",
+    "tags": [
+     "Urban district format",
+     "Sheikh Zayed Road corridor",
+     "Mixed-use feel"
+    ],
+    "url": "https://imtiaz.ae/property/raw-district-ii-by-imtiaz"
+   },
+   {
+    "name": "Sea Cliff by Imtiaz",
+    "community": "Dubai Islands",
+    "collection": "Islands",
+    "blurb": "An island address on Dubai Islands, laid out between shaded pathways and open-water views.",
+    "tags": [
+     "Open-water outlook",
+     "Shaded island paths",
+     "Island lifestyle"
+    ],
+    "url": "https://imtiaz.ae/property/sea-cliff"
+   },
+   {
+    "name": "Enre Residence",
+    "community": "Dubai South",
+    "collection": "Master communities",
+    "blurb": "A residence in Dubai South planned to let daily life flow with the outdoors, close to the future airport district.",
+    "tags": [
+     "Outdoor-led planning",
+     "Dubai South growth area",
+     "Calm setting"
+    ],
+    "url": "https://imtiaz.ae/property/enre-residence-by-imtiaz"
+   },
+   {
+    "name": "The Symphony by Imtiaz",
+    "community": "Meydan Horizon",
+    "collection": "Urban towers",
+    "blurb": "A building designed by Zaha Hadid Architects in the Meydan Horizon masterplan, treated as a dialogue between form and feeling.",
+    "tags": [
+     "Zaha Hadid Architects design",
+     "Meydan Horizon",
+     "Architectural landmark"
+    ],
+    "url": "https://imtiaz.ae/property/the-symphony-by-imtiaz"
+   },
+   {
+    "name": "Wynwood Horizon",
+    "community": "Meydan Horizon",
+    "collection": "Urban towers",
+    "blurb": "A distinguished address in the heart of the Meydan Horizon masterplan, positioned for business, culture and leisure access.",
+    "tags": [
+     "Masterplan centre",
+     "Business and culture links",
+     "Meydan location"
+    ],
+    "url": "https://imtiaz.ae/property/wynwood-horizon-by-imtiaz"
+   }
+  ]
+ },
+ {
+  "slug": "danube",
+  "name": "Danube Properties",
+  "hue": "38 86% 40%",
+  "site": "https://danubeproperties.com",
+  "tagline": "Themed towers with an amenity-first pitch.",
+  "about": "Danube gives each building a theme, from sport to jewels to bays, and fills it with a long list of shared amenities. It is also known for a monthly instalment structure that many buyers from India and the wider region follow closely.",
+  "knownFor": "Themed, amenity-rich towers",
+  "projects": [
+   {
+    "name": "Oceanz",
+    "community": "Dubai Maritime City",
+    "collection": "Waterfront",
+    "blurb": "A waterfront tower group in Dubai Maritime City, themed around the sea and aimed at buyers who want the coast without the Marina price of entry.",
+    "tags": [
+     "Sea-themed design",
+     "Maritime City coast",
+     "Amenity-rich"
+    ],
+    "url": "https://danubeproperties.com/portfolio/oceanz/"
+   },
+   {
+    "name": "Sportz",
+    "community": "Dubai Sports City",
+    "collection": "Urban towers",
+    "blurb": "A 39-floor tower built around active living, with an Olympic-sized lap pool, climbing wall, sky jogging track and coaching as amenities.",
+    "tags": [
+     "Olympic-sized lap pool",
+     "Sky jogging track",
+     "Sports City location"
+    ],
+    "url": "https://danubeproperties.com/portfolio/sportz/"
+   },
+   {
+    "name": "Elitz",
+    "community": "Jumeirah Village Circle",
+    "collection": "Urban towers",
+    "blurb": "Twin towers in Jumeirah Village Circle with a tower-wide amenity floor, in a suburb known for parks and everyday convenience.",
+    "tags": [
+     "Twin towers",
+     "JVC community",
+     "Amenity floor"
+    ],
+    "url": "https://danubeproperties.com/construction/elitz/"
+   },
+   {
+    "name": "Diamondz",
+    "community": "Jumeirah Lake Towers",
+    "collection": "Urban towers",
+    "blurb": "A tower in Jumeirah Lake Towers, built for professionals who want the lakes, Metro and the Marina within quick reach.",
+    "tags": [
+     "Lakeside district",
+     "Metro access",
+     "Near Marina"
+    ],
+    "url": "https://danubeproperties.com/portfolio/"
+   },
+   {
+    "name": "Bayz101",
+    "community": "Business Bay",
+    "collection": "Urban towers",
+    "blurb": "A Business Bay tower with canal-side access, part of Danube's run of Bay-themed buildings aimed at central-Dubai tenants.",
+    "tags": [
+     "Business Bay location",
+     "Canal district",
+     "Rental-friendly area"
+    ],
+    "url": "https://danubeproperties.com/portfolio/bayz/"
+   },
+   {
+    "name": "Jewelz",
+    "community": "Arjan",
+    "collection": "Urban towers",
+    "blurb": "A jewel-themed building in Arjan, a quieter pocket between Al Barsha and Dubai Hills with a growing retail base.",
+    "tags": [
+     "Jewel theme",
+     "Arjan neighbourhood",
+     "Quiet pocket"
+    ],
+    "url": "https://danubeproperties.com/portfolio/jewelz/"
+   },
+   {
+    "name": "Eleganz",
+    "community": "Jumeirah Village Circle",
+    "collection": "Urban towers",
+    "blurb": "Danube's first ready-to-move-in launch, delivering apartments and townhouses in Jumeirah Village Circle.",
+    "tags": [
+     "Ready-to-move-in",
+     "Townhouses and apartments",
+     "JVC community"
+    ],
+    "url": "https://danubeproperties.com/danube-properties-launches-two-projects-sportz-and-eleganz-amidst-high-demand/"
+   }
+  ]
+ },
+ {
+  "slug": "binghatti",
+  "name": "Binghatti",
+  "hue": "16 72% 46%",
+  "site": "https://www.binghatti.com",
+  "tagline": "Architecture first, with partners from the car world.",
+  "about": "Binghatti is recognised by its sculptural, geometric facades and by collaborations with Jacob & Co, Mercedes-Benz and Bugatti. Its towers cluster in Business Bay, Downtown Dubai, Al Jaddaf and Jumeirah Village Circle.",
+  "knownFor": "Sculptural facades and brand partnerships",
+  "projects": [
+   {
+    "name": "Burj Binghatti Jacob & Co Residences",
+    "community": "Business Bay",
+    "collection": "Branded residences",
+    "blurb": "A super-tall tower in Business Bay in partnership with the watch and jewellery house Jacob & Co, advancing through its upper levels.",
+    "tags": [
+     "Jacob & Co partnership",
+     "Super-tall silhouette",
+     "Business Bay skyline"
+    ],
+    "url": null
+   },
+   {
+    "name": "Mercedes-Benz Places",
+    "community": "Downtown Dubai",
+    "collection": "Branded residences",
+    "blurb": "A Mercedes-Benz-branded residential tower rising in Downtown Dubai, with design detailing drawn from the car marque.",
+    "tags": [
+     "Mercedes-Benz brand",
+     "Downtown address",
+     "Penthouse collection"
+    ],
+    "url": null
+   },
+   {
+    "name": "Bugatti Residences by Binghatti",
+    "community": "Business Bay",
+    "collection": "Branded residences",
+    "blurb": "A tower that carries the Bugatti name and design cues in Business Bay, aimed at collectors of the brand and of the skyline.",
+    "tags": [
+     "Bugatti partnership",
+     "Business Bay",
+     "Automotive design cues"
+    ],
+    "url": null
+   },
+   {
+    "name": "Binghatti Hills",
+    "community": "Dubai Science Park",
+    "collection": "Master communities",
+    "blurb": "A multi-building project in Dubai Science Park with distinctive geometric facades and access to the Al Barsha corridor.",
+    "tags": [
+     "Geometric facades",
+     "Science Park setting",
+     "Al Barsha access"
+    ],
+    "url": null
+   },
+   {
+    "name": "Binghatti Skyrise",
+    "community": "Business Bay",
+    "collection": "Urban towers",
+    "blurb": "A Business Bay high-rise whose angled facade is a signature of the developer's recent skyline projects.",
+    "tags": [
+     "Angled facade",
+     "Canal district",
+     "Central location"
+    ],
+    "url": null
+   },
+   {
+    "name": "Binghatti Gateway",
+    "community": "Al Jaddaf",
+    "collection": "Urban towers",
+    "blurb": "A tower in Al Jaddaf beside the Dubai Canal, one stop from Business Bay with creek-side access.",
+    "tags": [
+     "Creek-side district",
+     "Near the canal",
+     "Metro-linked"
+    ],
+    "url": null
+   },
+   {
+    "name": "Binghatti Mirage",
+    "community": "Jumeirah Village Circle",
+    "collection": "Urban towers",
+    "blurb": "A mid-rise block in Jumeirah Village Circle, with a reflective facade and the suburb's parks and schools around it.",
+    "tags": [
+     "Mid-rise block",
+     "JVC community",
+     "Everyday convenience"
+    ],
+    "url": null
+   }
+  ]
+ },
+ {
+  "slug": "omniyat",
+  "name": "Omniyat",
+  "hue": "276 40% 42%",
+  "site": "https://omniyat.com",
+  "tagline": "Fewer, more singular buildings.",
+  "about": "Omniyat builds a small number of design-focused towers, often with a hospitality partner such as Dorchester Collection and architects such as Zaha Hadid. Its work sits in Business Bay and on Palm Jumeirah.",
+  "knownFor": "Ultra-prime, design-led",
+  "projects": [
+   {
+    "name": "ORLA, Dorchester Collection, Dubai",
+    "community": "Palm Jumeirah",
+    "collection": "Branded residences",
+    "blurb": "A Dorchester Collection-branded address on the Palm's crescent, with hotel service woven into the residences.",
+    "tags": [
+     "Dorchester Collection",
+     "Palm crescent",
+     "Hotel-grade service"
+    ],
+    "url": "https://omniyat.com/residential/orla-dorchester-collection-dubai"
+   },
+   {
+    "name": "ORLA Infinity",
+    "community": "Palm Jumeirah",
+    "collection": "Branded residences",
+    "blurb": "A follow-on branded project on Palm Jumeirah, set around the island's sea-facing frontage and infinity pool lines.",
+    "tags": [
+     "Dorchester Collection",
+     "Sea frontage",
+     "Palm Jumeirah"
+    ],
+    "url": "https://www.omniyat.com/residential/orla-infinity-dorchester-collection-dubai"
+   },
+   {
+    "name": "One at Palm Jumeirah",
+    "community": "Palm Jumeirah",
+    "collection": "Branded residences",
+    "blurb": "A low-density Dorchester Collection residence on Palm Jumeirah, with private pools and beach-level living.",
+    "tags": [
+     "Low density",
+     "Private pools",
+     "Beach level"
+    ],
+    "url": "https://www.omniyat.com/residential/one-at-palm-jumeirah"
+   },
+   {
+    "name": "The Lana",
+    "community": "Business Bay",
+    "collection": "Branded residences",
+    "blurb": "A Dorchester Collection hotel and residences tower in Business Bay, built beside the canal in the city's busiest district.",
+    "tags": [
+     "Dorchester Collection",
+     "Canal-side",
+     "Hotel and residences"
+    ],
+    "url": "https://www.omniyat.com/residential/the-lana-residences"
+   },
+   {
+    "name": "VELA",
+    "community": "Business Bay",
+    "collection": "Branded residences",
+    "blurb": "A Dorchester Collection residential tower in Business Bay, with the hospitality brand's concierge and design standards.",
+    "tags": [
+     "Dorchester Collection",
+     "Business Bay",
+     "Concierge service"
+    ],
+    "url": "https://www.omniyat.com/residential/vela-dorchester-collection-dubai"
+   },
+   {
+    "name": "VELA Viento",
+    "community": "Business Bay",
+    "collection": "Branded residences",
+    "blurb": "A sister tower to VELA, rising nearby with the same hospitality brand and a distinct sail-inspired silhouette.",
+    "tags": [
+     "Dorchester Collection",
+     "Sail-inspired form",
+     "Business Bay"
+    ],
+    "url": "https://www.omniyat.com/residential/vela-viento-dorchester-collection-dubai"
+   },
+   {
+    "name": "The Opus",
+    "community": "Business Bay",
+    "collection": "Urban towers",
+    "blurb": "A Zaha Hadid Architects-designed building in Business Bay, known for its cube split by a void, with a hotel and offices inside.",
+    "tags": [
+     "Zaha Hadid Architects",
+     "Distinctive form",
+     "Hotel and offices"
+    ],
+    "url": "https://omniyat.com"
+   }
+  ]
+ },
+ {
+  "slug": "samana",
+  "name": "Samana Developers",
+  "hue": "180 62% 30%",
+  "site": "https://www.samanadevelopers.com",
+  "tagline": "Island-themed living for first-time buyers.",
+  "about": "Samana builds apartment communities with Mediterranean and island themes, mostly in Dubai Studio City, Jumeirah Village Circle and Arjan. Its buildings lean on lagoon-style pools and lifestyle amenities.",
+  "knownFor": "Themed communities, accessible entry",
+  "projects": [
+   {
+    "name": "Samana Golf Avenue",
+    "community": "Dubai Studio City",
+    "collection": "Golf & parks",
+    "blurb": "A community on the edge of Dubai Studio City organised around a golf outlook and generous landscaped podium.",
+    "tags": [
+     "Golf outlook",
+     "Studio City location",
+     "Landscaped podium"
+    ],
+    "url": null
+   },
+   {
+    "name": "Samana Mykonos",
+    "community": "Dubai Studio City",
+    "collection": "Waterfront",
+    "blurb": "A Greek-island-inspired development in Dubai Studio City, with whitewashed forms and a lagoon-style pool.",
+    "tags": [
+     "Greek-island theme",
+     "Lagoon-style pool",
+     "Studio City"
+    ],
+    "url": null
+   },
+   {
+    "name": "Samana Santorini",
+    "community": "Dubai Studio City",
+    "collection": "Waterfront",
+    "blurb": "A sister island-themed project in Dubai Studio City, with sunset-view terraces and a resort-style podium.",
+    "tags": [
+     "Island theme",
+     "Resort-style podium",
+     "Studio City"
+    ],
+    "url": null
+   },
+   {
+    "name": "Samana Waves",
+    "community": "Jumeirah Village Circle",
+    "collection": "Urban towers",
+    "blurb": "A wave-themed building in Jumeirah Village Circle with a terraced pool deck and everyday retail close by.",
+    "tags": [
+     "Wave-inspired design",
+     "JVC community",
+     "Pool deck"
+    ],
+    "url": null
+   },
+   {
+    "name": "Samana Park Views",
+    "community": "Arjan",
+    "collection": "Urban towers",
+    "blurb": "A building in Arjan with a park-facing outlook and quick access to Al Barsha and Dubai Hills.",
+    "tags": [
+     "Park views",
+     "Arjan location",
+     "Central access"
+    ],
+    "url": null
+   },
+   {
+    "name": "Samana Barari Views",
+    "community": "Majan",
+    "collection": "Master communities",
+    "blurb": "A residential project in Majan, within the Dubailand growth corridor, designed around gardens and communal terraces.",
+    "tags": [
+     "Garden setting",
+     "Majan neighbourhood",
+     "Communal terraces"
+    ],
+    "url": null
+   },
+   {
+    "name": "Samana Ivy Gardens",
+    "community": "Dubailand",
+    "collection": "Master communities",
+    "blurb": "A garden-themed community in Dubailand with planted courtyards and a family-friendly mix of buildings.",
+    "tags": [
+     "Garden theme",
+     "Courtyards",
+     "Family-friendly"
+    ],
+    "url": null
+   }
+  ]
+ },
+ {
+  "slug": "dubai-properties",
+  "name": "Dubai Properties",
+  "hue": "215 70% 38%",
+  "site": "https://www.dubaiproperties.ae",
+  "tagline": "Established communities, from JBR to Mudon.",
+  "about": "Dubai Properties is a master developer with long-running communities, including Jumeirah Beach Residence, Business Bay, Dubai Wharf and Mudon. These are mature neighbourhoods with years of resident history.",
+  "knownFor": "Mature, proven neighbourhoods",
+  "projects": [
+   {
+    "name": "Jumeirah Beach Residence",
+    "community": "JBR",
+    "collection": "Waterfront",
+    "blurb": "One of Dubai's best-known beachfront neighbourhoods, a continuous strip of towers with a pedestrian Walk and direct beach access.",
+    "tags": [
+     "Beach access",
+     "Pedestrian Walk",
+     "Established community"
+    ],
+    "url": null
+   },
+   {
+    "name": "Business Bay",
+    "community": "Business Bay",
+    "collection": "Urban towers",
+    "blurb": "The canal-side business district developed by Dubai Properties, mixing offices, residences and hotels beside Downtown.",
+    "tags": [
+     "Canal district",
+     "Central address",
+     "Mixed use"
+    ],
+    "url": null
+   },
+   {
+    "name": "Dubai Wharf",
+    "community": "Culture Village",
+    "collection": "Waterfront",
+    "blurb": "A creek-side development in Culture Village, with the waterfront and the old creek skyline as its backdrop.",
+    "tags": [
+     "Creek frontage",
+     "Culture Village",
+     "Heritage proximity"
+    ],
+    "url": null
+   },
+   {
+    "name": "Mudon",
+    "community": "Dubailand",
+    "collection": "Villas & townhouses",
+    "blurb": "A family villa and townhouse community in Dubailand, built around parks, a community centre and schools.",
+    "tags": [
+     "Family community",
+     "Parks and schools",
+     "Villas and townhouses"
+    ],
+    "url": null
+   },
+   {
+    "name": "Mudon Views",
+    "community": "Dubailand",
+    "collection": "Master communities",
+    "blurb": "A newer Mudon neighbourhood, with fresh landscaping, parks and quick access to the main Dubailand roads.",
+    "tags": [
+     "New neighbourhood",
+     "Park access",
+     "Dubailand roads"
+    ],
+    "url": null
+   },
+   {
+    "name": "Villanova",
+    "community": "Dubailand",
+    "collection": "Villas & townhouses",
+    "blurb": "A Mediterranean-style townhouse community in Dubailand, with village squares and tree-lined streets.",
+    "tags": [
+     "Mediterranean styling",
+     "Village squares",
+     "Townhouses"
+    ],
+    "url": null
+   },
+   {
+    "name": "Remraam",
+    "community": "Dubailand",
+    "collection": "Master communities",
+    "blurb": "A large apartment community in Dubailand with central landscaping and on-site community facilities.",
+    "tags": [
+     "Apartment community",
+     "Central landscaping",
+     "On-site facilities"
+    ],
+    "url": null
+   }
+  ]
+ },
+ {
+  "slug": "empire-developments",
+  "name": "Empire Developments",
+  "hue": "16 72% 46%",
+  "site": "https://empiredevelopments.ae",
+  "tagline": "Boutique luxury in small, finished runs.",
+  "about": "Empire Developments works in a boutique format, with a handful of luxury projects delivered one at a time. Its public portfolio includes Empire Livings, Empire Estates and Empire Residence.",
+  "knownFor": "Boutique luxury",
+  "projects": [
+   {
+    "name": "Empire Livings",
+    "community": "Dubai",
+    "collection": "Urban towers",
+    "blurb": "A luxury residential project that Empire has delivered, positioned as part of its design-focused portfolio.",
+    "tags": [
+     "Delivered project",
+     "Design-led",
+     "Boutique scale"
+    ],
+    "url": "https://empiredevelopments.ae"
+   },
+   {
+    "name": "Empire Estates",
+    "community": "Dubai",
+    "collection": "Villas & townhouses",
+    "blurb": "A luxury community from Empire, at an advanced stage of construction according to the developer's recent updates.",
+    "tags": [
+     "Advanced construction",
+     "Luxury community",
+     "Boutique scale"
+    ],
+    "url": "https://empiredevelopments.ae"
+   },
+   {
+    "name": "Empire Residence",
+    "community": "Dubai",
+    "collection": "Urban towers",
+    "blurb": "Part of Empire's portfolio of boutique residences, with a focus on finish and everyday service.",
+    "tags": [
+     "Boutique residence",
+     "Finish quality",
+     "Everyday service"
+    ],
+    "url": "https://empiredevelopments.ae"
+   }
+  ]
+ },
+ {
+  "slug": "arada",
+  "name": "Arada",
+  "hue": "150 48% 31%",
+  "site": "https://www.arada.com",
+  "tagline": "Destination developer, from Sharjah to the Palm.",
+  "about": "Arada started in Sharjah with Aljada and Masaar and now builds in Dubai and Abu Dhabi, including the Armani Beach Residences on the Palm. It treats each community as a destination with its own retail, schools and green space.",
+  "knownFor": "Destination communities",
+  "projects": [
+   {
+    "name": "Aljada",
+    "community": "Sharjah",
+    "collection": "Master communities",
+    "blurb": "A large mixed-use destination in Sharjah with apartments, retail, entertainment and a cultural core.",
+    "tags": [
+     "Mixed-use destination",
+     "Sharjah",
+     "Retail and leisure"
+    ],
+    "url": "https://www.arada.com/en/"
+   },
+   {
+    "name": "Masaar",
+    "community": "Sharjah",
+    "collection": "Villas & townhouses",
+    "blurb": "A green, villa-led community in Sharjah, planned with forest-like landscaping and walkable streets.",
+    "tags": [
+     "Forest-like landscaping",
+     "Walkable streets",
+     "Villa community"
+    ],
+    "url": "https://www.arada.com/en/"
+   },
+   {
+    "name": "Masaar 3",
+    "community": "Sharjah",
+    "collection": "Villas & townhouses",
+    "blurb": "A later phase in the Masaar community, extending the villa neighbourhoods and green corridors.",
+    "tags": [
+     "Later phase",
+     "Green corridors",
+     "Sharjah"
+    ],
+    "url": "https://www.arada.com/en/"
+   },
+   {
+    "name": "Nasma Residences",
+    "community": "Sharjah",
+    "collection": "Urban towers",
+    "blurb": "An apartment community in Sharjah with shared courtyards and a retail strip.",
+    "tags": [
+     "Courtyards",
+     "Retail strip",
+     "Sharjah"
+    ],
+    "url": "https://www.arada.com/en/"
+   },
+   {
+    "name": "Armani Beach Residences",
+    "community": "Palm Jumeirah",
+    "collection": "Branded residences",
+    "blurb": "A beach-front, Armani-branded residential development on Palm Jumeirah, with interiors by Armani/Casa.",
+    "tags": [
+     "Armani/Casa interiors",
+     "Beach frontage",
+     "Palm Jumeirah"
+    ],
+    "url": "https://www.arada.com/en/"
+   },
+   {
+    "name": "Anantara Residences Sharjah",
+    "community": "Sharjah",
+    "collection": "Branded residences",
+    "blurb": "A branded residence tower pairing the Anantara hospitality name with Sharjah's waterfront.",
+    "tags": [
+     "Anantara hospitality",
+     "Sharjah waterfront",
+     "Branded service"
+    ],
+    "url": "https://www.arada.com/en/"
+   },
+   {
+    "name": "Jouri Hills",
+    "community": "Dubai",
+    "collection": "Villas & townhouses",
+    "blurb": "A residential community in Dubai from Arada's newer portfolio, planned around landscaped streets.",
+    "tags": [
+     "Landscaped streets",
+     "Dubai location",
+     "Community plan"
+    ],
+    "url": "https://www.arada.com/en/"
+   }
+  ]
+ },
+ {
+  "slug": "nakheel",
+  "name": "Nakheel",
+  "hue": "215 70% 38%",
+  "site": "https://www.nakheel.com",
+  "tagline": "The island-makers behind the Palm.",
+  "about": "Nakheel created Palm Jumeirah and is now building Palm Jebel Ali and Dubai Islands. It also manages established communities such as Jumeirah Islands and Jumeirah Park.",
+  "knownFor": "Waterfront and island megaprojects",
+  "projects": [
+   {
+    "name": "Palm Jebel Ali",
+    "community": "Palm Jebel Ali",
+    "collection": "Islands",
+    "blurb": "The next palm, a large man-made island off the Jebel Ali coast with beaches, marinas and a mix of villas and apartments.",
+    "tags": [
+     "Man-made palm",
+     "Beach frontage",
+     "Large-scale masterplan"
+    ],
+    "url": null
+   },
+   {
+    "name": "Dubai Islands",
+    "community": "Dubai Islands",
+    "collection": "Islands",
+    "blurb": "An archipelago of five islands off Deira, with beaches, marinas and a mix of residential and hospitality districts.",
+    "tags": [
+     "Five-island archipelago",
+     "Deira coast",
+     "Marinas and beaches"
+    ],
+    "url": null
+   },
+   {
+    "name": "Como Residences",
+    "community": "Palm Jumeirah",
+    "collection": "Branded residences",
+    "blurb": "A branded residential tower on Palm Jumeirah, with wellness and hospitality design from the Como group.",
+    "tags": [
+     "Como group",
+     "Wellness design",
+     "Palm Jumeirah"
+    ],
+    "url": null
+   },
+   {
+    "name": "Palm Beach Towers",
+    "community": "Palm Jumeirah",
+    "collection": "Waterfront",
+    "blurb": "A long-established beachfront group on the Palm, with a mall, beach club access and sea-facing apartments.",
+    "tags": [
+     "Beach club access",
+     "Mall on site",
+     "Sea-facing"
+    ],
+    "url": null
+   },
+   {
+    "name": "Jumeirah Islands",
+    "community": "Jumeirah Islands",
+    "collection": "Villas & townhouses",
+    "blurb": "A gated villa community on landscaped lake islands, one of Dubai's earlier planned waterfront neighbourhoods.",
+    "tags": [
+     "Lake-island villas",
+     "Gated community",
+     "Mature landscaping"
+    ],
+    "url": null
+   },
+   {
+    "name": "Jumeirah Park",
+    "community": "Jumeirah Park",
+    "collection": "Villas & townhouses",
+    "blurb": "A family villa community near Dubai Marina and Sheikh Zayed Road, with parks and a community centre.",
+    "tags": [
+     "Family villas",
+     "Parks and community centre",
+     "Central access"
+    ],
+    "url": null
+   }
+  ]
+ },
+ {
+  "slug": "aldar",
+  "name": "Aldar",
+  "hue": "180 62% 30%",
+  "site": "https://www.aldar.com",
+  "tagline": "Abu Dhabi's largest developer, now in Dubai too.",
+  "about": "Aldar is Abu Dhabi's biggest master developer, behind communities on Saadiyat, Yas and Fahid islands, and has also launched in Dubai. For buyers who want the capital rather than the coast of Dubai, it is the reference point.",
+  "knownFor": "Abu Dhabi master communities",
+  "projects": [
+   {
+    "name": "Saadiyat Lagoons",
+    "community": "Saadiyat Island",
+    "collection": "Waterfront",
+    "blurb": "A family-oriented lagoon community on Saadiyat, with villas and townhouses near the island's beaches and cultural district.",
+    "tags": [
+     "Lagoon setting",
+     "Near Saadiyat beaches",
+     "Cultural district nearby"
+    ],
+    "url": null
+   },
+   {
+    "name": "Saadiyat Grove",
+    "community": "Saadiyat Island",
+    "collection": "Master communities",
+    "blurb": "A mixed-use district on Saadiyat, set among the island's cultural institutions and designed for a walkable day-to-day.",
+    "tags": [
+     "Mixed-use",
+     "Cultural district",
+     "Walkable"
+    ],
+    "url": null
+   },
+   {
+    "name": "Yas Acres",
+    "community": "Yas Island",
+    "collection": "Villas & townhouses",
+    "blurb": "A leafy villa community on Yas Island, with parks, a golf course and close proximity to theme-park leisure.",
+    "tags": [
+     "Leafy streets",
+     "Golf course",
+     "Yas leisure"
+    ],
+    "url": null
+   },
+   {
+    "name": "Yas Bay",
+    "community": "Yas Island",
+    "collection": "Waterfront",
+    "blurb": "A waterfront entertainment and residential district on Yas Island, with promenade, dining and marina-side living.",
+    "tags": [
+     "Waterfront district",
+     "Dining promenade",
+     "Marina-side"
+    ],
+    "url": null
+   },
+   {
+    "name": "Fahid Island",
+    "community": "Fahid Island",
+    "collection": "Islands",
+    "blurb": "A large new island masterplan between Yas and Saadiyat, planned for beaches, residential neighbourhoods and leisure.",
+    "tags": [
+     "New island masterplan",
+     "Between Yas and Saadiyat",
+     "Beach neighbourhoods"
+    ],
+    "url": null
+   },
+   {
+    "name": "Jubail Island",
+    "community": "Jubail Island",
+    "collection": "Islands",
+    "blurb": "A mangrove-fringed island community in Abu Dhabi, with villas and apartments planned around nature trails.",
+    "tags": [
+     "Mangrove setting",
+     "Nature trails",
+     "Abu Dhabi"
+    ],
+    "url": null
+   },
+   {
+    "name": "Haven by Aldar",
+    "community": "Dubailand",
+    "collection": "Villas & townhouses",
+    "blurb": "Aldar's Dubai launch, a villa and townhouse community in Dubailand planned around central parkland.",
+    "tags": [
+     "Dubai debut",
+     "Central parkland",
+     "Villas and townhouses"
+    ],
+    "url": null
+   }
+  ]
+ },
+ {
+  "slug": "hh-development",
+  "name": "H&H Development",
+  "hue": "276 40% 42%",
+  "site": "https://www.h-h.ae",
+  "tagline": "Branded residences with the world's hotel and luxury names.",
+  "about": "H&H builds residences tied to luxury names such as Four Seasons and Baccarat, alongside its Eden-branded projects. It is focused on a handful of high-service addresses in Dubai.",
+  "knownFor": "Luxury-brand residences",
+  "projects": [
+   {
+    "name": "Eden House Za'abeel",
+    "community": "Za'abeel",
+    "collection": "Urban towers",
+    "blurb": "An Eden-branded residence in Za'abeel, near Dubai's cultural and business centres.",
+    "tags": [
+     "Eden brand",
+     "Za'abeel",
+     "Central location"
+    ],
+    "url": "https://www.h-h.ae/development"
+   },
+   {
+    "name": "Eden Hills Dubai",
+    "community": "Dubai",
+    "collection": "Villas & townhouses",
+    "blurb": "An Eden-branded hillside residential community, presented by H&H as part of its signature collection.",
+    "tags": [
+     "Eden brand",
+     "Signature collection",
+     "Dubai"
+    ],
+    "url": "https://www.h-h.ae/development"
+   },
+   {
+    "name": "Baccarat Residences Dubai",
+    "community": "Dubai",
+    "collection": "Branded residences",
+    "blurb": "Residences carrying the Baccarat crystal house name, with interiors drawn from the brand's design language.",
+    "tags": [
+     "Baccarat brand",
+     "Crystal-inspired design",
+     "Dubai"
+    ],
+    "url": "https://www.h-h.ae/development"
+   },
+   {
+    "name": "Four Seasons branded residences",
+    "community": "Dubai",
+    "collection": "Branded residences",
+    "blurb": "Residences developed with Four Seasons, bringing the hotel group's service standards to a private-ownership format.",
+    "tags": [
+     "Four Seasons brand",
+     "Hotel-grade service",
+     "Dubai"
+    ],
+    "url": "https://www.h-h.ae/development"
+   }
+  ]
+ }
+]
