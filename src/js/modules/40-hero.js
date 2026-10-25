@@ -74,8 +74,6 @@
     var explicitPhoto = /[?&]scene=(?:photo|cinematic)\b/.test(location.search);
     var canGL = wantsGL();
     var spatial = explicit3d || (!explicitPhoto && canGL);
-    var modeLinks = SWK.$$('[data-hero-mode]');
-    modeLinks.forEach(function (link) { if ((link.getAttribute('data-hero-mode') === '3d') === spatial) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
     if (spatial) {
       hero.classList.add('is-spatial-mode');
       if (explicit3d) {
@@ -118,7 +116,6 @@
       var fallbackSource = SWK.$('.hero__bg source', hero), fallbackImage = SWK.$('.hero__bg img', hero);
       if (fallbackSource) fallbackSource.srcset = '/assets/images/hero/dubai-cinema-home.webp';
       if (fallbackImage) { fallbackImage.src = '/assets/images/hero/dubai-cinema-home.webp'; fallbackImage.alt = 'AI-created cinematic Dubai architectural visualisation'; }
-      modeLinks.forEach(function (link) { if (link.getAttribute('data-hero-mode') === 'cinematic') link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
       // Retain the scroll stage and chapter transitions when switching away from a slow GPU.
       // Collapsing the stage during a journey would move the entire page under the visitor.
       if (SWK.reduced) wrap.classList.add('is-flat');
