@@ -37,8 +37,8 @@ def gold(alpha):
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     yn, xn = yy / h, xx / w
     # Champagne -> rich gold -> antique gold: restrained metal, not a mirror.
-    base = ramp(0.78 * yn + 0.22 * xn, [(0, hexc('#f3dfa2')), (0.28, hexc('#d9b45a')), (0.52, hexc('#b8892b')),
-                                         (0.74, hexc('#d2a94a')), (1, hexc('#8f6a22'))])
+    base = ramp(0.78 * yn + 0.22 * xn, [(0, hexc('#ebcf84')), (0.28, hexc('#cfa13f')), (0.52, hexc('#a67a22')),
+                                         (0.74, hexc('#c79a38')), (1, hexc('#7a5518'))])
     # Soft bevel from a blurred height map, lit from the top left.
     px = h / 275
     height = np.asarray(Image.fromarray((alpha * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(px * 2.2))).astype(np.float32) / 255
