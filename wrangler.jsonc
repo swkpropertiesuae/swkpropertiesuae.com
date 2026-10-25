@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "swkpropertiesuae-site",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // Only legacy URLs that need regex/query matching reach the Worker; everything else is served as static assets.
+    "run_worker_first": [
+      "/index.html",
+      "/property-details.html",
+      "/blog-post.html",
+      "/properties.html",
+      "/about.html",
+      "/services.html",
+      "/mortgage.html",
+      "/blog.html",
+      "/contact.html",
+      "/properties/*",
+      "/blog/*"
+    ]
+  },
+  "routes": [
+    { "pattern": "swkpropertiesuae.com", "custom_domain": true },
+    { "pattern": "www.swkpropertiesuae.com", "custom_domain": true }
+  ]
+}
