@@ -106,10 +106,10 @@
       });
     });
 
-    // Prefill from ?property=<id>
+    // Prefill from ?project=<slug> (or the legacy ?property=<slug>)
     var cf = SWK.$('#contact-form');
     if (cf) {
-      var prop = new URLSearchParams(location.search).get('property');
+      var qs = new URLSearchParams(location.search); var prop = qs.get('project') || qs.get('property');
       if (prop && cf.elements.message && !cf.elements.message.value) {
         var title = prop.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
         cf.elements.message.value = 'Hello, I\'d like more details on ' + title + '.';
