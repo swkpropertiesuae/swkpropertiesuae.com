@@ -229,6 +229,10 @@ main > section .section-header h2, main > section .section-head-row h2 { backgro
 .dev-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:20px; }
 .dev-card { --dc:215 70% 38%; display:flex; flex-direction:column; gap:10px; padding:24px; border-radius:22px; background:#fff; border:1px solid hsl(var(--dc) / .18); border-top:4px solid hsl(var(--dc)); box-shadow:0 12px 30px hsl(var(--dc) / .1); color:inherit; text-decoration:none; transition:transform .3s ease, box-shadow .3s ease; }
 .dev-card:hover, .dev-card:focus-visible { transform:translateY(-5px); box-shadow:0 20px 42px hsl(var(--dc) / .2); }
+.dev-card__media { margin:-24px -24px 8px; aspect-ratio:16 / 9; overflow:hidden; border-radius:18px 18px 0 0; background:hsl(var(--dc) / .08); position:relative; }
+.dev-card__media img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s ease; }
+.dev-card:hover .dev-card__media img { transform:scale(1.05); }
+.dev-card__brand { display:flex; align-items:center; min-height:44px; margin-top:4px; }
 .dev-card__mono { display:grid; place-items:center; width:48px; height:48px; border-radius:14px; font-weight:700; letter-spacing:.04em; color:#fff; background:linear-gradient(135deg, hsl(var(--dc)), hsl(var(--dc) / .72)); }
 .dev-card h3 { margin:6px 0 0; font-size:1.3rem; }
 .dev-card__tag { margin:0; font-size:.88rem; color:#4a566d; }
@@ -284,4 +288,6 @@ main > section .section-header h2, main > section .section-head-row h2 { backgro
 @media(prefers-reduced-motion:reduce) { .dev-card, .project-card, .project-card__media img { transition:none; } .dev-card:hover, .project-card:hover { transform:none; } }
 
 .dev-logo { display:block; max-width:150px; max-height:48px; width:auto; height:auto; object-fit:contain; }
+.dev-logo { display:block; max-width:150px; max-height:48px; width:auto; height:auto; object-fit:contain; }
 .dev-logo--lg { max-width:210px; max-height:70px; margin-bottom:18px; }
+.marquee__logo { display:block; max-width:160px; max-height:44px; width:auto; height:auto; object-fit:contain; }

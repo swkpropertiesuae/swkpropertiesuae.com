@@ -15,8 +15,8 @@ import random
 import json
 import re
 import shutil
-from datetime import date, datetime
-from zoneinfo import ZoneInfo
+from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from pathlib import Path
 from urllib.parse import quote
 
@@ -42,7 +42,10 @@ TEAM = load("team")
 POSTS = sorted(load("blog"), key=lambda p: p["date"], reverse=True)
 
 BASE = SITE["url"]
-TODAY = datetime.now(ZoneInfo("Asia/Dubai")).date()
+try:
+    TODAY = datetime.now(ZoneInfo("Asia/Dubai")).date()
+except ZoneInfoNotFoundError:
+    TODAY = datetime.now(timezone(timedelta(hours=4))).date()
 e = html.escape
 
 # ---------------------------------------------------------------- helpers
@@ -166,11 +169,14 @@ def project_media(dev, proj, lazy=True, cls=""):
     return f'<img src="{asset(path)}" alt="{alt}" width="800" height="520"{load_attr} decoding="async"{cls_attr}>'
 
 
-def dev_logo(dev, cls="dev-logo"):
+def dev_logo(dev, cls="dev-logo", alt=None):
     """Official logo if one has been added at src/assets/images/developers/<slug>.(svg|png|webp); otherwise empty."""
     for ext in ("svg", "png", "webp"):
         if (SRC / "assets" / "images" / "developers" / f"{dev['slug']}.{ext}").exists():
-            return f'<img class="{cls}" src="/assets/images/developers/{dev["slug"]}.{ext}" alt="{e(dev["name"])} logo" loading="lazy" decoding="async">'
+            s = img_size(f"assets/images/developers/{dev['slug']}.{ext}")
+            dims = f' width="{s[0]}" height="{s[1]}"' if s else ""
+            alt_text = e(f"{dev['name']} logo" if alt is None else alt)
+            return f'<img class="{cls}" src="/assets/images/developers/{dev["slug"]}.{ext}" alt="{alt_text}"{dims} loading="lazy" decoding="async">'
     return ""
 
 
@@ -223,6 +229,14 @@ def img_size(src):
                     if m[0] in (0xD8, 0x01) or 0xD0 <= m[0] <= 0xD7:
                         continue
                     fh.seek(int.from_bytes(fh.read(2), "big") - 2, 1)
+            elif head.lstrip().startswith((b"<svg", b"<?xml")):
+                text = f.read_text(encoding="utf-8", errors="ignore")
+                mw, mh = re.search(r'\bwidth=["\'](\d+(?:\.\d+)?)', text), re.search(r'\bheight=["\'](\d+(?:\.\d+)?)', text)
+                mv = re.search(r'viewBox=["\']\s*[\d.-]+\s+[\d.-]+\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)', text)
+                if mw and mh:
+                    size = (int(float(mw.group(1))), int(float(mh.group(1))))
+                elif mv:
+                    size = (int(float(mv.group(1))), int(float(mv.group(2))))
     except (OSError, ValueError):
         size = None
     _SIZES[rel] = size
@@ -342,7 +356,7 @@ NAV = [("/", "Home"), ("/properties/", "Properties"), ("/about/", "About"), ("/s
 
 def site_header(path):
     links = "".join(
-        f'<a href="{h}"{" aria-current=\"page\"" if (h == path or (h != "/" and path.startswith(h))) else ""}>{l}</a>' for h, l in NAV)
+        f"""<a href="{h}"{' aria-current="page"' if (h == path or (h != "/" and path.startswith(h))) else ""}>{l}</a>""" for h, l in NAV)
     return (f'<header class="site-header" data-site-header><div class="site-header__inner container">'
             f'<a href="/" class="site-brand" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" class="brand-logo" width="338" height="275" decoding="async" fetchpriority="high"></a>'
             f'<nav class="site-nav" aria-label="Primary">{links}</nav>'
@@ -714,7 +728,7 @@ def dev_card(dev, i=0):
     names = "".join(f"<li>{e(p['name'])}</li>" for p in dev["projects"][:3])
     mono = "".join(w[0] for w in dev["name"].replace("&", " ").split()[:2]).upper()
     return f"""<a class="dev-card" href="/properties/{dev['slug']}/" data-reveal data-reveal-delay="{(i % 3) * 70}" style="--dc:{dev['hue']}" aria-label="{e(dev['name'])}: {len(dev['projects'])} featured projects">
-{dev_logo(dev) or f'<span class="dev-card__mono" aria-hidden="true">{mono}</span>'}<h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
+<div class="dev-card__media">{project_media(dev, dev["projects"][0])}</div><div class="dev-card__brand">{dev_logo(dev) or f'<span class="dev-card__mono" aria-hidden="true">{mono}</span>'}</div><h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
 <ul>{names}</ul><span class="dev-card__count">{len(dev['projects'])} featured projects {ARROW}</span></a>"""
 
 
@@ -859,8 +873,9 @@ def build_home():
 
     logos = [("01", "Arada"), ("02", "Dubai Properties"), ("03", "DAMAC"), ("04", "Samana Developers"), ("05", "Danube Properties"),
              ("06", "Binghatti"), ("07", "Azizi"), ("08", "Dubai Properties"), ("09", "Empire Developments"), ("10", "Sobha Realty")]
-    one = "".join(f'<div class="marquee__item">{img(f"assets/images/developers/logo-{n}.png", name)}</div>' for n, name in logos)
-    two = "".join(f'<div class="marquee__item" aria-hidden="true">{img(f"assets/images/developers/logo-{n}.png", "")}</div>' for n, name in logos)
+    one = "".join(f'<div class="marquee__item">{dev_logo(d, "marquee__logo")}</div>' for d in DEVS)
+    two = "".join(f'<div class="marquee__item" aria-hidden="true">{dev_logo(d, "marquee__logo", alt="")}</div>' for d in DEVS)
+
 
     comm_cards = ""
     for i, c in enumerate(COMMUNITIES):
@@ -998,7 +1013,7 @@ def build_properties():
 <div class="empty-state" data-empty-state hidden><p>No projects match those filters. Try widening your search, or
 <a href="{wa("Hi, I couldn't find a project matching my search. Could you help me find something similar?")}" target="_blank" rel="noopener noreferrer">ask a consultant on WhatsApp</a>.</p></div>
 <div class="center" style="margin-top:var(--space-6)"><button type="button" class="btn btn-outline-dark" data-projects-more hidden>Show more projects</button></div>
-<p class="listing-note">Project names and locations are taken from each developer's public information. Images on this site are SWK illustrations; official renders, films and brochures are available from the developers and through SWK on request. Prices and availability are not published here.</p>
+<p class="listing-note">Project names, locations and imagery reference each developer's public portfolio; official brochures, floor plans and films are available from the developers and through SWK on request. Prices and availability are not published here.</p>
 </section>
 <section class="section ambient-glow-host" style="text-align:center">{GLOW}<div class="container"><h2>Not sure which developer fits?</h2>
 <p style="max-width:52ch; margin:var(--space-4) auto 0">Tell us your location, timeline and what the home needs to do. We will shortlist the projects that fit and explain the trade-offs.</p>
@@ -1018,7 +1033,7 @@ def build_developer(d):
         official_label = "Official project page" if q["url"] else f"{d['name']} website"
         msg = wa(f"Hello SWK Properties, I'd like current availability and brochure details for {q['name']} by {d['name']}.")
         rows += f"""<article class="project-feature{' project-feature--flip' if i % 2 else ''}" id="{q['slug']}" style="--dc:{d['hue']}" data-reveal>
-<div class="project-feature__media">{project_media(d, q, lazy=i > 0)}<span class="project-feature__note">SWK illustration · official renders on request</span></div>
+<div class="project-feature__media">{project_media(d, q, lazy=i > 0)}<span class="project-feature__note">{e(d['name'])} &middot; {e(q['community'])}</span></div>
 <div class="project-feature__copy"><span class="eyebrow">{e(q['collection'])}</span><h3>{e(q['name'])}</h3>
 <p class="project-feature__loc">{PIN} {e(q['community'])}</p><p>{e(q['blurb'])}</p><ul class="project-feature__tags">{tags}</ul>
 <div class="project-feature__actions"><a href="{msg}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Ask SWK about this project</a>
@@ -1027,14 +1042,14 @@ def build_developer(d):
     jump = "".join(f'<a href="#{q["slug"]}">{e(q["name"])}</a>' for q in d["projects"])
     others = [x for x in DEVS if x["slug"] != d["slug"]][:3]
     more = "".join(dev_card(x, i) for i, x in enumerate(others))
-    body = f"""{page_hero(d['name'], d['tagline'], trail, bg="properties")}
+    body = f"""{page_hero(d['name'], d['tagline'], trail, local=project_art(d, d['projects'][0])[0])}
 <section class="section container ambient-glow-host" style="--dc:{d['hue']}">{GLOW}
 <div class="dev-intro"><div>{dev_logo(d, "dev-logo dev-logo--lg")}<span class="eyebrow">About the developer</span><h2>{e(d['name'])}: {e(d['knownFor'].lower())}</h2><p>{e(d['about'])}</p></div>
 <aside class="dev-intro__card"><span>Known for</span><strong>{e(d['knownFor'])}</strong><span>Featured here</span><strong>{len(d['projects'])} projects</strong>
 <a href="{e(d['site'])}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-sm">Developer website ↗</a></aside></div>
 <nav class="dev-jump" aria-label="Projects by {e(d['name'])}">{jump}</nav></section>
 <section class="section section--alt ambient-glow-host">{GLOW}<div class="container project-features">{rows}
-<p class="listing-note">Project names and locations come from {e(d['name'])}'s public information; check the developer's own pages for the latest status. Images on this page are SWK illustrations. Prices, unit details and availability are shared by SWK on enquiry and are not published here.</p></div></section>
+<p class="listing-note">Project names, locations and imagery reference {e(d['name'])}'s public portfolio; check the developer's own pages for the latest status. Prices, unit details and availability are shared by SWK on enquiry and are not published here.</p></div></section>
 <section class="section container ambient-glow-host">{GLOW}<div class="section-header center"><span class="eyebrow">Keep exploring</span><h2>Other developers</h2></div><div class="dev-grid">{more}</div></section>
 {cta_section("Want the current brief on " + d["name"] + "?", "Tell us what you are looking for. A consultant will send availability, brochures and a straight view of the trade-offs.")}"""
     ld = [breadcrumb_ld(trail), {"@context": "https://schema.org", "@type": "ItemList", "name": f"{d['name']} projects", "itemListElement": [
