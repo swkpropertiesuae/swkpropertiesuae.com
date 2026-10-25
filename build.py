@@ -763,7 +763,7 @@ def testimonials_markup(reviews):
         rating = max(1, min(5, int(r.get("rating", 5))))
         initials = "".join(w[0] for w in r["name"].split()[:2]).upper()
         country = r.get("country", "")
-        cards += (f'<figure class="testi-card" style="--tc:{hues[i % 6]}"><div class="testi-card__top">'
+        cards += (f'<figure class="testi-card" style="--tc:{hues[i % 6]};--i:{i}"><div class="testi-card__top">'
                   f'<span class="testi-card__country"><span aria-hidden="true">{flag_emoji(r.get("flag", ""))}</span> {e(country)}</span>'
                   f'<span class="testi-card__stars" role="img" aria-label="{rating} out of 5">{"★" * rating}{"☆" * (5 - rating)}</span></div>'
                   f'<blockquote>{e(r["quote"])}</blockquote>'
@@ -777,7 +777,9 @@ def testimonials_markup(reviews):
             tags += f'<span>{flag_emoji(r.get("flag", ""))} {e(k)}</span>'
     return (f'<div class="testi" data-testi><div class="testi__track" data-testi-track tabindex="0" role="region" aria-label="Client testimonials">{cards}</div>'
             f'<div class="testi__nav"><button type="button" class="tc-arrow" data-testi-prev aria-label="Previous testimonials">{PREV}</button>'
-            f'<button type="button" class="tc-arrow" data-testi-next aria-label="Next testimonials">{NEXT}</button></div>'
+            f'<button type="button" class="tc-arrow" data-testi-next aria-label="Next testimonials">{NEXT}</button>'
+            f'<span class="testi__dots" data-testi-dots aria-hidden="true"></span>'
+            f'<button type="button" class="review-pause" data-testi-pause aria-pressed="false">Pause</button></div>'
             f'<div class="testi__countries" aria-label="Where our clients are from">{tags}</div></div>')
 
 
