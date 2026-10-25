@@ -55,7 +55,11 @@ const BUILDING_VERT = /* glsl */ `
     vWorld = wp.xyz;
     vNormalW = normalize(mat3(m) * normal);
     vec3 local = position * sc;
-    vFace = (abs(normal.x) > 0.5) ? vec2(local.z, local.y) : vec2(local.x, local.y);
+    #ifdef ROUND
+      vFace = vec2(atan(position.x, position.z) * 0.5 * sc.x, local.y);   // arc length around the drum
+    #else
+      vFace = (abs(normal.x) > 0.5) ? vec2(local.z, local.y) : vec2(local.x, local.y);
+    #endif
     vTop = step(0.5, normal.y);
     vSeed = aSeed;
     vec4 mv = viewMatrix * wp;
@@ -144,6 +148,10 @@ const BUILDING_FRAG = /* glsl */ `
       float lit = step(0.93, r);
       vec3 tint = mix(base, vec3(0.35, 0.50, 0.66), glassy * 0.6);
       vec3 glass = skyRef * tint * 1.25;
+      // Broad sky reflection that slides across the glass with height and position, as on real curtain walls.
+      float streak = smoothstep(0.55, 1.0, sin(vWorld.y * 0.045 + (vWorld.x + vWorld.z) * 0.06 + seed * 40.0) * 0.5 + 0.5);
+      glass = mix(glass, glass * 1.25 + vec3(0.12, 0.16, 0.2), streak * glassy * 0.55);
+      glass *= mix(0.78, 1.08, clamp(vWorld.y / 120.0, 0.0, 1.0));   // darker toward the street, brighter higher up
       glass += vec3(1.0, 0.86, 0.6) * sunSpec * 0.9 * glassy;
       glass = mix(glass, vec3(1.0, 0.85, 0.55), lit * 0.75);
       glass *= 0.82 + 0.3 * hash(id.yx + seed * 13.7);          // pane-to-pane variation
@@ -321,7 +329,7 @@ const GROUND_FRAG = /* glsl */ `
     float joint = max(smoothstep(0.0, 0.05, abs(fract(xz.y / 12.0) - 0.5) - 0.45),
                       smoothstep(0.0, 0.05, abs(fract(xz.x / 12.0) - 0.5) - 0.45));
     plaza *= 1.0 - joint * 0.05 * (1.0 - smoothstep(30.0, 160.0, vFogDepth));
-    float halfRoad = mix(78.0, 15.0, smoothstep(20.0, 220.0, -xz.y));
+    float halfRoad = mix(78.0, 24.0, smoothstep(20.0, 220.0, -xz.y));
     // Landscaped forecourt: lawns in the cells either side of the boulevard, trees are instanced in JS.
     vec2 lc = (cf - 0.5) * CELL;
     float lawnCell = step(0.5, abs(cid.x)) * step(abs(cid.x), 2.5) * step(-1.5, cid.y) * step(cid.y, 4.5);
@@ -345,22 +353,27 @@ const GROUND_FRAG = /* glsl */ `
 `;
 
 
-const TREE_VERT = /* glsl */ `
+const PROP_VERT = /* glsl */ `
   varying vec3 vWorld;
   varying vec3 vNormalW;
   varying float vFogDepth;
   void main() {
-    vec4 wp = modelMatrix * instanceMatrix * vec4(position, 1.0);
+    mat4 m = modelMatrix;
+    #ifdef USE_INSTANCING
+      m = modelMatrix * instanceMatrix;
+    #endif
+    vec4 wp = m * vec4(position, 1.0);
     vWorld = wp.xyz;
-    vNormalW = normalize(mat3(modelMatrix * instanceMatrix) * normal);
+    vNormalW = normalize(mat3(m) * normal);
     vec4 mv = viewMatrix * wp;
     vFogDepth = -mv.z;
     gl_Position = projectionMatrix * mv;
   }
 `;
 
-const TREE_FRAG = /* glsl */ `
+const PROP_FRAG = /* glsl */ `
   uniform vec3 uColor;
+  uniform float uGloss;
   uniform vec3 uFogColor;
   uniform float uFogDensity;
   varying vec3 vWorld;
@@ -368,12 +381,55 @@ const TREE_FRAG = /* glsl */ `
   varying float vFogDepth;
   void main() {
     vec3 N = normalize(vNormalW);
-    float diff = clamp(dot(N, normalize(vec3(0.55, 0.62, 0.56))), 0.0, 1.0);
-    float v = fract(sin(dot(floor(vWorld.xz * 0.5), vec2(12.9898, 78.233))) * 43758.5453);
-    vec3 col = uColor * (0.9 + 0.22 * v) * (0.62 + 0.7 * diff) * (0.84 + 0.3 * clamp(vWorld.y / 8.0, 0.0, 1.0));
+    vec3 V = normalize(cameraPosition - vWorld);
+    vec3 L = normalize(vec3(0.55, 0.62, 0.56));
+    float diff = clamp(dot(N, L), 0.0, 1.0);
+    vec3 col = uColor * (0.52 + 0.62 * diff);
+    vec3 R = reflect(-V, N);
+    col += uGloss * (pow(max(dot(R, L), 0.0), 18.0) * 0.5 + 0.18 * clamp(R.y, 0.0, 1.0));
     float ff = 1.0 - exp(-pow(vFogDepth * uFogDensity, 2.0));
-    col = mix(col, uFogColor, clamp(ff, 0.0, 1.0));
-    gl_FragColor = vec4(col, 1.0);
+    gl_FragColor = vec4(mix(col, uFogColor, clamp(ff, 0.0, 1.0)), 1.0);
+  }
+`;
+
+const FOLIAGE_VERT = /* glsl */ `
+  attribute vec3 aTint;
+  varying vec3 vWorld;
+  varying vec3 vNormalW;
+  varying vec3 vTint;
+  varying float vFogDepth;
+  void main() {
+    mat4 m = modelMatrix * instanceMatrix;
+    vec4 wp = m * vec4(position, 1.0);
+    vWorld = wp.xyz;
+    vNormalW = normalize(mat3(m) * normal);
+    vTint = aTint;
+    vec4 mv = viewMatrix * wp;
+    vFogDepth = -mv.z;
+    gl_Position = projectionMatrix * mv;
+  }
+`;
+
+const FOLIAGE_FRAG = /* glsl */ `
+  uniform vec3 uColor;
+  uniform vec3 uFogColor;
+  uniform float uFogDensity;
+  varying vec3 vWorld;
+  varying vec3 vNormalW;
+  varying vec3 vTint;
+  varying float vFogDepth;
+  float hash(vec3 p) { p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+  void main() {
+    vec3 N = normalize(vNormalW);
+    if (!gl_FrontFacing) N = -N;
+    float diff = clamp(dot(N, normalize(vec3(0.55, 0.62, 0.56))), 0.0, 1.0);
+    // Leaf clumps: fine dapple that fades with range, plus warm light bleeding through thin foliage.
+    float clump = hash(floor(vWorld * 1.8)) * 0.3 + hash(floor(vWorld * 4.5)) * 0.16;
+    float fine = 1.0 - smoothstep(60.0, 260.0, vFogDepth);
+    vec3 col = uColor * vTint * (0.82 + clump * fine) * (0.52 + 0.78 * diff);
+    col += vec3(0.16, 0.14, 0.04) * pow(1.0 - diff, 3.0) * 0.4;
+    float ff = 1.0 - exp(-pow(vFogDepth * uFogDensity, 2.0));
+    gl_FragColor = vec4(mix(col, uFogColor, clamp(ff, 0.0, 1.0)), 1.0);
   }
 `;
 
@@ -450,79 +506,6 @@ const VEH_FRAG = /* glsl */ `
   }
 `;
 
-const CAR_VERT = /* glsl */ `
-  attribute float aLane;
-  attribute float aSpeed;
-  attribute float aOff;
-  attribute float aDir;
-  uniform float uTime;
-  uniform float uPx;
-  varying float vDir;
-  varying float vFade;
-  void main() {
-    float zFar = -520.0;
-    float zNear = 96.0;
-    float span = zNear - zFar;
-    float z = zFar + mod(aOff + aDir * uTime * aSpeed, span);
-    vec4 mv = modelViewMatrix * vec4(aLane, 0.9, z, 1.0);
-    gl_Position = projectionMatrix * mv;
-    gl_PointSize = clamp(520.0 * uPx / max(-mv.z, 1.0), 2.0 * uPx, 16.0 * uPx);
-    vDir = aDir;
-    vFade = smoothstep(0.0, 40.0, z - zFar) * smoothstep(0.0, 24.0, zNear - z);
-  }
-`;
-
-const CAR_FRAG = /* glsl */ `
-  varying float vDir;
-  varying float vFade;
-  void main() {
-    float d = length(gl_PointCoord - 0.5);
-    float a = smoothstep(0.5, 0.22, d);
-    // Mostly pearl and navy cars with the odd gold, teal or red one.
-    float k = fract(gl_FragCoord.x * 0.013 + gl_FragCoord.y * 0.007);
-    vec3 c = vec3(0.96, 0.97, 0.99);
-    c = mix(c, vec3(0.10, 0.20, 0.42), step(0.4, k));
-    c = mix(c, vec3(0.95, 0.70, 0.18), step(0.7, k));
-    c = mix(c, vec3(0.06, 0.62, 0.60), step(0.84, k));
-    c = mix(c, vec3(0.86, 0.20, 0.14), step(0.94, k));
-    gl_FragColor = vec4(c, a * vFade);
-  }
-`;
-
-const DUST_VERT = /* glsl */ `
-  attribute float aSize;
-  attribute float aPhase;
-  attribute float aMix;
-  uniform float uTime;
-  uniform float uPx;
-  varying float vA;
-  varying float vMix;
-  void main() {
-    vec3 p = position;
-    p.y += sin(uTime * 0.25 + aPhase) * 1.8;
-    p.x += cos(uTime * 0.2 + aPhase * 1.3) * 1.4;
-    vec4 mv = modelViewMatrix * vec4(p, 1.0);
-    gl_Position = projectionMatrix * mv;
-    float dist = max(-mv.z, 1.0);
-    gl_PointSize = clamp(aSize * uPx * 240.0 / dist, 1.0, 26.0 * uPx);
-    float near = smoothstep(2.0, 18.0, dist);
-    float far = 1.0 - smoothstep(120.0, 360.0, dist);
-    vA = near * far * (0.55 + 0.45 * sin(uTime * 0.8 + aPhase * 3.0));
-    vMix = aMix;
-  }
-`;
-
-const DUST_FRAG = /* glsl */ `
-  varying float vA;
-  varying float vMix;
-  void main() {
-    float d = length(gl_PointCoord - 0.5);
-    float a = smoothstep(0.5, 0.05, d);
-    vec3 c = mix(vec3(0.98, 0.76, 0.28), vec3(1.0, 0.98, 0.92), vMix);
-    gl_FragColor = vec4(c, a * vA * 0.55);
-  }
-`;
-
 const BEACON_VERT = /* glsl */ `
   attribute float aPhase;
   uniform float uTime;
@@ -559,7 +542,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
   renderer.setPixelRatio(pixelRatio);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(52, 1, 0.5, 1400);
+  const camera = new THREE.PerspectiveCamera(52, 1, 0.5, 4500);
   const rand = mulberry32(20160607);
   scene.fog = new THREE.FogExp2(FOG_COLOR.getHex(), 0.0023);
 
@@ -573,7 +556,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
 
   // ---- Sky (follows the camera so it never parallaxes)
   const sky = new THREE.Mesh(
-    new THREE.SphereGeometry(900, 32, 20),
+    new THREE.SphereGeometry(2000, 32, 20),
     new THREE.ShaderMaterial({
       vertexShader: SKY_VERT,
       fragmentShader: SKY_FRAG,
@@ -589,7 +572,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
 
   // ---- Ground
   const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(2600, 2600),
+    new THREE.PlaneGeometry(4400, 4400),
     new THREE.ShaderMaterial({
       vertexShader: GROUND_VERT,
       fragmentShader: GROUND_FRAG,
@@ -597,7 +580,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     })
   );
   ground.rotation.x = -Math.PI / 2;
-  ground.position.set(0, 0, -240);   // spans x -1300..1300 so the satellite view always has desert and sea to the edge
+  ground.position.set(0, 0, -240);   // spans x -2200..2200 so the satellite view always has desert and sea to the edge
   scene.add(ground);
 
   // ---- Buildings (single instanced draw call)
@@ -608,8 +591,8 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
   const CELL = 26;
 
   const casters = [];
-  const push = (x, y, z, w, h, d, ry, seed) => {
-    parts.push({ x, y, z, w, h, d, ry, seed });
+  const push = (x, y, z, w, h, d, ry, seed, round = false) => {
+    parts.push({ x, y, z, w, h, d, ry, seed, round });
     if (y === 0 && h > 8 && w < 40) casters.push([x, z, w, d, h]);
   };
 
@@ -620,7 +603,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
       const z = gz * CELL + (rand() - 0.5) * 4;
       const ax = Math.abs(x);
       // Wide open forecourt near the camera, narrowing to a boulevard downtown.
-      const halfRoad = lerp(78, 15, smoothstepJS(20, 220, -z));
+      const halfRoad = lerp(78, 24, smoothstepJS(20, 220, -z));
       if (ax < halfRoad) continue;
       const pBuild = 0.9 - 0.4 * smoothstepJS(120, 280, ax);
       if (rand() > pBuild) continue;
@@ -632,7 +615,8 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
       const w = 9 + rand() * 10;
       const d = 9 + rand() * 10;
       const seed = rand();
-      push(x, 0, z, w, h, d, 0, seed);
+      const drum = h > 70 && rand() < 0.14;
+      push(x, 0, z, drum ? Math.min(w, d) + 2 : w, h, drum ? Math.min(w, d) + 2 : d, 0, seed, drum);
       if (h > 95 && rand() < 0.75) {
         const h2 = h * (0.22 + rand() * 0.18);
         push(x, h, z, w * 0.62, h2, d * 0.62, 0, fract1(seed + 0.31));
@@ -666,26 +650,32 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     });
   }
 
-  // Landmark 1: a tiered, slowly twisting spire (Burj-style silhouette)
+  // Landmark 1: a Burj-style Y-plan tower: three wings around a core, each tier stepping back in a slow spiral, topped by a spire.
+  const crowns = [];
   {
-    const lx = 40, lz = -300, tiers = 16;
+    const lx = 46, lz = -318, tiers = 22, tierH = 17;
     for (let i = 0; i < tiers; i++) {
       const t = i / (tiers - 1);
-      push(lx, i * 13.5, lz, lerp(22, 4.5, Math.pow(t, 0.9)), 14.2, lerp(22, 4.5, Math.pow(t, 0.9)), i * 0.22, 0.37);
+      const arm = lerp(19, 2, Math.pow(t, 0.85));
+      const spin = i * 0.1;
+      const core = lerp(13, 5.5, t);
+      push(lx, i * tierH, lz, core, tierH + 0.3, core, spin, 0.37);
+      for (let k = 0; k < 3; k++) {
+        const a = spin + k * 2.0944;
+        push(lx + Math.cos(a) * arm * 0.5, i * tierH, lz - Math.sin(a) * arm * 0.5, arm, tierH + 0.3, 7.5 - t * 3, a, 0.37);
+      }
     }
-    casters.push([lx, lz, 12, 12, tiers * 13.5 + 44]);
-    push(lx, tiers * 13.5, lz, 1.1, 44, 1.1, 0, 5.5);
-    beacons.push([lx, tiers * 13.5 + 46, lz, 0.4]);
+    push(lx, tiers * tierH, lz, 1.5, 78, 1.5, 0, 5.5);
+    casters.push([lx, lz, 14, 14, tiers * tierH + 60]);
+    beacons.push([lx, tiers * tierH + 80, lz, 0.4]);
   }
-  // Landmark 2: a twisted tower
-  {
-    const lx = -52, lz = -210, tiers = 24;
-    for (let i = 0; i < tiers; i++) {
-      push(lx, i * 7, lz, 22 - i * 0.15, 7.2, 22 - i * 0.15, i * 0.075, 0.61);
-    }
-    casters.push([lx, lz, 20, 20, tiers * 7]);
-    beacons.push([lx, tiers * 7 + 1, lz, 2.2]);
-  }
+  // Landmark 2: a pair of Emirates-Towers-style shafts with pyramid crowns and masts.
+  [[-56, -196, 26, 300], [-56, -250, 22, 252]].forEach(([lx, lz, w, H], i) => {
+    push(lx, 0, lz, w, H, w, 0, 0.61 + i * 0.08);
+    crowns.push([lx, H, lz, w * 0.68, 48 - i * 8]);
+    push(lx, H + 40 - i * 8, lz, 0.9, 38, 0.9, 0, 5.5);
+    beacons.push([lx, H + 80 - i * 8, lz, 2.2 + i]);
+  });
   // A hazy backdrop row that closes the far end of the boulevard (no hard gap of raw sky).
   for (let i = -4; i <= 4; i++) {
     const h = 70 + rand() * 190;
@@ -698,38 +688,51 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
 
   function fract1(v) { return v - Math.floor(v); }
 
-  const count = parts.length;
-  const seeds = new Float32Array(count);
+  const axisY = new THREE.Vector3(0, 1, 0);
   const matrix = new THREE.Matrix4();
   const quat = new THREE.Quaternion();
-  const axisY = new THREE.Vector3(0, 1, 0);
   const pos = new THREE.Vector3();
   const scl = new THREE.Vector3();
-  const buildings = new THREE.InstancedMesh(
-    unit,
-    new THREE.ShaderMaterial({
-      vertexShader: BUILDING_VERT,
-      fragmentShader: BUILDING_FRAG,
-      uniforms: {
-        uTime: uniforms.uTime,
-        uFogColor: uniforms.uFogColor,
-        uFogDensity: uniforms.uFogDensity,
-      },
-    }),
-    count
-  );
-  parts.forEach((p, i) => {
-    quat.setFromAxisAngle(axisY, p.ry);
-    pos.set(p.x, p.y, p.z);
-    scl.set(p.w, p.h, p.d);
-    matrix.compose(pos, quat, scl);
-    buildings.setMatrixAt(i, matrix);
-    seeds[i] = p.seed;
+  const unitDrum = new THREE.CylinderGeometry(0.5, 0.5, 1, 28);
+  unitDrum.translate(0, 0.5, 0);
+  const buildingMaterial = (round) => new THREE.ShaderMaterial({
+    vertexShader: BUILDING_VERT,
+    fragmentShader: BUILDING_FRAG,
+    defines: round ? { ROUND: 1 } : {},
+    uniforms: { uTime: uniforms.uTime, uFogColor: uniforms.uFogColor, uFogDensity: uniforms.uFogDensity },
   });
-  buildings.geometry.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seeds, 1));
-  buildings.instanceMatrix.needsUpdate = true;
-  buildings.frustumCulled = false;
-  scene.add(buildings);
+  const makeInstances = (list, geometry, round) => {
+    const seeds = new Float32Array(list.length);
+    const mesh = new THREE.InstancedMesh(geometry, buildingMaterial(round), list.length);
+    list.forEach((p, i) => {
+      quat.setFromAxisAngle(axisY, p.ry);
+      pos.set(p.x, p.y, p.z);
+      scl.set(p.w, p.h, p.d);
+      matrix.compose(pos, quat, scl);
+      mesh.setMatrixAt(i, matrix);
+      seeds[i] = p.seed;
+    });
+    mesh.geometry.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seeds, 1));
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.frustumCulled = false;
+    scene.add(mesh);
+    return mesh;
+  };
+  const count = parts.length;
+  makeInstances(parts.filter((p) => !p.round), unit, false);
+  makeInstances(parts.filter((p) => p.round), unitDrum, true);
+
+  // Pyramid crowns (triangular-section, like the Emirates Towers) in glass and steel.
+  crowns.forEach(([x, y, z, r, h]) => {
+    const g = new THREE.ConeGeometry(r, h, 3);
+    g.translate(0, h / 2, 0);
+    const m = new THREE.Mesh(g, new THREE.ShaderMaterial({
+      vertexShader: PROP_VERT, fragmentShader: PROP_FRAG,
+      uniforms: { uColor: { value: new THREE.Color(0x6f8aa8) }, uGloss: { value: 0.9 }, uFogColor: uniforms.uFogColor, uFogDensity: uniforms.uFogDensity },
+    }));
+    m.position.set(x, y, z); m.rotation.y = Math.PI / 6;
+    scene.add(m);
+  });
 
   // ---- Long afternoon shadows, cast away from the sun (+x, +z): every caster's footprint swept along
   // the shadow vector, as a hexagon. From above this is what makes the city read as satellite imagery.
@@ -755,20 +758,139 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
   }
 
 
-  // Illuminated developer wordmarks on a stylised Dubai skyline, not a geographic map.
+  // ---- Helpers for simple lit props and illuminated signage
+  const onFrame = [];
   const signTextures = [];
-  const signBuildings = parts.filter(p => p.y === 0 && p.h > 65 && p.w > 11 && p.z > -290 && p.z < -50).slice(0, mobile ? 4 : 8);
-  signBuildings.forEach((p, i) => {
-    const canvas = document.createElement('canvas'); canvas.width = 1024; canvas.height = 192;
-    const ctx = canvas.getContext('2d'); if (!ctx) return;
-    ctx.fillStyle = '#18232d'; ctx.fillRect(0, 0, 1024, 192);
-    ctx.fillStyle = '#f5e9ce'; ctx.font = '500 100px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(['EMAAR', 'DAMAC', 'SOBHA', 'BINGHATTI'][i % 4], 512, 100, 970);
-    const texture = new THREE.CanvasTexture(canvas); texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy()); signTextures.push(texture);
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(p.w * 0.9, p.w * 0.17), new THREE.MeshBasicMaterial({ map: texture, color: 0xfff6e8 }));
-    sign.position.set(p.x, p.h - 4.5, p.z + p.d / 2 + 0.06); scene.add(sign);
+  const propMat = (color, gloss = 0) => new THREE.ShaderMaterial({
+    vertexShader: PROP_VERT, fragmentShader: PROP_FRAG,
+    uniforms: { uColor: { value: new THREE.Color(color) }, uGloss: { value: gloss }, uFogColor: uniforms.uFogColor, uFogDensity: uniforms.uFogDensity },
   });
+  const propBox = (w, h, d, x, y, z, color, gloss = 0) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), propMat(color, gloss));
+    m.position.set(x, y, z); scene.add(m); return m;
+  };
+  const canvasTexture = (c) => {
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    signTextures.push(t);
+    return t;
+  };
+  const fitText = (ctx, text, maxW, start, weight) => {
+    let size = start;
+    do { ctx.font = `${weight} ${size}px "Helvetica Neue", Arial, sans-serif`; size -= 4; } while (ctx.measureText(text).width > maxW && size > 20);
+    return size;
+  };
+  // Backlit tower crown sign: charcoal panel, gold keyline, warm white lettering.
+  const towerSignTexture = (text) => {
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 256;
+    const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, '#202733'); g.addColorStop(1, '#0d1118');
+    x.fillStyle = g; x.fillRect(0, 0, 1024, 256);
+    x.strokeStyle = '#d3ad55'; x.lineWidth = 7; x.strokeRect(12, 12, 1000, 232);
+    x.strokeStyle = 'rgba(211,173,85,.45)'; x.lineWidth = 2; x.strokeRect(26, 26, 972, 204);
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.shadowColor = 'rgba(255,214,140,.9)'; x.shadowBlur = 22; x.fillStyle = '#fff3d6';
+    const words = text.split(' ');
+    if (text.length > 15 && words.length > 1) {
+      const mid = Math.ceil(words.length / 2);
+      const l1 = words.slice(0, mid).join(' '), l2 = words.slice(mid).join(' ');
+      const sz = Math.min(fitText(x, l1, 880, 104, 700), fitText(x, l2, 880, 104, 700));
+      x.font = `700 ${sz}px "Helvetica Neue", Arial, sans-serif`;
+      x.fillText(l1, 512, 98); x.fillText(l2, 512, 178);
+    } else {
+      fitText(x, text, 880, 140, 700); x.fillText(text, 512, 134);
+    }
+    return canvasTexture(c);
+  };
+  // UAE overhead direction sign: green board, white lettering, route shield.
+  const gantryTexture = (line1, line2, shield) => {
+    const c = document.createElement('canvas'); c.width = 768; c.height = 384;
+    const x = c.getContext('2d');
+    x.fillStyle = '#0a6a3c'; x.fillRect(0, 0, 768, 384);
+    x.strokeStyle = '#f4f7f2'; x.lineWidth = 9; x.strokeRect(14, 14, 740, 356);
+    x.fillStyle = '#f4f7f2'; x.textBaseline = 'middle';
+    x.textAlign = 'left';
+    const sz = fitText(x, line1, shield ? 470 : 640, 88, 700);
+    x.font = `700 ${sz}px "Helvetica Neue", Arial, sans-serif`; x.fillText(line1, 44, 120);
+    fitText(x, line2, 620, 52, 500); x.fillText(line2, 44, 250);
+    // arrow
+    x.beginPath(); x.moveTo(690, 330); x.lineTo(690, 290); x.lineTo(668, 290); x.lineTo(710, 244); x.lineTo(752, 290); x.lineTo(730, 290); x.lineTo(730, 330); x.closePath(); x.fill();
+    if (shield) {
+      x.fillStyle = '#f6c915'; x.beginPath(); x.roundRect(560, 44, 160, 112, 18); x.fill();
+      x.fillStyle = '#10241a'; x.textAlign = 'center'; x.font = '800 66px "Helvetica Neue", Arial, sans-serif'; x.fillText(shield, 640, 102);
+    }
+    return canvasTexture(c);
+  };
+  const signPlane = (tex, w, h, x, y, z, rotY) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }));
+    m.position.set(x, y, z); m.rotation.y = rotY; scene.add(m); return m;
+  };
+
+  // ---- Tower signage: real Sheikh Zayed Road names, mounted on the crowns facing the avenue and the approach
+  {
+    const NAMES = ['EMAAR', 'THE ADDRESS', 'DAMAC', 'JW MARRIOTT MARQUIS', 'SOBHA', 'DUBAI WORLD TRADE CENTRE', 'BINGHATTI', 'FAIRMONT', 'INDEX TOWER', 'ARADA', 'MILLENNIUM PLAZA', 'DANUBE'];
+    // Only towers that stand clear of everything between them and the approaching camera carry a sign, so every
+    // sign is fully visible; each one is mounted on the roof edge on struts and faces down the avenue.
+    const clear = (q) => !parts.some((o) => o !== q && o.z > q.z && o.z < q.z + 170 && Math.abs(o.x - q.x) < (o.w + q.w) / 2 + 2 && o.y + o.h > q.h + 2);
+    const cand = parts.filter((q) => q.y === 0 && !q.round && q.h > 80 && q.w > 12 && q.z > -470 && q.z < -14 && Math.abs(q.x) < 125 && clear(q))
+      .sort((u, v) => v.z - u.z);
+    const picked = [];
+    cand.forEach((q) => {
+      if (picked.length >= (mobile ? 6 : 10)) return;
+      if (picked.some((o) => Math.abs(o.z - q.z) < 55 || (Math.sign(o.x) === Math.sign(q.x) && Math.abs(o.z - q.z) < 90))) return;
+      picked.push(q);
+    });
+    picked.forEach((q, i) => {
+      const tex = towerSignTexture(NAMES[i % NAMES.length]);
+      const w = Math.min(q.w * 1.12, 34), h = w / 4, zf = q.z + q.d / 2 - 1.2;
+      signPlane(tex, w, h, q.x, q.h + 3 + h / 2, zf, 0);
+      propBox(w + 0.6, h + 0.6, 0.3, q.x, q.h + 3 + h / 2, zf - 0.22, 0x1a1f27);                 // sign casing
+      [-1, 1].forEach((sd) => propBox(0.35, 3.2, 0.35, q.x + sd * w * 0.38, q.h + 1.5, zf - 0.2, 0x59616b));
+    });
+    // Street-level blade signs: lit name boards on the front corner of the first row of buildings, reaching out over the
+    // pavement at eye height so they read head-on as the camera drives past (clear of the metro and the camera path).
+    {
+      const firstRow = parts.filter((q) => q.y === 0 && !q.round && q.h > 24 && q.w > 8 && q.z < 60 && q.z > -340 && Math.abs(q.x) < 80)
+        .sort((u, v) => v.z - u.z);
+      const used = [];
+      firstRow.forEach((q) => {
+        if (used.length >= (mobile ? 5 : 9)) return;
+        const side = Math.sign(q.x) || 1;
+        const rowMin = parts.filter((o) => o.y === 0 && Math.sign(o.x) === side && Math.abs(o.z - q.z) < 12).reduce((m, o) => Math.min(m, Math.abs(o.x)), 1e9);
+        if (Math.abs(q.x) > rowMin + 0.01) return;
+        if (used.some((o) => Math.abs(o.z - q.z) < 34 && (Math.sign(o.x) === side || Math.abs(o.z - q.z) < 18))) return;
+        used.push(q);
+        const fx = q.x - side * q.w / 2, cx = fx - side * 4.4, zf = q.z + q.d / 2 - 0.5;
+        signPlane(towerSignTexture(NAMES[(used.length * 5 + 3) % NAMES.length]), 8, 2, cx, 15.8, zf + 0.34, 0);
+        propBox(8.5, 2.5, 0.4, cx, 15.8, zf, 0x1a1f27);
+        propBox(0.3, 0.3, 0.3, fx - side * 0.3, 15.8, zf, 0x59616b);
+      });
+    }
+    [[-56, -196, 26, 300, 'EMIRATES OFFICE TOWER'], [-56, -250, 22, 252, 'JUMEIRAH EMIRATES TOWERS']].forEach(([x, z, w, H, name]) => {
+      signPlane(towerSignTexture(name), w * 0.92, w * 0.92 / 4, x, H - 12, z + w / 2 + 0.12, 0);
+    });
+  }
+
+  // ---- Sheikh Zayed Road overhead gantries
+  {
+    const BOARDS = [
+      [58,  ['Abu Dhabi', 'Jebel Ali · Dubai Marina', 'E 11'], ['Downtown Dubai', 'Dubai Mall · Burj Khalifa', 'E 11']],
+      [-10, ['Business Bay', 'Al Khail Road · Ras Al Khor'],   ['Dubai Mall', 'Burj Khalifa · Downtown']],
+      [-96, ['World Trade Centre', 'DIFC · Trade Centre'],     ['Al Quoz', 'Jumeirah · Umm Suqeim']],
+      [-184, ['Deira', 'Sharjah · Airport'],                    ['Sheikh Zayed Road', 'Dubai · Abu Dhabi', 'E 11']],
+      [-280, ['Downtown Dubai', 'Emaar Boulevard'],             ['Business Bay', 'Canal · Al Safa']],
+    ];
+    BOARDS.slice(0, mobile ? 4 : 5).forEach(([z, left, right]) => {
+      [-1, 1].forEach((sx) => propBox(0.5, 9.4, 0.5, sx * 10.2, 4.7, z, 0x7b848e, 0.2));
+      propBox(21, 0.55, 0.7, 0, 9.3, z, 0x7b848e, 0.2);
+      [[-4.9, left], [4.9, right]].forEach(([bx, [l1, l2, shield]]) => {
+        const board = signPlane(gantryTexture(l1, l2, shield), 8.6, 4.3, bx, 6.85, z + 0.42, 0);
+        propBox(8.9, 4.6, 0.3, bx, 6.85, z + 0.12, 0x2d343c);        // back of the board
+        board.renderOrder = 2;
+      });
+    });
+  }
 
   // ---- Stone central reservation, limestone pavements and boulevard lighting
   {
@@ -783,14 +905,14 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     flat(1.3, 0.4, roadLen, 0, 0.2, 0xbca68b);
     flat(0.2, 0.5, roadLen, 0.75, 0.25, 0xb9b3a6); flat(0.2, 0.5, roadLen, -0.75, 0.25, 0xb9b3a6);
 
-    const lampGeo = new THREE.CylinderGeometry(0.12, 0.16, 1, 5);
+    const lampGeo = new THREE.CylinderGeometry(0.1, 0.15, 1, 6);
     lampGeo.translate(0, 0.5, 0);
-    const bulbGeo = new THREE.SphereGeometry(0.55, 8, 6);
-    const lampMat = new THREE.MeshBasicMaterial({ color: 0x2b3750 });
-    const bulbMat = new THREE.MeshBasicMaterial({ color: 0xffd58a });
+    const headGeo = new THREE.BoxGeometry(1.9, 0.2, 0.5);      // luminaire head on an arm reaching over the carriageway
+    const lampMat = new THREE.MeshBasicMaterial({ color: 0x58606c });
+    const bulbMat = new THREE.MeshBasicMaterial({ color: 0xd9dde2 });
     const N = mobile ? 26 : 44;
     const lamps = new THREE.InstancedMesh(lampGeo, lampMat, N * 2);
-    const bulbs = new THREE.InstancedMesh(bulbGeo, bulbMat, N * 2);
+    const bulbs = new THREE.InstancedMesh(headGeo, bulbMat, N * 2);
     const m = new THREE.Matrix4();
     const q = new THREE.Quaternion();
     const v = new THREE.Vector3();
@@ -802,7 +924,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
         const lz = z - 7.5;
         v.set(side * 8.2, 0, lz); sv.set(1, 7.5, 1);
         m.compose(v, q, sv); lamps.setMatrixAt(k, m);
-        v.set(side * 8.2, 7.7, lz); sv.set(1, 1, 1);
+        v.set(side * 7.3, 7.6, lz); sv.set(1, 1, 1);
         m.compose(v, q, sv); bulbs.setMatrixAt(k, m);
         k++;
       }
@@ -810,31 +932,150 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     [lamps, bulbs].forEach((o) => { o.frustumCulled = false; scene.add(o); });
   }
 
-  // ---- Trees: a double row along the boulevard and clusters on the forecourt lawns
+  // ---- Vegetation: date palms with individual fronds, and broadleaf trees built from displaced leaf clumps
   {
-    const spots = [];
-    for (let z = 92; z > -44; z -= 12) { spots.push([-10.4, z, 1.0], [10.4, z, 1.0]); }
+    const upV = new THREE.Vector3(0, 1, 0);
+    const mkGeo = (pos, nor, tint, idx) => {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+      g.setAttribute('aTint', new THREE.Float32BufferAttribute(tint, 3));
+      if (idx) g.setIndex(idx);
+      return g;
+    };
+    const PALM_H = 9, LEAN = 1.1;
+    const palmTrunk = (() => {
+      const pos = [], nor = [], tint = [], idx = [], S = 12, R = 8;
+      for (let i = 0; i <= S; i++) {
+        const t = i / S, r = lerp(0.34, 0.2, t) * (i === 0 ? 1.4 : 1), cx = LEAN * t * t;
+        for (let j = 0; j <= R; j++) {
+          const a = (j / R) * Math.PI * 2, nx = Math.cos(a), nz = Math.sin(a);
+          pos.push(cx + nx * r, PALM_H * t, nz * r); nor.push(nx, 0.2, nz);
+          const ring = (i % 2 ? 0.74 : 1) * (0.86 + 0.14 * Math.sin(j * 2.3 + i));    // leaf-base scars up the stem
+          tint.push(ring, ring, ring);
+        }
+      }
+      for (let i = 0; i < S; i++) for (let j = 0; j < R; j++) { const q = i * (R + 1) + j, w = q + R + 1; idx.push(q, w, q + 1, w, w + 1, q + 1); }
+      return mkGeo(pos, nor, tint, idx);
+    })();
+    const palmCrown = (() => {
+      const pos = [], nor = [], tint = [], FR = 14, K = 11;
+      const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+      for (let f = 0; f < FR; f++) {
+        const phi = (f / FR) * Math.PI * 2 + Math.sin(f * 12.9) * 0.2;
+        const hi = f % 2 === 0, el = hi ? 0.95 : 0.3 + Math.sin(f) * 0.08, L = hi ? 3.5 : 3.9 + Math.sin(f * 3.1) * 0.25;
+        const pts = [];
+        for (let k = 0; k <= K; k++) {
+          const sk = k / K, r = L * sk * Math.cos(el);
+          pts.push(v3(LEAN + Math.cos(phi) * r, PALM_H + L * (Math.sin(el) * sk - 0.8 * sk * sk), Math.sin(phi) * r));
+        }
+        const sideV = v3(-Math.sin(phi), 0, Math.cos(phi));
+        for (let k = 1; k < K; k++) {
+          const sk = k / K, P = pts[k], T = pts[k + 1].clone().sub(pts[k - 1]).normalize();
+          for (const sd of [-1, 1]) {
+            const len = (0.35 + 1.15 * Math.sin(Math.PI * Math.min(1, sk * 0.95 + 0.04))) * (hi ? 0.92 : 1);
+            const dirL = sideV.clone().multiplyScalar(sd * 0.9).addScaledVector(T, 0.55).addScaledVector(upV, -0.5 - 0.35 * sk).normalize();
+            const tip = P.clone().addScaledVector(dirL, len), B = P.clone().addScaledVector(T, 0.27), C = tip.clone().addScaledVector(T, 0.16);
+            const n = new THREE.Vector3().subVectors(B, P).cross(new THREE.Vector3().subVectors(C, P)).normalize();
+            if (n.y < 0) n.negate();
+            n.multiplyScalar(0.45).addScaledVector(upV, 0.55).normalize();
+            const shade = 0.72 + 0.4 * sk + 0.08 * Math.sin(k * 5 + f);
+            [P, B, C, P, C, tip].forEach((q) => { pos.push(q.x, q.y, q.z); nor.push(n.x, n.y, n.z); tint.push(shade, shade, shade); });
+          }
+        }
+      }
+      return mkGeo(pos, nor, tint);
+    })();
+    const broadCrown = (() => {
+      const pos = [], nor = [], tint = [];
+      const blobs = [[0, 0, 0, 1.35], [1.0, -0.25, 0.3, 0.98], [-0.9, -0.15, 0.55, 1.0], [0.2, 0.2, -1.0, 1.0], [-0.3, 0.7, 0.2, 0.92], [0.7, 0.45, -0.45, 0.85]];
+      blobs.forEach(([cx, cy, cz, r], bi) => {
+        const ico = new THREE.IcosahedronGeometry(1, 2), pa = ico.attributes.position;
+        for (let i = 0; i < pa.count; i++) {
+          const nx = pa.getX(i), ny = pa.getY(i), nz = pa.getZ(i);
+          const bump = 1 + 0.2 * (Math.sin(nx * 5.3 + bi) * Math.sin(ny * 4.1 + bi * 2) * 0.5 + Math.sin(nz * 7.7 + bi * 1.7) * 0.5);
+          const x = cx + nx * r * bump, y = cy + ny * r * bump * 0.88, z = cz + nz * r * bump;
+          pos.push(x, y, z); nor.push(nx, ny, nz);
+          const sh = 0.58 + 0.5 * clamp((y + 1.3) / 2.8, 0, 1);
+          tint.push(sh, sh, sh * 0.96);
+        }
+      });
+      return mkGeo(pos, nor, tint);
+    })();
+    const broadTrunk = (() => {
+      const g = new THREE.CylinderGeometry(0.2, 0.34, 3.6, 7); g.translate(0, 1.8, 0);
+      const n = g.attributes.position.count;
+      g.setAttribute('aTint', new THREE.Float32BufferAttribute(new Array(n * 3).fill(0.85), 3));
+      return g;
+    })();
+    const foliageMat = (color) => new THREE.ShaderMaterial({
+      vertexShader: FOLIAGE_VERT, fragmentShader: FOLIAGE_FRAG, side: THREE.DoubleSide,
+      uniforms: { uColor: { value: new THREE.Color(color) }, uFogColor: uniforms.uFogColor, uFogDensity: uniforms.uFogDensity },
+    });
+
+    const palms = [], broad = [];
+    for (let z = 90; z > -44; z -= 12) {
+      if ([58, -10].some((gz) => Math.abs(z - gz) < 4.5)) continue;                // keep clear of the overhead gantries
+      palms.push([-10.0, z, 0.72]); palms.push([10.0, z, 0.72]);
+    }
     for (const gx of [-2, -1, 1, 2]) {
       for (let gz = -1; gz <= 4; gz++) {
         const cx = gx * CELL, cz = gz * CELL;
-        spots.push([cx, cz, 1.25]);
-        [[-5.6, -5.6], [5.6, -5.6], [-5.6, 5.6], [5.6, 5.6]].forEach(([ox, oz]) => spots.push([cx + ox + (rand() - 0.5), cz + oz + (rand() - 0.5), 0.8 + rand() * 0.4]));
+        broad.push([cx + (rand() - 0.5) * 2, cz + (rand() - 0.5) * 2, 1.15 + rand() * 0.35]);
+        [[-6.2, -6.2], [6.2, -6.2], [-6.2, 6.2], [6.2, 6.2]].forEach(([ox, oz]) => palms.push([cx + ox + (rand() - 0.5) * 1.2, cz + oz + (rand() - 0.5) * 1.2, 0.85 + rand() * 0.3]));
       }
     }
-    const crownGeo = new THREE.IcosahedronGeometry(1, 1); crownGeo.translate(0, 1, 0);
-    const trunkGeo = new THREE.CylinderGeometry(0.16, 0.24, 1, 6); trunkGeo.translate(0, 0.5, 0);
-    const mat = (color) => new THREE.ShaderMaterial({
-      vertexShader: TREE_VERT, fragmentShader: TREE_FRAG,
-      uniforms: { uColor: { value: new THREE.Color(color) }, uFogColor: uniforms.uFogColor, uFogDensity: uniforms.uFogDensity },
-    });
-    const crowns = new THREE.InstancedMesh(crownGeo, mat(0x68a83f), spots.length);
-    const trunks = new THREE.InstancedMesh(trunkGeo, mat(0x6b4f35), spots.length);
     const tm = new THREE.Matrix4(), tq = new THREE.Quaternion(), tp = new THREE.Vector3(), ts = new THREE.Vector3();
-    spots.forEach(([x, z, k], i) => {
-      tp.set(x, 0, z); ts.set(0.32 * k, 2.8 * k, 0.32 * k); tm.compose(tp, tq, ts); trunks.setMatrixAt(i, tm);
-      tp.set(x, 2.2 * k, z); ts.set(2.0 * k, 1.7 * k, 2.0 * k); tm.compose(tp, tq, ts); crowns.setMatrixAt(i, tm);
+    const place = (geo, color, list, y0 = 0) => {
+      const mesh = new THREE.InstancedMesh(geo, foliageMat(color), list.length);
+      list.forEach(([x, z, k], i) => {
+        tq.setFromAxisAngle(upV, rand() * Math.PI * 2); tp.set(x, y0 * k, z); ts.set(k, k * (0.92 + rand() * 0.16), k);
+        tm.compose(tp, tq, ts); mesh.setMatrixAt(i, tm);
+      });
+      mesh.frustumCulled = false; scene.add(mesh);
+    };
+    place(palmTrunk, 0x8d7c66, palms);
+    place(palmCrown, 0x5a8e34, palms);
+    place(broadTrunk, 0x6a5848, broad);
+    place(broadCrown, 0x4e8a34, broad, 4.7);
+  }
+
+  // ---- Dubai Metro viaduct and trains alongside the carriageway (the Sheikh Zayed Road signature)
+  {
+    const trainCanvas = document.createElement('canvas'); trainCanvas.width = 512; trainCanvas.height = 128;
+    const tx = trainCanvas.getContext('2d');
+    tx.fillStyle = '#d9dde3'; tx.fillRect(0, 0, 512, 128);
+    tx.fillStyle = '#1b2430'; for (let i = 0; i < 5; i++) tx.fillRect(14 + i * 100, 30, 76, 40);          // windows
+    tx.fillStyle = '#c8102e'; tx.fillRect(0, 84, 512, 18);                                                // Red Line stripe
+    tx.fillStyle = '#8f98a4'; tx.fillRect(0, 106, 512, 22);
+    const trainTex = new THREE.CanvasTexture(trainCanvas); trainTex.colorSpace = THREE.SRGBColorSpace;
+    signTextures.push(trainTex);
+    const trainMat = new THREE.MeshBasicMaterial({ map: trainTex });
+    const L = 700, zMid = -250;
+    const pierGeo = new THREE.BoxGeometry(1.4, 9.05, 1.7); pierGeo.translate(0, 4.5, 0);
+    [-1, 1].forEach((sx, si) => {
+      const x = sx * 16.2;
+      propBox(4.9, 0.9, L, x, 9.5, zMid, 0xdad7d0, 0.1);                               // deck
+      propBox(0.3, 0.7, L, x - 2.3, 10.3, zMid, 0xc9c6bf);                              // parapets
+      propBox(0.3, 0.7, L, x + 2.3, 10.3, zMid, 0xc9c6bf);
+      propBox(0.14, 0.18, L, x - 0.75, 10.04, zMid, 0x5a6068); propBox(0.14, 0.18, L, x + 0.75, 10.04, zMid, 0x5a6068);   // rails
+      const piers = new THREE.InstancedMesh(pierGeo, propMat(0xd0cdc6), 24);
+      const pm = new THREE.Matrix4();
+      for (let i = 0; i < 24; i++) { pm.makeTranslation(x, 0, 92 - i * 28); piers.setMatrixAt(i, pm); }
+      piers.frustumCulled = false; scene.add(piers);
+      const train = new THREE.Group();
+      for (let c = 0; c < 4; c++) {
+        const car = new THREE.Mesh(new THREE.BoxGeometry(2.9, 3.5, 17.5), trainMat);
+        car.position.set(0, 11.9, c * 18.2); train.add(car);
+      }
+      train.rotation.y = sx > 0 ? 0 : Math.PI;
+      scene.add(train);
+      const speed = 17 + si * 4, span = L + 160;
+      onFrame.push((t) => {                                       // trains cycle the full length of the viaduct, one each way
+        const u = ((t * speed + si * 260) % span) - 80;
+        train.position.set(x, 0, sx > 0 ? 100 - u : -600 + u);
+      });
     });
-    [trunks, crowns].forEach((o) => { o.frustumCulled = false; scene.add(o); });
   }
 
   // ---- Realistic traffic: instanced sedans and SUVs (white-heavy UAE fleet) with lit head/tail lamps
@@ -916,72 +1157,48 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     scene.add(mesh);
   });
 
-  // ---- Distant headlight / tail-light glints
-  const carCount = mobile ? 40 : 90;
-  const carGeo = new THREE.BufferGeometry();
-  const lane = new Float32Array(carCount);
-  const speed = new Float32Array(carCount);
-  const off = new Float32Array(carCount);
-  const dir = new Float32Array(carCount);
-  for (let i = 0; i < carCount; i++) {
-    const d = i % 2 === 0 ? 1 : -1;
-    const lanes = d > 0 ? [-2.6, -5.6] : [2.6, 5.6];
-    lane[i] = lanes[(rand() * 2) | 0] + (rand() - 0.5) * 0.5;
-    speed[i] = 14 + rand() * 18;
-    off[i] = rand() * 620;
-    dir[i] = d;
+  // ---- Motorbikes with riders, weaving between the cars (same instanced traffic shader)
+  {
+    const list = [];
+    const bike = (g, part, m) => list.push({ geo: g, part, m });
+    const wheel = (zc) => { const w = new THREE.CylinderGeometry(0.33, 0.33, 0.13, 14); w.rotateZ(Math.PI / 2); bike(w, 2, T(0, 0.33, zc)); const r = new THREE.CylinderGeometry(0.2, 0.2, 0.15, 12); r.rotateZ(Math.PI / 2); bike(r, 5, T(0, 0.33, zc)); };
+    wheel(0.72); wheel(-0.72);
+    const R = (rx, ry, rz) => new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rx, ry, rz));
+    bike(new THREE.BoxGeometry(0.3, 0.34, 0.85), 0, T(0, 0.78, 0.18));             // tank
+    bike(new THREE.BoxGeometry(0.26, 0.12, 0.7), 2, T(0, 0.74, -0.38));            // seat
+    bike(new THREE.BoxGeometry(0.34, 0.36, 0.42), 5, T(0, 0.46, 0.05));            // engine
+    bike(new THREE.BoxGeometry(0.1, 0.62, 0.1), 5, T(0, 0.62, 0.66).multiply(R(-0.35, 0, 0)));   // forks
+    bike(new THREE.BoxGeometry(0.7, 0.06, 0.06), 5, T(0, 1.0, 0.52));              // bars
+    bike(new THREE.BoxGeometry(0.2, 0.14, 0.1), 3, T(0, 0.9, 0.76));               // headlight
+    bike(new THREE.BoxGeometry(0.18, 0.08, 0.06), 4, T(0, 0.8, -0.82));            // tail lamp
+    bike(new THREE.BoxGeometry(0.34, 0.55, 0.28), 2, T(0, 1.22, -0.12).multiply(R(0.42, 0, 0)));   // rider torso, leaning in
+    bike(new THREE.SphereGeometry(0.17, 10, 8), 6, T(0, 1.67, 0.1));               // helmet
+    [-1, 1].forEach((sd) => {
+      bike(new THREE.BoxGeometry(0.13, 0.5, 0.16), 2, T(sd * 0.2, 0.86, -0.1).multiply(R(0.9, 0, 0)));  // legs
+      bike(new THREE.BoxGeometry(0.1, 0.1, 0.5), 2, T(sd * 0.32, 1.22, 0.36).multiply(R(0.25, 0, 0)));  // arms
+    });
+    const geo = mergeParts(list);
+    const n = mobile ? 8 : 16;
+    const ln = new Float32Array(n), sp = new Float32Array(n), of = new Float32Array(n), dr = new Float32Array(n), cl = new Float32Array(n * 3);
+    const BIKE_PAINT = [[0.8, 0.1, 0.08], [0.1, 0.2, 0.55], [0.08, 0.08, 0.09], [0.95, 0.45, 0.08], [0.85, 0.85, 0.86]];
+    for (let i = 0; i < n; i++) {
+      const d = i % 2 === 0 ? 1 : -1;
+      ln[i] = (d > 0 ? -3.95 : 3.95) + (rand() - 0.5) * 0.5;
+      sp[i] = 15 + rand() * 11;
+      of[i] = rand() * 612;
+      dr[i] = d;
+      const c = BIKE_PAINT[(rand() * BIKE_PAINT.length) | 0];
+      cl[i * 3] = c[0]; cl[i * 3 + 1] = c[1]; cl[i * 3 + 2] = c[2];
+    }
+    geo.setAttribute('aLane', new THREE.InstancedBufferAttribute(ln, 1));
+    geo.setAttribute('aSpeed', new THREE.InstancedBufferAttribute(sp, 1));
+    geo.setAttribute('aOff', new THREE.InstancedBufferAttribute(of, 1));
+    geo.setAttribute('aDir', new THREE.InstancedBufferAttribute(dr, 1));
+    geo.setAttribute('aColor', new THREE.InstancedBufferAttribute(cl, 3));
+    const mesh = new THREE.InstancedMesh(geo, vehMat, n);
+    mesh.frustumCulled = false;
+    scene.add(mesh);
   }
-  carGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(carCount * 3), 3));
-  carGeo.setAttribute('aLane', new THREE.BufferAttribute(lane, 1));
-  carGeo.setAttribute('aSpeed', new THREE.BufferAttribute(speed, 1));
-  carGeo.setAttribute('aOff', new THREE.BufferAttribute(off, 1));
-  carGeo.setAttribute('aDir', new THREE.BufferAttribute(dir, 1));
-  const cars = new THREE.Points(
-    carGeo,
-    new THREE.ShaderMaterial({
-      vertexShader: CAR_VERT,
-      fragmentShader: CAR_FRAG,
-      uniforms: { uTime: uniforms.uTime, uPx: uniforms.uPx },
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.NormalBlending,
-    })
-  );
-  cars.frustumCulled = false;
-  scene.add(cars);
-
-  // ---- Floating dust / bokeh
-  const dustCount = mobile ? 700 : 1500;
-  const dustGeo = new THREE.BufferGeometry();
-  const dp = new Float32Array(dustCount * 3);
-  const ds = new Float32Array(dustCount);
-  const dph = new Float32Array(dustCount);
-  const dm = new Float32Array(dustCount);
-  for (let i = 0; i < dustCount; i++) {
-    dp[i * 3] = (rand() - 0.5) * 150;
-    dp[i * 3 + 1] = 2 + Math.pow(rand(), 1.6) * 90;
-    dp[i * 3 + 2] = 100 - rand() * 600;
-    ds[i] = 0.16 + Math.pow(rand(), 3) * 0.7;
-    dph[i] = rand() * 6.28;
-    dm[i] = rand() < 0.28 ? 1 : 0;
-  }
-  dustGeo.setAttribute('position', new THREE.BufferAttribute(dp, 3));
-  dustGeo.setAttribute('aSize', new THREE.BufferAttribute(ds, 1));
-  dustGeo.setAttribute('aPhase', new THREE.BufferAttribute(dph, 1));
-  dustGeo.setAttribute('aMix', new THREE.BufferAttribute(dm, 1));
-  const dust = new THREE.Points(
-    dustGeo,
-    new THREE.ShaderMaterial({
-      vertexShader: DUST_VERT,
-      fragmentShader: DUST_FRAG,
-      uniforms: { uTime: uniforms.uTime, uPx: uniforms.uPx },
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.NormalBlending,
-    })
-  );
-  dust.frustumCulled = false;
-  scene.add(dust);
 
   // ---- Aircraft-warning beacons on the tallest towers
   const bGeo = new THREE.BufferGeometry();
@@ -1029,8 +1246,9 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
 
   // Scroll journey: 0..SPLIT is the satellite descent (straight down at ORBIT_Y, levelling out as the
   // altitude falls to street height above the boulevard); SPLIT..1 drives down the avenue.
-  const SPLIT = 0.52, ORBIT_Y = 820, STREET_Y = 15;
-  const ORBIT_FOV = 40;
+  const SPLIT = 0.52, ORBIT_Y = 820, STREET_Y = 18;
+  const ORBIT_FOV = 34;                    // a long lens flattens perspective, which is what makes the opening read as isometric
+  const ISO_PITCH = -48, ISO_YAW = 0.62;   // opening tilt (degrees) and compass turn (radians, ~35 deg)
 
   function placeCamera(dt) {
     const k = 1 - Math.exp(-dt * 7.5);
@@ -1047,16 +1265,20 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     // Altitude falls exponentially so the zoom feels constant, like a satellite app.
     let y = STREET_Y * Math.pow(ORBIT_Y / STREET_Y, 1 - de) + lerp(0, 19, Math.pow(t, 1.1));
     y *= 1 + 0.16 * (1 - ie);                                   // opening drift: settle in from a touch higher
-    const z = p < SPLIT ? lerp(-110, 95, easeInOutSine(Math.pow(d, 0.92))) : lerp(95, -170, easeInOutSine(t));
+    const z = p < SPLIT ? lerp(-230, 95, easeInOutSine(Math.pow(d, 0.92))) : lerp(95, -170, easeInOutSine(t));
 
     const street = smooth(clamp(1 - (y - 18) / 320, 0, 1));    // 0 in orbit .. 1 at street level
     const sway = Math.sin(p * Math.PI * 1.25) * 7.5 * (0.25 + 0.75 * street);
     const x = clamp(sway + cur.px * lerp(30, 2.6, street) + Math.sin(clock * 0.13) * 0.9 * street, -(9.5 + 30 * (1 - street)), 9.5 + 30 * (1 - street));
-    camera.position.set(x, y + cur.py * 1.6 * street + Math.sin(clock * 0.21) * 0.35 * street, z);
-
-    const pitch = (-87 + 83 * Math.pow(de, 1.7) - 4 * t - cur.py * 1.4) * Math.PI / 180;
-    const yaw = -cur.px * 0.03 * street;
-    const dir = new THREE.Vector3(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch));
+    // Isometric opening: look at the ground point below (x, z) from a raised, turned vantage, then swing
+    // round behind the boulevard and level out as the altitude falls.
+    const pitchDeg = ISO_PITCH + (ISO_PITCH * -1 - 4) * Math.pow(de, 1.35) - 4 * t - cur.py * 1.4;
+    const pitch = pitchDeg * Math.PI / 180;
+    const yaw = ISO_YAW * Math.pow(1 - de, 1.1) - cur.px * 0.03 * street;
+    const hx = Math.sin(yaw), hz = -Math.cos(yaw);
+    const back = (y / Math.tan(-pitch)) * Math.pow(1 - de, 0.8);
+    camera.position.set(x - hx * back, y + cur.py * 1.6 * street + Math.sin(clock * 0.21) * 0.35 * street, z - hz * back);
+    const dir = new THREE.Vector3(hx * Math.cos(pitch), Math.sin(pitch), hz * Math.cos(pitch));
     camera.lookAt(camera.position.clone().addScaledVector(dir, 300));
     camera.rotation.z += (Math.sin(p * Math.PI * 2) * 0.03 + cur.px * -0.012 + Math.sin(clock * 0.9) * 0.0025) * street;
 
@@ -1083,6 +1305,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     clock += dt;
     uniforms.uTime.value = clock;
     placeCamera(dt);
+    onFrame.forEach((fn) => fn(clock));
     renderer.render(scene, camera);
     frames++;
     if (!readyFired) {
@@ -1133,10 +1356,10 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
       if (o.geometry) o.geometry.dispose();
       if (o.material) o.material.dispose();
     });
-    signTextures.forEach(texture => texture.dispose());
+    signTextures.forEach((texture) => texture.dispose());
     renderer.dispose();
   };
-  api.stats = () => ({ buildings: count, cars: carCount, dust: dustCount, beacons: beacons.length, camera: camera.position.toArray(), fov: camera.fov, pixelRatio });
+  api.stats = () => ({ buildings: count, beacons: beacons.length, camera: camera.position.toArray(), fov: camera.fov, pixelRatio });
 
   resize();
   return api;

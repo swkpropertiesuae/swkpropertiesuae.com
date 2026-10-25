@@ -260,7 +260,7 @@
 }
 @keyframes swk-logo-sheen { 0%, 62% { background-position: -160% 0; } 100% { background-position: 160% 0; } }
 @media (prefers-reduced-motion: reduce) { .site-brand::after, .footer-logo::after { animation: none; display: none; } }
-.site-brand .brand-logo { height: 46px; width: auto; }
+.site-brand .brand-logo { height: 52px; width: auto; }
 
 /* ---- Glass panels ---- */
 
