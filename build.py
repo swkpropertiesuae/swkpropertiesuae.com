@@ -861,10 +861,6 @@ def build_home():
     search = (select("s-developer", "developer", "Developer", [(d["slug"], d["name"]) for d in DEVS], "Any developer")
               + select("s-community", "community", "Community", [(c, c) for c in PROJECT_COMMUNITIES], "Any community")
               + select("s-collection", "collection", "Collection", [(c, c) for c in COLLECTIONS], "Any collection"))
-    gallery = "".join(
-        f'<button type="button" class="fan-card" data-fan-card="{i}" aria-label="Open photo {i + 1} of 25">'
-        f'{img(f"assets/images/gallery/image{i + 1}.webp", "", "", lazy=i >= 7, sizes="(min-width: 700px) 20vw, 45vw")}</button>' for i in range(25))
-    dots = "".join(f'<span class="fan-dot" data-fan-dot="{i}"></span>' for i in range(25))
     spotlight = [(DEV_BY[sl], next(q for q in DEV_BY[sl]["projects"] if q["name"] == nm)) for sl, nm in
                  [("emaar", "Greencrest"), ("damac", "Chelsea Residences"), ("sobha", "Sobha SeaHaven"), ("omniyat", "ORLA, Dorchester Collection, Dubai"),
                   ("binghatti", "Mercedes-Benz Places"), ("nakheel", "Palm Jebel Ali")]]
@@ -932,15 +928,6 @@ def build_home():
 </section></div>
 
 {VALUES}
-
-<section class="section container arc-gallery ambient-glow-host" data-arc-gallery>{GLOW}
-<div class="section-header center"><span class="eyebrow">Portfolio</span>{h2_cascade("A closer look at our listings")}
-<p>Explore the architecture, interiors and neighbourhoods behind a UAE property search.</p></div>
-<div class="fan-carousel-wrap" data-fan-carousel aria-label="Portfolio photo carousel" role="region">
-<div class="fan-layout" data-fan-track>{gallery}</div>
-<div class="fan-pagination"><button type="button" class="fan-arrow" data-fan-prev aria-label="Previous photos">{PREV}</button>
-<div class="fan-dots" data-fan-dots aria-hidden="true">{dots}</div><button type="button" class="fan-arrow" data-fan-next aria-label="Next photos">{NEXT}</button></div></div>
-<div class="arc-gallery__viewall"><a href="/properties/" class="btn btn-outline-dark">View all properties</a></div></section>
 
 <section class="section section--alt featured-section ambient-glow-host">{GLOW}<div class="container">
 <div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Developers</span>{h2_cascade("Leading developers. One advisory desk.")}</div>

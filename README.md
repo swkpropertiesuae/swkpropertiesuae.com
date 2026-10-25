@@ -1,6 +1,6 @@
 # SWK Properties UAE — static site
 
-Warm light theme (cream canvas, deep navy ink, tan/gold accents), serif display type, satellite-to-street WebGL hero, scroll-driven 3D depth, header navigation, fan gallery, glow listing cards.
+Warm light theme (cream canvas, deep navy ink, tan/gold accents), serif display type, satellite-to-street WebGL hero, scroll-driven 3D depth, header navigation, glow listing cards.
 No runtime dependencies. Output is plain static files in `public/`.
 
 ## Build
@@ -20,7 +20,7 @@ node tools/dev-server.js 8765      # serves public/, draws SVG placeholders for 
 PLAYWRIGHT_PATH=/opt/node22/lib/node_modules/playwright node tools/qa.js
 ```
 
-`tools/qa.js` checks every page (console errors, SEO tags, links, alt text, overflow, axe), the hero scroll scrub, slider, fan, lightbox, filters, calculator maths, forms, a 320–1920px layout sweep, reduced motion, `?nowebgl` and no-JS. Optional: `AXE_PATH` (axe-core file), `SHOTS` (screenshot dir).
+`tools/qa.js` checks every page (console errors, SEO tags, links, alt text, overflow, axe), the hero scroll scrub, slider, lightbox, filters, calculator maths, forms, a 320–1920px layout sweep, reduced motion, `?nowebgl` and no-JS. Optional: `AXE_PATH` (axe-core file), `SHOTS` (screenshot dir).
 
 ## 3D hero
 

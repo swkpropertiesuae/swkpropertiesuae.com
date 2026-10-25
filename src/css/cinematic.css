@@ -447,17 +447,6 @@
 /* Hide the headline's plain text only while JS is about to split it. */
 .js [data-typewriter]:not([data-tw-init]) { visibility: hidden; }
 
-/* ---- Fan carousel motion ---- */
-
-.fan-card {
-  transition: transform 0.75s var(--ease-luxury), opacity 0.5s var(--ease-luxury), filter 0.3s ease, box-shadow 0.3s ease;
-  filter: brightness(0.82);
-}
-.fan-card.is-center { filter: none; box-shadow: var(--shadow-lg); }
-.fan-card:hover { filter: brightness(1.08); }
-.fan-card:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
-@media (prefers-reduced-motion: reduce) { .fan-card { transition: none; } }
-
 /* ---- Calculator extras ---- */
 
 .calc-hint { display: block; min-height: 2.75em; line-height: 1.35; margin-top: var(--space-2); font-size: var(--fs-xs); color: var(--slate-500); }
@@ -501,7 +490,3 @@
 .section-header.center .cascade-text { margin-inline: auto; }
 .cascade-text__word { height: 1.28em; line-height: 1.28; }
 
-/* Fan: room above the centre card (it lifts slightly) and one tidy row of dots. */
-.fan-card { top: 1.75rem; }
-.fan-dots { max-width: none; flex-wrap: nowrap; gap: 4px; }
-.fan-dot { width: 5px; height: 5px; }

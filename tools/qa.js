@@ -123,7 +123,7 @@ function pagesFromSitemap() {
   await page.evaluate(() => scrollTo(0, 0));
   ok(L.clean(msgs).length === 0, 'home console clean after scrub: ' + JSON.stringify(L.clean(msgs)));
 
-  sect('Home: nav bar, tilt, slider, fan, lightbox');
+  sect('Home: nav bar, tilt, slider');
   await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(500);
   // Desktop uses the top navigation bar; tablet/phone use the header menu (no floating bottom buttons).
   const navInfo = await page.evaluate(() => { const h = document.querySelector('.site-header'), n = [...document.querySelectorAll('.site-nav a')]; const cur = n.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent);
@@ -155,27 +155,6 @@ function pagesFromSitemap() {
   const tilt = await card.evaluate((el) => ({ rx: el.style.getPropertyValue('--rx'), ry: el.style.getPropertyValue('--ry') }));
   ok(parseFloat(tilt.ry) > 2 && parseFloat(tilt.rx) > 1, `3D tilt ${JSON.stringify(tilt)}`);
   await page.mouse.move(5, 5);
-
-  // fan carousel
-  await page.evaluate(() => document.querySelector('[data-fan-carousel]').scrollIntoView({ block: 'center' }));
-  await page.waitForTimeout(1300);
-  await shot(page, 'home-fan');
-  const fan = () => page.evaluate(() => { const cs = [...document.querySelectorAll('[data-fan-card]')]; return { center: cs.findIndex((c) => c.classList.contains('is-center')), visible: cs.filter((c) => c.style.opacity === '1').length, dot: [...document.querySelectorAll('.fan-dot')].findIndex((d) => d.classList.contains('is-active')) }; });
-  let f0 = await fan(); ok(f0.center === 3 && f0.visible === 7 && f0.dot === 3, `fan initial ${JSON.stringify(f0)}`);
-  await page.click('[data-fan-next]'); await page.waitForTimeout(300);
-  let f1 = await fan(); ok(f1.center === 4 && f1.dot === 4, `fan next ${JSON.stringify(f1)}`);
-  await page.click('[data-fan-card="6"]'); await page.waitForTimeout(300);
-  let f2 = await fan(); ok(f2.center === 6, `fan side-card click ${JSON.stringify(f2)}`);
-  await page.keyboard.press('ArrowLeft'); await page.waitForTimeout(200);
-  ok((await fan()).center === 5, 'fan keyboard');
-  await page.click('[data-fan-card="5"]'); await page.waitForTimeout(500);
-  ok(await page.evaluate(() => !!document.querySelector('.lightbox.is-open')), 'lightbox opens from fan centre');
-  ok(await page.evaluate(() => document.activeElement.className.includes('lightbox__close')), 'lightbox focuses close button');
-  await page.keyboard.press('ArrowRight'); await page.waitForTimeout(100);
-  ok(await page.evaluate(() => document.querySelector('.lightbox__counter').textContent) === '7 / 25', 'lightbox next');
-  await page.keyboard.press('Escape'); await page.waitForTimeout(500);
-  ok(await page.evaluate(() => document.querySelector('.lightbox').hidden), 'lightbox closes on Escape');
-  ok(await page.evaluate(() => document.activeElement.hasAttribute('data-fan-card')), 'focus returns to opener');
 
   // Text-only stories and the site assistant.
   await page.locator('[data-review-carousel]').scrollIntoViewIfNeeded();
