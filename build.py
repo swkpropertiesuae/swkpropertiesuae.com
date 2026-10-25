@@ -810,10 +810,10 @@ def build_home():
 <div class="hero__captions" aria-hidden="true"><p class="hero__caption">The UAE, <em>from above.</em></p><p class="hero__caption">Down to <em>the street.</em></p><p class="hero__caption">Find <em>yours.</em></p></div>
 <div class="hero__content container">
 <span class="hero__eyebrow">UAE Property Advisory · RERA-registered</span>
-<h1 class="hero__title"><span class="sr-only">The UAE is building its next decade. Own your place in it.</span><span data-typewriter aria-hidden="true">The UAE is building its next decade.<br><em>Own your place in it.</em></span></h1>
+<h1 class="hero__title"><span class="sr-only">Invest where the UAE is heading. Live where it already shines.</span><span data-typewriter aria-hidden="true">Invest where the UAE is heading.<br><em>Live where it already shines.</em></span></h1>
 <p class="hero__subtitle">Off-plan and ready homes across the UAE's freehold communities, with mortgage, payment-plan and rental-yield advisory from first shortlist to handover.</p>
 <div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Listings {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Talk to an advisor</a></div>
-<nav class="hero-mode-switch" aria-label="Hero viewing mode"><a href="/?scene=photo" data-hero-mode="cinematic" aria-current="page">Cinematic</a><a href="/" data-hero-mode="3d">Satellite to street</a></nav><div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
+<div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
 <span class="hero-art-credit">AI-created architectural visualisation</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
