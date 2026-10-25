@@ -68,6 +68,9 @@
 
     initTypewriter();
 
+    // An approved film takes precedence over the procedural scene.
+    if (window.SWKFilm && window.SWKFilm(hero, wrap)) return;
+
     // The satellite-to-street WebGL journey is the default wherever WebGL is usable; ?scene=photo (or no WebGL,
     // reduced motion, save-data) keeps the cinematic photograph with its scroll scrub.
     var explicit3d = /[?&](?:scene=3d|hold)\b/.test(location.search);

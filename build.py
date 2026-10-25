@@ -910,7 +910,13 @@ def build_home():
     else:
       team = f'''<div class="review-carousel" data-review-carousel aria-label="{review_heading}">{slides}<div class="review-controls"><button type="button" class="tc-arrow" data-review-prev aria-label="Previous story">{PREV}</button><span data-review-count>1 / {len(reviews) if reviews else 8}</span><button type="button" class="tc-arrow" data-review-next aria-label="Next story">{NEXT}</button><button type="button" class="review-pause" data-review-pause aria-pressed="false">Pause</button></div></div>'''
 
+    # Only enable the footage journey when a licensed, locally hosted film exists.
+    film = SRC / "assets/video/swk-office-journey.mp4"
+    footage = ''
+    if film.is_file():
+        footage = '<video class="hero__film" data-hero-film muted playsinline preload="metadata" aria-hidden="true"><source src="/assets/video/swk-office-journey.mp4" type="video/mp4"></video>'
     body = f"""<div class="hero-cine"><section class="hero" aria-label="Introduction">
+{footage}
 <div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/dubai-cinema-home.webp">
 <img src="/assets/images/hero/dubai-cinema-home.webp" alt="AI-created cinematic UAE architectural visualisation" width="1600" height="1067" fetchpriority="high" decoding="async"></picture></div>
 <canvas class="hero__gl" aria-hidden="true"></canvas>

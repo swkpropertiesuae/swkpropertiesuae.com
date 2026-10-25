@@ -490,3 +490,11 @@
 .section-header.center .cascade-text { margin-inline: auto; }
 .cascade-text__word { height: 1.28em; line-height: 1.28; }
 
+
+/* Real footage mode: the film contains the entire aerial-to-office edit. */
+.hero__film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0; pointer-events: none; }
+.hero.is-film .hero__film { opacity: 1; }
+.hero.is-film .hero__bg, .hero.is-film .hero__gl { opacity: 0; }
+.js .hero-cine:has(.hero.is-film) { height: 420svh; }
+@media (max-width: 767px) { .js .hero-cine:has(.hero.is-film) { height: 320svh; } }
+@media (prefers-reduced-motion: reduce) { .hero__film { display: none; } }
