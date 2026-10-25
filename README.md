@@ -44,6 +44,8 @@ Add new files under `src/assets/`, never directly in `public/` (the build delete
 
 ## Needs your input
 
+- `data/testimonials.json` is empty on purpose. Add only real client statements, each with the client's written approval, in the format of `data/testimonials.example.json` (`approved: true` is required to show an entry; `flag` is the 2-letter country code). Until then the home page shows service commitments instead.
+
 - `data/site.json` `formEndpoint` is empty. Until set, forms open the visitor's mail app and never claim a message was received.
 - `brn` and `tradeLicense` are empty. Fill them in for the footer and legal pages.
 - FAQ fee wording (for example the "AED 4,200" DLD admin fee and housing-fee text) is kept from the original site. Verify it before relying on it.

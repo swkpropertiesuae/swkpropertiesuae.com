@@ -1783,3 +1783,22 @@
 function cards(){var frag=document.createDocumentFragment();matches.slice(shown,shown+12).forEach(function(r){var card=document.createElement('article');card.className='research-card';var link=document.createElement('a');link.href='/blog/'+r.slug+'/';var heading=document.createElement('h3');heading.textContent=r.area;var year=document.createElement('p');year.textContent=String(r.year)+(r.year===2026?' · through 5 October':'');var value=document.createElement('strong');value.className='research-card__value';value.textContent='AED '+Math.round(r.median).toLocaleString('en-AE')+' / sq ft';var count=document.createElement('p');count.textContent=r.count.toLocaleString('en-AE')+' qualifying records';link.append(year,heading,value,count);card.append(link);frag.append(card);});shown=Math.min(shown+12,matches.length);results.append(frag);more.hidden=shown>=matches.length;status.textContent=matches.length+' reports found. Showing '+shown+'.';}
 function filter(){var q=input.value.trim().toLowerCase();results.replaceChildren();shown=0;if(!q){more.hidden=true;status.textContent='Browse all 16 years below, or search the 416 reports.';return;}matches=rows.filter(function(r){return (r.area+' '+r.year).toLowerCase().includes(q);});cards();}
 input.addEventListener('input',function(){if(rows){filter();return;}if(loading)return;status.textContent='Loading the research index…';loading=fetch('/assets/data/research-index.json').then(function(r){if(!r.ok)throw Error();return r.json();}).then(function(data){rows=data;filter();}).catch(function(){status.textContent='Search is temporarily unavailable. Browse by year below.';}).finally(function(){loading=null;});});more.addEventListener('click',cards);});})();
+
+// Testimonials: arrow buttons page the snap-scrolling card track.
+(function () {
+  'use strict';
+  var S = window.SWK;
+  S.reg('testimonials', function () {
+    var root = S.$('[data-testi]');
+    if (!root) return;
+    var track = S.$('[data-testi-track]', root);
+    function step() { var c = track.firstElementChild; return c ? c.getBoundingClientRect().width + 20 : 320; }
+    function go(dir) { track.scrollBy({ left: dir * step(), behavior: S.reduced ? 'auto' : 'smooth' }); }
+    S.$('[data-testi-prev]', root).addEventListener('click', function () { go(-1); });
+    S.$('[data-testi-next]', root).addEventListener('click', function () { go(1); });
+    track.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+    });
+  });
+})();
