@@ -349,7 +349,9 @@
     }
 
     var captions = SWK.$$('.hero__caption', hero);
-    var ranges = [[0.14, 0.44], [0.5, 0.78], [0.8, 1.2]];
+    // Chapters: orbit -> street -> "find yours" -> Al Saqr Business Tower; the doors cut at ~0.86, the office holds to 1.
+    var ranges = [[0.04, 0.27], [0.3, 0.5], [0.53, 0.7], [0.72, 0.85]];
+    wrap.classList.add('is-spatial');
     var progress = 0;
     var scene = null;
     var visible = true;
@@ -358,6 +360,7 @@
     function flatten() {
       if (scene) { try { scene.dispose(); } catch (e) { /* noop */ } scene = null; }
       hero.classList.remove('is-gl', 'is-gl-pending', 'is-spatial-mode');
+      if (progress < 0.02) wrap.classList.remove('is-spatial');   // short photo stage; mid-journey the stage is kept so the page doesn't jump
       hero.classList.add('is-photo-mode');
       var fallbackSource = SWK.$('.hero__bg source', hero), fallbackImage = SWK.$('.hero__bg img', hero);
       if (fallbackSource) fallbackSource.srcset = '/assets/images/hero/dubai-cinema-home.webp';
@@ -374,10 +377,11 @@
       progress = total > 0 ? SWK.clamp(-r.top / total, 0, 1) : 0;
       hero.style.setProperty('--p', progress.toFixed(4));
       hero.classList.toggle('is-leaving', progress > 0.18);
+      hero.classList.toggle('is-arrived', progress > 0.955);   // inside the SWK office: reveal the address and CTAs
       captions.forEach(function (el, i) {
         var rg = ranges[i] || [2, 3];
         var fade = 0.07;
-        var o = SWK.clamp((progress - rg[0]) / fade, 0, 1) * (i === captions.length - 1 ? 1 : SWK.clamp((rg[1] - progress) / fade, 0, 1));
+        var o = SWK.clamp((progress - rg[0]) / fade, 0, 1) * SWK.clamp((rg[1] - progress) / fade, 0, 1);
         var t = SWK.clamp((progress - rg[0]) / (rg[1] - rg[0]), 0, 1);
         el.style.setProperty('--o', o.toFixed(3));
         el.style.setProperty('--y', ((0.5 - t) * 46).toFixed(1) + 'px');

@@ -915,7 +915,9 @@ def build_home():
 <img src="/assets/images/hero/dubai-cinema-home.webp" alt="AI-created cinematic UAE architectural visualisation" width="1600" height="1067" fetchpriority="high" decoding="async"></picture></div>
 <canvas class="hero__gl" aria-hidden="true"></canvas>
 <div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div><div class="hero__streak" aria-hidden="true"></div>
-<div class="hero__captions" aria-hidden="true"><p class="hero__caption">The UAE, <em>from above.</em></p><p class="hero__caption">Down to <em>the street.</em></p><p class="hero__caption">Find <em>yours.</em></p></div>
+<div class="hero__captions" aria-hidden="true"><p class="hero__caption">The UAE, <em>from above.</em></p><p class="hero__caption">Down to <em>the street.</em></p><p class="hero__caption">Find <em>yours.</em></p><p class="hero__caption hero__caption--tower">Al Saqr Business Tower<small>Sheikh Zayed Road, Dubai</small></p></div>
+<div class="hero__flash" aria-hidden="true"></div>
+<div class="hero__arrival"><span class="hero__arrival-eyebrow">Welcome to SWK Properties</span><p class="hero__arrival-addr">Al Saqr Business Tower, Sheikh Zayed Road, Dubai, UAE</p><div class="hero__arrival-ctas"><a href="/contact/" class="btn btn-primary">Book a consultation</a><a href="/properties/" class="btn btn-outline-light">Explore developers</a></div></div>
 <div class="hero__content container">
 <span class="hero__eyebrow">UAE Property Advisory · RERA-registered</span>
 <h1 class="hero__title"><span class="sr-only">Invest where the UAE is heading. Live where it already shines.</span><span data-typewriter aria-hidden="true">Invest where the UAE is heading.<br><em>Live where it already shines.</em></span></h1>

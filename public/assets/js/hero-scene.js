@@ -627,6 +627,25 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     }
   }
 
+  // ---- Al Saqr Business Tower (93 Sheikh Zayed Road, Trade Centre Second): the journey ends inside the SWK office here.
+  // It stands just past the Metro viaduct on the right-hand side of the avenue, its entrance facing the approaching camera.
+  const SAQR = { x: 38, z: -232, w: 26, d: 22, h: 168, pw: 32, pd: 28, ph: 10 };
+  SAQR.front = SAQR.z + SAQR.pd / 2;                 // podium face, where the glass entrance sits
+  for (let i = parts.length - 1; i >= 0; i--) {      // clear the lots under the tower
+    const q = parts[i];
+    const underTower = Math.abs(q.x - SAQR.x) < (q.w + SAQR.pw) / 2 + 5 && Math.abs(q.z - SAQR.z) < (q.d + SAQR.pd) / 2 + 5;
+    const forecourt = q.z < -135 && q.z > SAQR.z - 20 && Math.abs(q.x - SAQR.x) < 30;   // open plaza the camera dives through
+    if (underTower || forecourt) parts.splice(i, 1);
+  }
+  for (let i = casters.length - 1; i >= 0; i--) if (Math.abs(casters[i][0] - SAQR.x) < 36 && Math.abs(casters[i][1] - SAQR.z) < 30) casters.splice(i, 1);
+  for (let i = beacons.length - 1; i >= 0; i--) if (Math.abs(beacons[i][0] - SAQR.x) < 36 && Math.abs(beacons[i][2] - SAQR.z) < 30) beacons.splice(i, 1);
+  push(SAQR.x, 0, SAQR.z, SAQR.w, SAQR.h, SAQR.d, 0, 0.45);          // blue-grey curtain wall shaft
+  parts[parts.length - 1].noSign = true;
+  push(SAQR.x, SAQR.h, SAQR.z, SAQR.w * 0.7, 9, SAQR.d * 0.7, 0, 0.45);
+  push(SAQR.x, 0, SAQR.z, SAQR.pw, SAQR.ph, SAQR.pd, 0, 0.12);       // limestone podium
+  parts[parts.length - 1].noSign = true;
+  beacons.push([SAQR.x, SAQR.h + 12, SAQR.z, 0.9]);
+
   // Rooftop plant rooms and antennas on the taller blocks
   {
     const base = parts.length;
@@ -833,7 +852,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     // Only towers that stand clear of everything between them and the approaching camera carry a sign, so every
     // sign is fully visible; each one is mounted on the roof edge on struts and faces down the avenue.
     const clear = (q) => !parts.some((o) => o !== q && o.z > q.z && o.z < q.z + 170 && Math.abs(o.x - q.x) < (o.w + q.w) / 2 + 2 && o.y + o.h > q.h + 2);
-    const cand = parts.filter((q) => q.y === 0 && !q.round && q.h > 80 && q.w > 12 && q.z > -470 && q.z < -14 && Math.abs(q.x) < 125 && clear(q))
+    const cand = parts.filter((q) => !q.noSign && q.y === 0 && !q.round && q.h > 80 && q.w > 12 && q.z > -470 && q.z < -14 && Math.abs(q.x) < 125 && clear(q))
       .sort((u, v) => v.z - u.z);
     const picked = [];
     cand.forEach((q) => {
@@ -851,7 +870,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     // Street-level blade signs: lit name boards on the front corner of the first row of buildings, reaching out over the
     // pavement at eye height so they read head-on as the camera drives past (clear of the metro and the camera path).
     {
-      const firstRow = parts.filter((q) => q.y === 0 && !q.round && q.h > 24 && q.w > 8 && q.z < 60 && q.z > -340 && Math.abs(q.x) < 80)
+      const firstRow = parts.filter((q) => !q.noSign && q.y === 0 && !q.round && q.h > 24 && q.w > 8 && q.z < 60 && q.z > -340 && Math.abs(q.x) < 80)
         .sort((u, v) => v.z - u.z);
       const used = [];
       firstRow.forEach((q) => {
@@ -1200,6 +1219,291 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     scene.add(mesh);
   }
 
+  // ---- Al Saqr Business Tower entrance, and the SWK office behind it.
+  // The office is a small enclosed set built far from the city (x = OFFICE.x) so the camera can cut through the glass doors.
+  const OFFICE = { x: 3000, hw: 9, zFront: 6, zBack: -26, h: 5.6, signY: 2.78 };
+  const rig = { officeOn: false, signT: 0 };
+  const officeRoot = new THREE.Group();
+  officeRoot.visible = false;
+  scene.add(officeRoot);
+  {
+    const zf = SAQR.front, ex = SAQR.x;
+    const rnd = mulberry32(7711);
+    const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+    const rr = (g, x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
+    const basic = (o) => new THREE.MeshBasicMaterial(Object.assign({ fog: false, toneMapped: false }, o));
+    const addMat = (map, opacity) => basic({ map, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending });
+    const plane = (parent, w, h, mat, x, y, z, rx = 0, ry = 0) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.position.set(x, y, z); m.rotation.set(rx, ry, 0); parent.add(m); return m; };
+    const box = (parent, w, h, d, mat, x, y, z) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); parent.add(m); return m; };
+    const GOLD = '#e2bb62';
+
+    // ---------- Exterior: glass entrance, canopy and name boards on the podium
+    {
+      const lobby = mk(512, 256), lg = lobby.getContext('2d');
+      const lgr = lg.createLinearGradient(0, 0, 0, 256);
+      lgr.addColorStop(0, '#fff6df'); lgr.addColorStop(0.55, '#f7d9a2'); lgr.addColorStop(1, '#a9803f');
+      lg.fillStyle = lgr; lg.fillRect(0, 0, 512, 256);
+      const lrg = lg.createRadialGradient(256, 120, 4, 256, 120, 200);
+      lrg.addColorStop(0, 'rgba(255,255,255,.95)'); lrg.addColorStop(1, 'rgba(255,255,255,0)');
+      lg.fillStyle = lrg; lg.fillRect(0, 0, 512, 256);
+      lg.fillStyle = 'rgba(48,34,18,.5)';
+      [[70, 150, 16, 70], [150, 162, 14, 58], [360, 156, 15, 64], [432, 150, 16, 70]].forEach(([a, b, c, d]) => { lg.fillRect(a, b, c, d); lg.beginPath(); lg.arc(a + c / 2, b - 9, 9, 0, 6.3); lg.fill(); });
+      plane(scene, 9, 4.6, basic({ map: canvasTexture(lobby) }), ex, 2.5, zf + 0.04);
+      const gold = 0x9b7430, dark = 0x1b222d;
+      propBox(9.8, 0.4, 0.6, ex, 5.0, zf + 0.15, gold);
+      [-4.7, 4.7].forEach((s) => propBox(0.34, 5.0, 0.6, ex + s, 2.5, zf + 0.15, gold));
+      for (let i = -2; i <= 2; i++) propBox(0.12, 4.7, 0.3, ex + i * 1.8, 2.45, zf + 0.12, dark);
+      propBox(9, 0.1, 0.3, ex, 3.85, zf + 0.12, dark);
+      propBox(13, 0.5, 6, ex, 5.9, zf + 3, 0x20262f);
+      propBox(13.2, 0.16, 6.2, ex, 5.58, zf + 3, gold);
+      plane(scene, 12, 5.4, basic({ color: 0xffdca0 }), ex, 5.62, zf + 3, Math.PI / 2);   // warm light under the canopy
+      propBox(18, 0.2, 9, ex, 0.1, zf + 4.5, 0xd8d0c0);                                   // stone apron
+      [-7.5, 7.5].forEach((s) => { propBox(1.7, 1.0, 1.7, ex + s, 0.5, zf + 5, 0x1d242c); propBox(1.3, 1.3, 1.3, ex + s, 1.55, zf + 5, 0x2c5a2f); });
+      const nameTex = towerSignTexture('AL SAQR BUSINESS TOWER');
+      signPlane(nameTex, 14, 3.5, ex, 8.15, zf + 0.22, 0);
+      propBox(14.6, 4.1, 0.3, ex, 8.15, zf + 0.04, 0x1a1f27);
+      signPlane(nameTex, 24, 6, ex, SAQR.h - 9, SAQR.z + SAQR.d / 2 + 0.2, 0);             // crown sign facing the avenue
+      propBox(24.8, 6.6, 0.4, ex, SAQR.h - 9, SAQR.z + SAQR.d / 2 + 0.02, 0x1a1f27);
+    }
+
+    // ---------- Interior textures
+    const marble = (() => {
+      const c = mk(1024, 1024), g = c.getContext('2d');
+      const bg = g.createLinearGradient(0, 0, 1024, 1024); bg.addColorStop(0, '#0a1326'); bg.addColorStop(1, '#14213f');
+      g.fillStyle = bg; g.fillRect(0, 0, 1024, 1024);
+      for (let i = 0; i < 34; i++) {
+        g.strokeStyle = rnd() < 0.5 ? `rgba(222,186,108,${0.05 + rnd() * 0.09})` : `rgba(255,255,255,${0.03 + rnd() * 0.05})`;
+        g.lineWidth = 0.6 + rnd() * 1.8; g.beginPath();
+        const x0 = rnd() * 1024, y0 = rnd() * 1024;
+        g.moveTo(x0, y0); g.bezierCurveTo(x0 + (rnd() - 0.5) * 500, y0 + (rnd() - 0.5) * 500, x0 + (rnd() - 0.5) * 500, y0 + (rnd() - 0.5) * 500, x0 + (rnd() - 0.5) * 700, y0 + (rnd() - 0.5) * 700);
+        g.stroke();
+      }
+      g.strokeStyle = 'rgba(214,170,90,.22)'; g.lineWidth = 3;
+      g.strokeRect(1.5, 1.5, 1021, 1021); g.beginPath(); g.moveTo(512, 0); g.lineTo(512, 1024); g.moveTo(0, 512); g.lineTo(1024, 512); g.stroke();
+      const t = canvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(18 / 6, 32 / 6); return t;
+    })();
+
+    const backWall = (() => {
+      const c = mk(2048, 512), g = c.getContext('2d');
+      const bg = g.createLinearGradient(0, 0, 0, 512); bg.addColorStop(0, '#102449'); bg.addColorStop(1, '#0a1730');
+      g.fillStyle = bg; g.fillRect(0, 0, 2048, 512);
+      for (let x = 0; x < 2048; x += 16) { g.fillStyle = (x / 16) % 2 ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.12)'; g.fillRect(x, 0, 8, 512); if ((x / 16) % 8 === 0) { g.fillStyle = 'rgba(226,187,98,.5)'; g.fillRect(x, 0, 2, 512); } }
+      const sp = g.createRadialGradient(1024, 270, 20, 1024, 270, 760); sp.addColorStop(0, 'rgba(226,187,98,.28)'); sp.addColorStop(1, 'rgba(226,187,98,0)');
+      g.fillStyle = sp; g.fillRect(0, 0, 2048, 512);
+      g.fillStyle = 'rgba(226,187,98,.8)'; g.fillRect(0, 10, 2048, 3); g.fillRect(0, 478, 2048, 3);
+      g.fillStyle = '#070d1a'; g.fillRect(0, 486, 2048, 26);
+      return canvasTexture(c);
+    })();
+
+    const windowWall = (() => {
+      const W = 3072, H = 480, c = mk(W, H), g = c.getContext('2d');
+      const sk = g.createLinearGradient(0, 0, 0, H); sk.addColorStop(0, '#1c2c58'); sk.addColorStop(0.38, '#6584b8'); sk.addColorStop(0.66, '#f3b676'); sk.addColorStop(0.8, '#ffe0b0'); sk.addColorStop(1, '#f2c690');
+      g.fillStyle = sk; g.fillRect(0, 0, W, H);
+      [['#6f89b8', 0.52, 150, 0.58], ['#4d6694', 0.7, 210, 0.74], ['#243556', 0.9, 290, 0.9]].forEach(([col, hs, hmax, base]) => {
+        for (let x = -20; x < W;) {
+          const w = 60 + rnd() * 120, h = 60 + rnd() * hmax * hs;
+          g.fillStyle = col; g.fillRect(x, H * 0.84 - h, w, h);
+          if (col === '#243556') { g.fillStyle = 'rgba(255,214,150,.75)'; for (let k = 0; k < 14; k++) g.fillRect(x + 8 + rnd() * (w - 20), H * 0.84 - h + 10 + rnd() * (h - 20), 4, 5); }
+          x += w + rnd() * 14;
+        }
+      });
+      g.fillStyle = '#243556'; g.fillRect(W * 0.62, H * 0.84 - 420, 14, 420); g.fillRect(W * 0.62 - 20, H * 0.84 - 120, 54, 120);   // a slim spire
+      g.fillStyle = '#10182c'; g.fillRect(0, H * 0.84, W, H * 0.16);                                                                // Sheikh Zayed Road below
+      for (let i = 0; i < 90; i++) { g.fillStyle = rnd() < 0.5 ? 'rgba(255,238,200,.85)' : 'rgba(255,70,50,.8)'; g.fillRect(rnd() * W, H * 0.86 + rnd() * H * 0.1, 18 + rnd() * 44, 3); }
+      const rf = g.createLinearGradient(0, 0, W, H); rf.addColorStop(0.3, 'rgba(255,255,255,0)'); rf.addColorStop(0.45, 'rgba(255,255,255,.1)'); rf.addColorStop(0.6, 'rgba(255,255,255,0)');
+      g.fillStyle = rf; g.fillRect(0, 0, W, H);
+      g.fillStyle = '#0b111f'; for (let x = 0; x <= W; x += W / 10) g.fillRect(x - 6, 0, 12, H);
+      g.fillRect(0, 0, W, 10); g.fillRect(0, H - 14, W, 14);
+      return canvasTexture(c);
+    })();
+
+    const woodWall = (() => {
+      const W = 3072, H = 480, c = mk(W, H), g = c.getContext('2d');
+      for (let x = 0; x < W; x += 24) { const s = 36 + ((x / 24) % 3) * 8; g.fillStyle = `rgb(${s + 22},${s + 8},${s - 6})`; g.fillRect(x, 0, 22, H); if ((x / 24) % 6 === 0) { g.fillStyle = 'rgba(226,187,98,.55)'; g.fillRect(x + 22, 0, 2, H); } }
+      for (let i = 0; i < 3; i++) {
+        const nx = 520 + i * 900, ny = 70, nw = 420, nh = 300;
+        g.fillStyle = '#120e0a'; g.fillRect(nx - 8, ny - 8, nw + 16, nh + 16);
+        const ng = g.createLinearGradient(0, ny, 0, ny + nh); ng.addColorStop(0, 'rgba(255,226,170,1)'); ng.addColorStop(1, 'rgba(210,150,70,.55)');
+        g.fillStyle = ng; g.fillRect(nx, ny, nw, nh);
+        g.fillStyle = 'rgba(30,20,10,.85)'; g.fillRect(nx + 40, ny + nh - 120, 60, 120); g.fillRect(nx + 160, ny + nh - 170, 80, 170); g.fillRect(nx + 300, ny + nh - 90, 70, 90);
+      }
+      g.fillStyle = '#070d1a'; g.fillRect(0, H - 22, W, 22);
+      return canvasTexture(c);
+    })();
+
+    const gradTex = (stops, w, h, vertical) => {
+      const c = mk(w, h), g = c.getContext('2d'), gr = vertical ? g.createLinearGradient(0, 0, 0, h) : g.createLinearGradient(0, 0, w, 0);
+      stops.forEach(([o, col]) => gr.addColorStop(o, col)); g.fillStyle = gr; g.fillRect(0, 0, w, h); return canvasTexture(c);
+    };
+    const stripGlow = gradTex([[0, 'rgba(255,225,170,0)'], [0.5, 'rgba(255,225,170,.55)'], [1, 'rgba(255,225,170,0)']], 128, 4, false);
+    const washTex = gradTex([[0, 'rgba(255,214,150,.9)'], [1, 'rgba(255,214,150,0)']], 4, 128, true);
+    const halo = (() => {
+      const c = mk(512, 512), g = c.getContext('2d'), gr = g.createRadialGradient(256, 256, 10, 256, 256, 256);
+      gr.addColorStop(0, 'rgba(255,205,110,.9)'); gr.addColorStop(0.5, 'rgba(240,170,60,.28)'); gr.addColorStop(1, 'rgba(240,170,60,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, 512, 512); return canvasTexture(c);
+    })();
+
+    // ---------- Interior room (everything but the floor; mirrored below the floor for the polished reflection)
+    const room = new THREE.Group();
+    const { hw, zFront, zBack, h: RH } = OFFICE;
+    const L = zFront - zBack, zMid = (zFront + zBack) / 2;
+    plane(room, hw * 2, RH, basic({ map: backWall }), 0, RH / 2, zBack);
+    plane(room, L, RH, basic({ map: windowWall }), -hw, RH / 2, zMid, 0, Math.PI / 2);
+    plane(room, L, RH, basic({ map: woodWall }), hw, RH / 2, zMid, 0, -Math.PI / 2);
+    plane(room, hw * 2, L, basic({ color: 0x0b1018 }), 0, RH, zMid, Math.PI / 2);
+    plane(room, hw * 2, RH, basic({ color: 0x0b1018 }), 0, RH / 2, zFront, 0, Math.PI);
+    [-6, -3, 0, 3, 6].forEach((sx) => {                       // linear LED coves running down the ceiling
+      plane(room, 0.14, L, basic({ color: 0xfff1d4 }), sx, RH - 0.02, zMid, Math.PI / 2);
+      plane(room, 1.1, L, addMat(stripGlow, 0.7), sx, RH - 0.04, zMid, Math.PI / 2);
+    });
+    plane(room, hw * 2, 1.9, addMat(washTex, 0.5), 0, RH - 0.95, zBack + 0.02);    // warm wash falling from the ceiling onto the feature wall
+    // reception desk
+    box(room, 4.6, 1.05, 1.3, basic({ color: 0x131c31 }), 4.8, 0.525, -14);
+    box(room, 4.8, 0.08, 1.5, basic({ color: 0xece3d2 }), 4.8, 1.09, -14);
+    box(room, 4.62, 0.06, 0.04, basic({ color: 0xe2bb62 }), 4.8, 0.6, -13.34);
+    plane(room, 4.6, 0.5, addMat(stripGlow, 0.8), 4.8, 0.14, -13.2, -Math.PI / 2);
+    box(room, 1.6, 0.04, 0.5, basic({ color: 0x0b1018 }), 4.8, 1.15, -14.1);
+    // lounge: rug, two armchairs, marble table, pendant
+    plane(room, 4.6, 3.4, basic({ color: 0x14254a }), -4.8, 0.012, -12, -Math.PI / 2);
+    plane(room, 4.0, 2.8, basic({ color: 0x1b315f }), -4.8, 0.016, -12, -Math.PI / 2);
+    [[-6.1, -12], [-3.5, -12]].forEach(([cx, cz], i) => {
+      box(room, 1.05, 0.5, 1.0, basic({ color: 0xd9cfbd }), cx, 0.25, cz);
+      box(room, 1.05, 0.75, 0.24, basic({ color: 0xcdc2ae }), cx, 0.78, cz - 0.4);
+      box(room, 0.14, 0.62, 0.9, basic({ color: 0xc4b8a2 }), cx + (i ? 0.46 : -0.46), 0.6, cz);
+    });
+    const tbl = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.42, 28), basic({ color: 0xe6ddcb })); tbl.position.set(-4.8, 0.21, -13.1); room.add(tbl);
+    const cord = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 1.8, 6), basic({ color: 0x777777 })); cord.position.set(-4.8, RH - 0.9, -12.6); room.add(cord);
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.34, 20, 14), basic({ color: 0xfff0cf })); bulb.position.set(-4.8, RH - 1.9, -12.6); room.add(bulb);
+    plane(room, 2.6, 2.6, addMat(halo, 0.5), -4.8, RH - 1.9, -12.45);
+    // plants beside the feature wall
+    [-7.8, 7.8].forEach((px) => {
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.34, 0.7, 18), basic({ color: 0x1b2230 })); pot.position.set(px, 0.35, -24.4); room.add(pot);
+      for (let k = 0; k < 7; k++) { const lf = new THREE.Mesh(new THREE.SphereGeometry(0.4 + rnd() * 0.2, 10, 8), basic({ color: rnd() < 0.5 ? 0x2c5d34 : 0x3b7340 })); lf.position.set(px + (rnd() - 0.5) * 0.7, 1.0 + rnd() * 1.1, -24.4 + (rnd() - 0.5) * 0.7); room.add(lf); }
+    });
+
+    // ---------- The signage board: SWK PROPERTIES, drawn into one canvas and scrubbed by scroll
+    const SIGN_W = mobile ? 1536 : 2048, SIGN_H = SIGN_W / 2;
+    const signCanvas = mk(SIGN_W, SIGN_H), sg = signCanvas.getContext('2d');
+    const signTex = canvasTexture(signCanvas);
+    plane(room, 9.2, 4.6, basic({ map: signTex, transparent: true }), 0, 2.78, zBack + 0.1);
+    const haloMat = addMat(halo, 0);
+    plane(room, 17, 10, haloMat, 0, 2.78, zBack + 0.06);
+
+    const logo = new Image();
+    let ready = false, edgeLayer = null, edgeGlow = null, bloom = null, edgeTmp = null, litTmp = null, geo = null;
+    const makeBloom = (src, pad, blur, color) => {
+      const c = mk(src.width + pad * 2, src.height + pad * 2), g = c.getContext('2d');
+      g.shadowColor = color; g.shadowBlur = blur; g.shadowOffsetX = 4000;
+      g.drawImage(src, pad - 4000, pad);
+      return c;
+    };
+    logo.onload = () => {
+      const lh = Math.round(SIGN_H * 0.64), lw = Math.round(lh * logo.naturalWidth / logo.naturalHeight);
+      const base = mk(lw, lh); base.getContext('2d').drawImage(logo, 0, 0, lw, lh);
+      geo = { lw, lh, x: (SIGN_W - lw) / 2, y: (SIGN_H - lh) / 2 - SIGN_H * 0.02 };
+      try {                                               // neon outline traced from the logo's own silhouette
+        const bg = base.getContext('2d'), src = bg.getImageData(0, 0, lw, lh).data;
+        const out = mk(lw, lh), og = out.getContext('2d'), od = og.createImageData(lw, lh), R = Math.max(2, Math.round(lw / 420));
+        const a = (x, y) => (x < 0 || y < 0 || x >= lw || y >= lh) ? 0 : src[(y * lw + x) * 4 + 3];
+        for (let y = 0; y < lh; y++) for (let x = 0; x < lw; x++) {
+          if (src[(y * lw + x) * 4 + 3] > 120 && (a(x - R, y) < 60 || a(x + R, y) < 60 || a(x, y - R) < 60 || a(x, y + R) < 60)) {
+            const i = (y * lw + x) * 4; od.data[i] = 255; od.data[i + 1] = 226; od.data[i + 2] = 150; od.data[i + 3] = 255;
+          }
+        }
+        og.putImageData(od, 0, 0);
+        edgeLayer = out;
+        edgeGlow = makeBloom(out, 40, 16, 'rgba(255,196,80,1)');
+      } catch (err) { edgeLayer = null; }
+      bloom = makeBloom(base, 70, 46, 'rgba(255,190,70,.95)');
+      edgeTmp = mk(lw, lh); litTmp = mk(lw, lh);
+      logoBase = base;
+      ready = true;
+    };
+    let logoBase = null;
+    logo.src = new URL('../images/brand/swk-logo-white.png', import.meta.url).href;
+
+    const ease = (v) => smooth(clamp(v, 0, 1));
+    const drawSign = (t, clk) => {
+      const W = SIGN_W, H = SIGN_H;
+      sg.setTransform(1, 0, 0, 1, 0, 0);
+      sg.clearRect(0, 0, W, H);
+      sg.shadowBlur = 0; sg.globalAlpha = 1; sg.globalCompositeOperation = 'source-over';
+      // brushed navy board
+      const m = H * 0.03, bx = m, by = m, bw = W - m * 2, bh = H - m * 2;
+      const bgr = sg.createLinearGradient(0, 0, 0, H); bgr.addColorStop(0, '#13244a'); bgr.addColorStop(1, '#091226');
+      rr(sg, bx, by, bw, bh, H * 0.05); sg.fillStyle = bgr; sg.fill();
+      sg.strokeStyle = 'rgba(226,187,98,.2)'; sg.lineWidth = 3; sg.stroke();
+      // LED border chasing round the board
+      const per = 2 * (bw + bh), prog = ease(t / 0.2);
+      if (prog > 0) {
+        rr(sg, bx + 10, by + 10, bw - 20, bh - 20, H * 0.045);
+        sg.setLineDash([per * prog, per]); sg.lineDashOffset = 0;
+        sg.strokeStyle = '#f0cd7a'; sg.lineWidth = 7; sg.shadowColor = 'rgba(255,200,90,.95)'; sg.shadowBlur = 22; sg.stroke();
+        sg.setLineDash([]); sg.shadowBlur = 0;
+      }
+      if (!ready || !geo) return;
+      const { lw, lh, x, y } = geo;
+      const wipe = ease((t - 0.1) / 0.4), fillA = ease((t - 0.42) / 0.3);
+      const stutter = t < 0.74 && ((t * 23) % 1) < 0.28 ? 0.45 : 1;
+      if (edgeLayer && wipe > 0 && fillA < 1) {            // neon trace, left to right, with a bright head
+        const e = edgeTmp.getContext('2d');
+        e.globalCompositeOperation = 'source-over'; e.clearRect(0, 0, lw, lh);
+        e.drawImage(edgeGlow, -40, -40); e.drawImage(edgeLayer, 0, 0);
+        const rx = wipe * (lw + 90) - 45;
+        e.globalCompositeOperation = 'destination-in';
+        const mg = e.createLinearGradient(rx - 90, 0, rx, 0); mg.addColorStop(0, 'rgba(0,0,0,1)'); mg.addColorStop(1, 'rgba(0,0,0,0)');
+        e.fillStyle = mg; e.fillRect(0, 0, lw, lh);
+        e.globalCompositeOperation = 'source-over';
+        sg.globalAlpha = 1 - 0.7 * fillA; sg.drawImage(edgeTmp, x, y); sg.globalAlpha = 1;
+        if (wipe < 1) { const hg = sg.createLinearGradient(x + rx - 26, 0, x + rx + 26, 0); hg.addColorStop(0, 'rgba(255,230,160,0)'); hg.addColorStop(0.5, 'rgba(255,240,200,.9)'); hg.addColorStop(1, 'rgba(255,230,160,0)'); sg.globalCompositeOperation = 'lighter'; sg.fillStyle = hg; sg.fillRect(x + rx - 26, y - 10, 52, lh + 20); sg.globalCompositeOperation = 'source-over'; }
+      }
+      if (fillA > 0) {                                       // gold fill and bloom
+        sg.globalCompositeOperation = 'lighter';
+        sg.globalAlpha = fillA * 0.4 * stutter * (0.88 + 0.12 * Math.sin(clk * 2.1));
+        sg.drawImage(bloom, x - 70, y - 70);
+        sg.globalCompositeOperation = 'source-over';
+        sg.globalAlpha = fillA * stutter; sg.drawImage(logoBase, x, y);
+        sg.globalAlpha = 1;
+        const gp = (clk * 0.2) % 1;                          // a glint sweeps across once the sign is lit
+        if (t > 0.86 && gp < 0.3) {
+          const l = litTmp.getContext('2d'), gx = lerp(-0.3, 1.3, gp / 0.3) * lw;
+          l.globalCompositeOperation = 'source-over'; l.clearRect(0, 0, lw, lh); l.drawImage(logoBase, 0, 0);
+          l.globalCompositeOperation = 'source-atop';
+          const sw = l.createLinearGradient(gx - lw * 0.1, 0, gx + lw * 0.1, 0); sw.addColorStop(0, 'rgba(255,255,255,0)'); sw.addColorStop(0.5, 'rgba(255,255,255,.95)'); sw.addColorStop(1, 'rgba(255,255,255,0)');
+          l.fillStyle = sw; l.fillRect(0, 0, lw, lh);
+          sg.globalCompositeOperation = 'lighter'; sg.drawImage(litTmp, x, y); sg.globalCompositeOperation = 'source-over';
+        }
+      }
+      const ta = ease((t - 0.7) / 0.25) * 0.8;                // tagline
+      if (ta > 0) {
+        sg.globalAlpha = ta; sg.fillStyle = '#d9b25f'; sg.textAlign = 'center'; sg.textBaseline = 'middle';
+        sg.font = `600 ${Math.round(H * 0.036)}px "General Sans", "Helvetica Neue", Arial, sans-serif`;
+        if ('letterSpacing' in sg) sg.letterSpacing = `${Math.round(H * 0.012)}px`;
+        sg.fillText('UAE PROPERTY ADVISORY', W / 2, H * 0.915);
+        if ('letterSpacing' in sg) sg.letterSpacing = '0px';
+        sg.globalAlpha = 1;
+      }
+    };
+    let skip = 0, lastT = -1;
+    drawSign(0, 0); signTex.needsUpdate = true;
+    onFrame.push((clk) => {
+      if (!rig.officeOn) return;
+      haloMat.opacity = ease((rig.signT - 0.3) / 0.5) * 0.55;
+      if ((skip++ & 1) && Math.abs(rig.signT - lastT) < 0.002) return;       // ~30 fps for the sign canvas
+      lastT = rig.signT; drawSign(rig.signT, clk); signTex.needsUpdate = true;
+    });
+    logo.addEventListener('load', () => { drawSign(rig.signT, 0); signTex.needsUpdate = true; });
+
+    // ---------- Floor + mirrored copy of the room (polished stone reflecting the sign and the coves)
+    const mirror = room.clone(true);
+    mirror.scale.y = -1;
+    const floor = plane(officeRoot, hw * 2, L, basic({ map: marble, transparent: true, opacity: 0.8 }), 0, 0.002, zMid, -Math.PI / 2);
+    floor.renderOrder = 1;
+    [room, mirror].forEach((g) => { g.position.x = 0; officeRoot.add(g); });
+    officeRoot.children.forEach((c) => { if (c !== floor) c.renderOrder = 0; });
+    officeRoot.position.set(OFFICE.x, 0, 0);
+  }
+
   // ---- Aircraft-warning beacons on the tallest towers
   const bGeo = new THREE.BufferGeometry();
   const bp = new Float32Array(beacons.length * 3);
@@ -1245,10 +1549,27 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
   }
 
   // Scroll journey: 0..SPLIT is the satellite descent (straight down at ORBIT_Y, levelling out as the
-  // altitude falls to street height above the boulevard); SPLIT..1 drives down the avenue.
-  const SPLIT = 0.52, ORBIT_Y = 820, STREET_Y = 18;
+  // altitude falls to street height above the boulevard); SPLIT..PA drives down Sheikh Zayed Road;
+  // PA..PD swoops over the Metro viaduct and dives to the Al Saqr Business Tower entrance; PD..1 is inside the SWK office.
+  const SPLIT = 0.52, PA = 0.72, PD = 0.86, ORBIT_Y = 820, STREET_Y = 18;
+  const DOOR = { x: SAQR.x, z: SAQR.front + 1.6, eye: 1.85 };
+  const heroEl = canvas.parentElement;
+  let lastFlash = -1;
   const ORBIT_FOV = 34;                    // a long lens flattens perspective, which is what makes the opening read as isometric
   const ISO_PITCH = -48, ISO_YAW = 0.62;   // opening tilt (degrees) and compass turn (radians, ~35 deg)
+
+  // Inside the SWK office: a slow dolly down the lobby toward the signage board, easing to a stop on the final frame.
+  function placeOffice(p) {
+    const u = clamp((p - PD) / (1 - PD), 0, 1);
+    const fov = camera.userData.portrait ? 66 : 54;
+    const dEnd = clamp(13 / (2 * Math.tan(fov * Math.PI / 360) * camera.aspect), 12.5, 21);   // far enough back to fit the board with the room around it
+    const k = 1 - Math.pow(1 - u, 2.4);
+    camera.position.set(OFFICE.x + Math.sin(clock * 0.2) * 0.05 + cur.px * 0.5 * k, 1.62 + Math.sin(clock * 0.33) * 0.015 + cur.py * 0.12 * k, lerp(4.2, OFFICE.zBack + dEnd, k));
+    camera.lookAt(OFFICE.x + cur.px * 0.8, lerp(1.9, OFFICE.signY - 0.25, k), OFFICE.zBack);
+    if (Math.abs(camera.fov - fov) > 0.01 || camera.near !== 0.1) { camera.fov = fov; camera.near = 0.1; camera.updateProjectionMatrix(); }
+    rig.signT = clamp((u - 0.06) / 0.8, 0, 1);
+    sky.position.copy(camera.position);
+  }
 
   function placeCamera(dt) {
     const k = 1 - Math.exp(-dt * 7.5);
@@ -1258,33 +1579,51 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
     introT = Math.min(1, introT + dt / 2.6);
     const ie = easeOutCubic(introT);
     const p = clamp(cur.p, 0, 1);
-    const d = clamp(p / SPLIT, 0, 1);
+
+    // The cut through the glass doors: a warm glare (HTML overlay) peaks exactly when the camera jumps inside.
+    const flash = p < PD ? smooth(clamp((p - (PD - 0.05)) / 0.05, 0, 1)) : 1 - smooth(clamp((p - PD) / 0.045, 0, 1));
+    if (Math.abs(flash - lastFlash) > 0.004) { lastFlash = flash; heroEl.style.setProperty('--flash', flash.toFixed(3)); }
+    rig.officeOn = p >= PD;
+    officeRoot.visible = rig.officeOn;
+    if (rig.officeOn) { placeOffice(p); return; }
+
+    const pa = Math.min(p, PA);
+    const d = clamp(pa / SPLIT, 0, 1);
     const de = easeInOutSine(d);
-    const t = clamp((p - SPLIT) / (1 - SPLIT), 0, 1);
+    const t = clamp((pa - SPLIT) / (PA - SPLIT), 0, 1);
 
     // Altitude falls exponentially so the zoom feels constant, like a satellite app.
-    let y = STREET_Y * Math.pow(ORBIT_Y / STREET_Y, 1 - de) + lerp(0, 19, Math.pow(t, 1.1));
+    let y = STREET_Y * Math.pow(ORBIT_Y / STREET_Y, 1 - de) + lerp(0, 14, Math.pow(t, 1.1));
     y *= 1 + 0.16 * (1 - ie);                                   // opening drift: settle in from a touch higher
-    const z = p < SPLIT ? lerp(-230, 95, easeInOutSine(Math.pow(d, 0.92))) : lerp(95, -170, easeInOutSine(t));
+    let z = pa < SPLIT ? lerp(-230, 95, easeInOutSine(Math.pow(d, 0.92))) : lerp(95, -128, easeInOutSine(t));
 
     const street = smooth(clamp(1 - (y - 18) / 320, 0, 1));    // 0 in orbit .. 1 at street level
-    const sway = Math.sin(p * Math.PI * 1.25) * 7.5 * (0.25 + 0.75 * street);
-    const x = clamp(sway + cur.px * lerp(30, 2.6, street) + Math.sin(clock * 0.13) * 0.9 * street, -(9.5 + 30 * (1 - street)), 9.5 + 30 * (1 - street));
+    const sway = Math.sin(pa * Math.PI * 1.25) * 7.5 * (0.25 + 0.75 * street);
+    let x = clamp(sway + cur.px * lerp(30, 2.6, street) + Math.sin(clock * 0.13) * 0.9 * street, -(9.5 + 30 * (1 - street)), 9.5 + 30 * (1 - street));
+    // Entrance dive: stay above the Metro viaduct while crossing to the right, then drop to eye level at the doors.
+    const u = clamp((p - PA) / (PD - PA), 0, 1), ue = easeInOutSine(u);
+    if (u > 0) {
+      x = lerp(x, DOOR.x, ue);
+      z = lerp(z, DOOR.z, ue);
+      y = lerp(y, DOOR.eye, easeInOutSine(clamp((ue - 0.5) / 0.5, 0, 1)));
+    }
     // Isometric opening: look at the ground point below (x, z) from a raised, turned vantage, then swing
     // round behind the boulevard and level out as the altitude falls.
-    const pitchDeg = ISO_PITCH + (ISO_PITCH * -1 - 4) * Math.pow(de, 1.35) - 4 * t - cur.py * 1.4;
+    const pitchDeg = ISO_PITCH + (ISO_PITCH * -1 - 4) * Math.pow(de, 1.35) - 4 * t - cur.py * 1.4 * (1 - ue);
     const pitch = pitchDeg * Math.PI / 180;
     const yaw = ISO_YAW * Math.pow(1 - de, 1.1) - cur.px * 0.03 * street;
     const hx = Math.sin(yaw), hz = -Math.cos(yaw);
     const back = (y / Math.tan(-pitch)) * Math.pow(1 - de, 0.8);
     camera.position.set(x - hx * back, y + cur.py * 1.6 * street + Math.sin(clock * 0.21) * 0.35 * street, z - hz * back);
     const dir = new THREE.Vector3(hx * Math.cos(pitch), Math.sin(pitch), hz * Math.cos(pitch));
-    camera.lookAt(camera.position.clone().addScaledVector(dir, 300));
-    camera.rotation.z += (Math.sin(p * Math.PI * 2) * 0.03 + cur.px * -0.012 + Math.sin(clock * 0.9) * 0.0025) * street;
+    const look = camera.position.clone().addScaledVector(dir, 300);
+    if (u > 0) look.lerp(new THREE.Vector3(DOOR.x, 2.4, SAQR.front - 30), smooth(clamp(ue * 1.25, 0, 1)));   // turn to face the doors
+    camera.lookAt(look);
+    camera.rotation.z += (Math.sin(pa * Math.PI * 2) * 0.03 + cur.px * -0.012 + Math.sin(clock * 0.9) * 0.0025) * street * (1 - ue);
 
     const baseFov = camera.userData.portrait ? 70 : 56;
-    const fov = lerp(ORBIT_FOV, baseFov, smooth(de)) + 10 * t;
-    const near = clamp(camera.position.y * 0.018, 0.5, 16);       // keeps depth precision for the ground-level shadows from orbit
+    const fov = lerp(lerp(ORBIT_FOV, baseFov, smooth(de)) + 10 * t, baseFov, ue);
+    const near = clamp(camera.position.y * 0.018, 0.3, 16);       // keeps depth precision for the ground-level shadows from orbit
     if (Math.abs(camera.fov - fov) > 0.01 || Math.abs(camera.near - near) > 0.05) { camera.fov = fov; camera.near = near; camera.updateProjectionMatrix(); }
 
     // Thin, bluish air from orbit; warm and dense at street level.
@@ -1332,6 +1671,7 @@ export function createHeroScene(canvas, { mobile = false, hold = false } = {}) {
 
   api.resize = resize;
   api.setProgress = (p) => { state.p = clamp(p, 0, 1); };
+  api.jump = (p) => { state.p = cur.p = clamp(p, 0, 1); introT = 1; };   // snap to a scroll position (used for stills and previews)
   api.setPointer = (x, y) => { state.px = clamp(x, -1, 1); state.py = clamp(y, -1, 1); };
   api.start = () => {
     if (hold) {

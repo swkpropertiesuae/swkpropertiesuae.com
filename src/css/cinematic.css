@@ -26,6 +26,11 @@
 @media (max-width: 767px) {
   .js .hero-cine { height: 200vh; height: 200svh; }
 }
+/* The WebGL journey runs from orbit to the SWK office, so it needs a longer scroll stage. */
+.js .hero-cine.is-spatial { height: 480vh; height: 480svh; }
+@media (max-width: 767px) {
+  .js .hero-cine.is-spatial { height: 520vh; height: 520svh; }
+}
 
 .hero {
   position: relative;
@@ -82,7 +87,8 @@
   pointer-events: none;
 }
 
-/* Dissolve the last frames of the fly-through into the page background. */
+/* Dissolve the last frames of the fly-through into the page background (photo / flat modes only:
+   the WebGL journey ends inside the SWK office and holds that frame). */
 .hero::after {
   content: '';
   position: absolute;
@@ -93,6 +99,67 @@
   background: linear-gradient(to bottom, transparent, var(--color-bg));
   opacity: clamp(0, calc((var(--p, 0) - 0.82) * 5.5), 1);
 }
+.hero.is-gl::after { display: none; }
+
+/* Warm glass glare that covers the cut through the Al Saqr Business Tower doors (driven by the scene). */
+.hero__flash {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: var(--flash, 0);
+  background: radial-gradient(ellipse at 50% 52%, #fffaf0 0%, #ffeccb 45%, #f6d9a4 100%);
+}
+
+.hero__caption--tower {
+  padding: 0.35em 0.9em 0.45em;
+  border-radius: 0.5em;
+  background: rgba(250, 244, 233, 0.86);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 18px 50px rgba(15, 34, 68, 0.28);
+  text-shadow: none;
+  align-self: start;
+  margin-top: 14vh;
+}
+
+.hero__caption small {
+  display: block;
+  margin-top: 0.5em;
+  font-family: var(--font-body, inherit);
+  font-size: 0.26em;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+}
+
+/* Arrival panel over the final office frame. */
+.hero__arrival {
+  position: absolute;
+  left: 0; right: 0;
+  top: 100vh; top: 100svh;   /* pinned to the viewport bottom, even where the hero is taller than the screen (mobile) */
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 3.5rem var(--space-5) clamp(1.4rem, 4vh, 2.6rem);
+  text-align: center;
+  color: #f7efdc;
+  background: linear-gradient(to top, rgba(6, 10, 22, 0.88), rgba(6, 10, 22, 0));
+  opacity: clamp(0, calc((var(--p, 0) - 0.955) * 28), 1);
+  transform: translate3d(0, calc(-100% + (1 - clamp(0, (var(--p, 0) - 0.955) * 28, 1)) * 18px), 0);
+  pointer-events: none;
+  visibility: hidden;
+}
+.hero.is-gl.is-arrived .hero__arrival { visibility: visible; }
+.hero__arrival-eyebrow { font-size: 0.74rem; letter-spacing: 0.3em; text-transform: uppercase; color: #e2bb62; }
+.hero__arrival-addr { margin: 0; font-family: var(--font-feature); font-size: clamp(1.15rem, 2.4vw, 1.9rem); color: #fff8ea; }
+.hero__arrival-ctas { display: flex; flex-wrap: wrap; gap: 0.7rem; justify-content: center; pointer-events: auto; }
+.hero__arrival .btn-outline-light { border: 1px solid rgba(247, 239, 220, 0.5); color: #f7efdc; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.hero__arrival .btn-outline-light:hover { background: rgba(255, 255, 255, 0.18); }
+.hero:not(.is-gl) .hero__arrival, .hero-cine.is-flat .hero__arrival, .hero.is-photo-mode .hero__arrival { display: none; }
 
 /* Soft sunset bloom where the street meets the horizon (hides the hard canyon edge). */
 .hero__glow {
