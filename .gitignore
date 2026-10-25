@@ -12,3 +12,4 @@ node_modules/
 swk-chat-operator-password.txt
 
 /data/research.json
+.wrangler/
