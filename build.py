@@ -166,7 +166,17 @@ def project_media(dev, proj, lazy=True, cls=""):
     return f'<img src="{asset(path)}" alt="{alt}" width="800" height="520"{load_attr} decoding="async"{cls_attr}>'
 
 
+def dev_logo(dev, cls="dev-logo"):
+    """Official logo if one has been added at src/assets/images/developers/<slug>.(svg|png|webp); otherwise empty."""
+    for ext in ("svg", "png", "webp"):
+        if (SRC / "assets" / "images" / "developers" / f"{dev['slug']}.{ext}").exists():
+            return f'<img class="{cls}" src="/assets/images/developers/{dev["slug"]}.{ext}" alt="{e(dev["name"])} logo" loading="lazy" decoding="async">'
+    return ""
+
+
 def film_url(dev, proj):
+    if proj.get("video"):
+        return f"https://www.youtube.com/watch?v={proj['video']}"
     return "https://www.youtube.com/results?search_query=" + quote(f"{proj['name']} {dev['name']} official")
 
 
@@ -704,7 +714,7 @@ def dev_card(dev, i=0):
     names = "".join(f"<li>{e(p['name'])}</li>" for p in dev["projects"][:3])
     mono = "".join(w[0] for w in dev["name"].replace("&", " ").split()[:2]).upper()
     return f"""<a class="dev-card" href="/properties/{dev['slug']}/" data-reveal data-reveal-delay="{(i % 3) * 70}" style="--dc:{dev['hue']}" aria-label="{e(dev['name'])}: {len(dev['projects'])} featured projects">
-<span class="dev-card__mono" aria-hidden="true">{mono}</span><h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
+{dev_logo(dev) or f'<span class="dev-card__mono" aria-hidden="true">{mono}</span>'}<h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
 <ul>{names}</ul><span class="dev-card__count">{len(dev['projects'])} featured projects {ARROW}</span></a>"""
 
 
@@ -1019,7 +1029,7 @@ def build_developer(d):
     more = "".join(dev_card(x, i) for i, x in enumerate(others))
     body = f"""{page_hero(d['name'], d['tagline'], trail, bg="properties")}
 <section class="section container ambient-glow-host" style="--dc:{d['hue']}">{GLOW}
-<div class="dev-intro"><div><span class="eyebrow">About the developer</span><h2>{e(d['name'])}: {e(d['knownFor'].lower())}</h2><p>{e(d['about'])}</p></div>
+<div class="dev-intro"><div>{dev_logo(d, "dev-logo dev-logo--lg")}<span class="eyebrow">About the developer</span><h2>{e(d['name'])}: {e(d['knownFor'].lower())}</h2><p>{e(d['about'])}</p></div>
 <aside class="dev-intro__card"><span>Known for</span><strong>{e(d['knownFor'])}</strong><span>Featured here</span><strong>{len(d['projects'])} projects</strong>
 <a href="{e(d['site'])}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-sm">Developer website ↗</a></aside></div>
 <nav class="dev-jump" aria-label="Projects by {e(d['name'])}">{jump}</nav></section>

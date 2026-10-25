@@ -282,3 +282,6 @@ main > section .section-header h2, main > section .section-head-row h2 { backgro
 .hero__search-wrap .search-bar { grid-template-columns:repeat(3, 1fr) auto; }
 @media(max-width:767px) { .hero__search-wrap .search-bar { grid-template-columns:1fr; } }
 @media(prefers-reduced-motion:reduce) { .dev-card, .project-card, .project-card__media img { transition:none; } .dev-card:hover, .project-card:hover { transform:none; } }
+
+.dev-logo { display:block; max-width:150px; max-height:48px; width:auto; height:auto; object-fit:contain; }
+.dev-logo--lg { max-width:210px; max-height:70px; margin-bottom:18px; }
