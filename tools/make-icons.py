@@ -47,27 +47,52 @@ def disc(size, mark_w=0.8, ring=0.07, bg=NAVY):
     return canvas.resize((size, size), Image.LANCZOS)
 
 
-# Detailed favicons: tight-cropped SWK mark filling a rounded navy tile with a fine gold keyline.
-from PIL import ImageDraw
+# Favicons: the full SWK mark (roof, swoosh and the whole of SWK), tight-cropped, on a navy tile that carries no
+# border so every pixel goes to the artwork. Small sizes get a brighter gold and a light sharpen so the letters stay
+# readable in a browser tab. Each size is rendered natively from the artwork (not shrunk from one big bitmap).
+import io
+import struct
+from PIL import ImageDraw, ImageEnhance, ImageFilter
+
 _tight = mark.crop(mark.getchannel("A").point(lambda v: 255 if v > 24 else 0).getbbox())
 
 
-def fav(size, fill=0.9, radius=0.22):
+def fav(size, fill=0.94, radius=0.2, lift=True):
     k = 8
     big = size * k
     c = Image.new("RGBA", (big, big), (0, 0, 0, 0))
     d = ImageDraw.Draw(c)
-    d.rounded_rectangle((0, 0, big - 1, big - 1), radius=int(big * radius), fill=(201, 154, 61, 255))
-    b = max(k, int(big * 0.035))
-    d.rounded_rectangle((b, b, big - 1 - b, big - 1 - b), radius=max(0, int(big * radius) - b), fill=NAVY)
+    d.rounded_rectangle((0, 0, big - 1, big - 1), radius=int(big * radius), fill=NAVY)
     w = int(big * fill)
     m = _tight.resize((w, int(w * _tight.height / _tight.width)), Image.LANCZOS)
+    if lift and size <= 64:
+        rgb = ImageEnhance.Brightness(m.convert("RGB")).enhance(1.28)
+        rgb = ImageEnhance.Contrast(rgb).enhance(1.12)
+        m = Image.merge("RGBA", (*rgb.split(), m.getchannel("A")))
     c.alpha_composite(m, ((big - m.width) // 2, (big - m.height) // 2))
-    return c.resize((size, size), Image.LANCZOS)
+    out = c.resize((size, size), Image.LANCZOS)
+    if size <= 64:
+        out = out.filter(ImageFilter.UnsharpMask(radius=0.6, percent=110, threshold=0))
+    return out
+
+
+def write_ico(path, sizes):
+    frames = []
+    for s in sizes:
+        buf = io.BytesIO()
+        fav(s).save(buf, "PNG", optimize=True)
+        frames.append((s, buf.getvalue()))
+    head = struct.pack("<HHH", 0, 1, len(frames))
+    offset = 6 + 16 * len(frames)
+    entries, blobs = b"", b""
+    for s, data in frames:
+        entries += struct.pack("<BBBBHHII", s % 256, s % 256, 0, 0, 1, 32, len(data), offset + len(blobs))
+        blobs += data
+    path.write_bytes(head + entries + blobs)
 
 
 fav(32).save(brand / "favicon-32.png", optimize=True)
-fav(180).save(brand / "favicon.png", optimize=True)
-fav(256).save(ROOT / "src" / "root" / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
-fav(180, 0.88, 0).convert("RGB").save(brand / "favicon-app.png", optimize=True)   # iOS rounds and masks its own icon
-print("detailed favicons written")
+fav(180, 0.92, 0.22, lift=False).save(brand / "favicon.png", optimize=True)
+write_ico(ROOT / "src" / "root" / "favicon.ico", [16, 32, 48])
+fav(180, 0.9, 0, lift=False).convert("RGB").save(brand / "favicon-app.png", optimize=True)   # iOS rounds and masks its own icon
+print("favicons written")

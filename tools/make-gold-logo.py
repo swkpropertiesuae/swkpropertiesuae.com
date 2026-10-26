@@ -12,7 +12,7 @@ from PIL import Image, ImageFilter
 
 BRAND = Path(__file__).resolve().parent.parent / "src" / "assets" / "images" / "brand"
 SRC = BRAND / "swk-logo-navy.png"
-MARK_CROP_BOTTOM = 232  # keeps the roof, swoosh and SWK; drops the PROPERTIES line
+MARK_CROP_BOTTOM = 252  # keeps the roof, swoosh and the whole of SWK (letters end at row 238); drops the PROPERTIES line (starts at row 253)
 
 
 def smooth_alpha(a, scale):
