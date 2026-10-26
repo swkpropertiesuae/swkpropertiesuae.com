@@ -6687,3 +6687,60 @@ body .hero__beat .hero__lead:not(#_) { width: max-content; max-width: min(92vw, 
 body .hero__beat { justify-self: center; }
 body .hero .hero__kicker:not(#_) { font-size: 0.72rem; text-shadow: 0 1px 2px rgba(2, 6, 14, 0.95), 0 2px 12px rgba(2, 6, 14, 0.9), 0 4px 26px rgba(2, 6, 14, 0.7); }
 body:has(.swk-chat__panel:not([hidden])) .cookie-banner { opacity: 0; pointer-events: none; }
+
+/* ======================================================================
+   Card rhythm: every card of a kind has the same rows, the same highlighted label,
+   the same footer position. Longer copy is clamped, never allowed to stretch a card.
+   ====================================================================== */
+:root { --clamp-bg: transparent; }
+body :is(.team-grid, .dev-grid, .project-grid, .svc-grid, .blog-grid, .property-grid) { align-items: stretch; }
+body :is(.team-card, .dev-card, .project-card, .svc-card, .blog-card) { display: flex; flex-direction: column; height: 100%; }
+
+/* Team: name (2 rows), highlighted position (2 rows), bio (9 rows) */
+body .team-card__body { display: flex; flex-direction: column; gap: 12px; flex: 1; padding: 20px 20px 24px; }
+body .team-card h3:not(#_):not(#_) { min-height: 2lh; display: flex; align-items: flex-end; font-size: 0.98rem; line-height: 1.35; letter-spacing: 0.14em; margin: 0; }
+body .team-card__role:not(#_) {
+  display: flex; align-items: center; min-height: 2.6lh; margin: 0; padding: 8px 12px; border-radius: 2px;
+  font-family: var(--tw-head); font-size: 0.66rem; font-weight: 600; line-height: 1.5; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #ecd7a6 !important; background: rgba(205, 178, 126, 0.12); border: 1px solid rgba(205, 178, 126, 0.55); border-left: 3px solid #cdb27e;
+}
+body .tw-light .team-card__role:not(#_) { color: #5f4720 !important; background: rgba(125, 96, 48, 0.1); border-color: rgba(125, 96, 48, 0.5); border-left-color: #7d6030; }
+body .team-card__bio { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 10; overflow: hidden; min-height: 9lh; margin: 0; font-size: 0.88rem; line-height: 1.6; }
+
+/* Developer cards: logo, name (2), tagline (2), three single-line projects, count */
+body .dev-card h3:not(#_):not(#_) { min-height: 2lh; display: flex; align-items: flex-start; margin: 0; line-height: 1.35; }
+body .dev-card__tag:not(#_) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-height: 2lh; margin: 0; }
+body .dev-card ul { min-height: 3lh; margin-bottom: auto; }
+body .dev-card li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body .dev-card__count { margin-top: auto; }
+
+/* Project cards */
+body .project-card__body { display: flex; flex-direction: column; flex: 1; }
+body .project-card__collection { min-height: 1lh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body .project-card h3:not(#_):not(#_) { min-height: 2lh; display: flex; align-items: flex-start; }
+body .project-card__loc { min-height: 1lh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
+body .project-card__blurb { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; min-height: 4lh; }
+body .project-card__more { margin-top: auto; }
+
+/* Services */
+body .svc-card h3:not(#_):not(#_) { min-height: 1lh; }
+body .svc-card p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; min-height: 3lh; }
+body .svc-card__more { margin-top: auto; }
+
+/* Journal */
+body .blog-card h3:not(#_):not(#_) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; min-height: 3lh; }
+body .blog-card p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; min-height: 4lh; }
+
+/* Value items and community tiles */
+body .value-item h3:not(#_):not(#_) { min-height: 3lh; display: flex; align-items: flex-start; }
+body .place-card h3:not(#_):not(#_) { min-height: 2lh; display: flex; align-items: flex-end; }
+body .svc-grid { grid-auto-rows: 1fr; }
+body .team-card__role:not(#_) { font-size: 0.62rem; letter-spacing: 0.1em; min-height: calc(2lh + 18px); height: calc(2lh + 18px); overflow: hidden; }
+body .dev-card__brand { height: 64px; min-height: 64px; display: flex; align-items: center; justify-content: flex-start; }
+body .dev-card__brand img { max-height: 52px; width: auto; max-width: 70%; object-fit: contain; object-position: left center; }
+body .project-card__media .project-card__dev, body .dev-card__media .project-card__dev {
+  background: rgba(7, 13, 24, 0.82) !important; color: #ecd7a6 !important; border: 1px solid rgba(205, 178, 126, 0.5) !important;
+  padding: 5px 10px !important; border-radius: 2px; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+body .calc-donut__center, body .calc-donut__center * { opacity: 1 !important; font-family: var(--tw-body) !important; font-weight: 500 !important; }
+body .tw-dark .calc-donut__center, body .tw-dark .calc-donut__center * { color: #f3eee3 !important; }

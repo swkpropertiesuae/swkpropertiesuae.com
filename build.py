@@ -754,7 +754,7 @@ def row_carousel(cards, label, noun):
 
 
 def dev_card(dev, i=0, reveal=True):
-    names = "".join(f"<li>{e(p['name'])}</li>" for p in dev["projects"][:3])
+    names = "".join(f"<li title=\"{e(p['name'])}\">{e(p['name'])}</li>" for p in dev["projects"][:3])
     mono = "".join(w[0] for w in dev["name"].replace("&", " ").split()[:2]).upper()
     rv = f' data-reveal data-reveal-delay="{(i % 3) * 70}"' if reveal else ""
     return f"""<a class="dev-card" href="/properties/{dev['slug']}/"{rv} style="--dc:{dev['hue']}" aria-label="{e(dev['name'])}: {len(dev['projects'])} featured projects">
