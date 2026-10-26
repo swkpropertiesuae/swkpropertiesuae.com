@@ -20,7 +20,7 @@
 .swk-chat { position:fixed; right:24px; bottom:28px; z-index:85; font-family:'General Sans',sans-serif; }
 .swk-chat__launcher { position:relative; display:flex; align-items:center; gap:0; margin-left:auto; border:1.5px solid #c9a24a; background:radial-gradient(circle at 32% 24%, #2a3a5c 0%, #17243c 62%, #101a2e 100%); color:#f3dfa2; border-radius:40px; padding:0; height:68px; min-width:68px; box-shadow:0 10px 30px #17243c55, inset 0 1px 0 #ffffff1f; cursor:pointer; overflow:hidden; transition:box-shadow .25s ease, transform .25s ease; }
 .swk-chat__launcher:hover, .swk-chat__launcher:focus-visible { transform:translateY(-2px); box-shadow:0 14px 36px #17243c66, 0 0 0 3px #c9a24a40, inset 0 1px 0 #ffffff1f; }
-.swk-chat__launcher img { flex:none; width:50px; height:auto; padding:0 9px; box-sizing:content-box; filter:drop-shadow(0 1px 1px #00000066); }
+.swk-chat__launcher img { flex:none; width:42px; height:auto; padding:0 13px; box-sizing:content-box; filter:drop-shadow(0 1px 1px #00000066); }
 .swk-chat__launcher span { max-width:0; opacity:0; white-space:nowrap; font-weight:600; font-size:.85rem; letter-spacing:.02em; transition:max-width .3s ease, opacity .2s ease, padding .3s ease; }
 .swk-chat__launcher:hover span, .swk-chat__launcher:focus-visible span { max-width:150px; opacity:1; padding-right:20px; }
 .swk-chat__panel { position:absolute; right:0; bottom:84px; width:min(390px,calc(100vw - 32px)); max-height:min(650px,calc(100dvh - 180px)); overflow:auto; border:1px solid #d6c8b4; background:#fbfaf7; color:#17243c; border-radius:24px; box-shadow:0 24px 80px #17243c30; }
@@ -38,7 +38,7 @@
 .swk-chat form button { min-width:44px; border:0; background:#17243c; color:white; border-radius:12px; cursor:pointer; }
 .swk-chat__handoff { display:block; margin:0 16px 12px; padding:12px; text-align:center; background:#564456; color:white; border-radius:12px; font-size:.83rem; }
 .swk-chat__privacy { display:block; padding:0 16px 16px; font-size:.65rem; line-height:1.5; color:#575969; }
-@media(max-width:899px) { .swk-chat { bottom:calc(102px + env(safe-area-inset-bottom)); right:16px; } .swk-chat__launcher { height:58px; min-width:58px; } .swk-chat__launcher img { width:42px; padding:0 8px; } .swk-chat__launcher span { display:none; } .swk-chat__panel { max-height:calc(100dvh - 240px); bottom:64px; } }
+@media(max-width:899px) { .swk-chat { bottom:calc(102px + env(safe-area-inset-bottom)); right:16px; } .swk-chat__launcher { height:58px; min-width:58px; } .swk-chat__launcher img { width:36px; padding:0 11px; } .swk-chat__launcher span { display:none; } .swk-chat__panel { max-height:calc(100dvh - 240px); bottom:64px; } }
 @media(prefers-reduced-motion:reduce) { .page-hero__bg img { animation:none; } .fan-card img { transition:none; transform:none; } }
 /* One floating contact entry; WhatsApp remains available inside Concierge. */
 body:has(.swk-chat) .whatsapp-float { display:none; }
