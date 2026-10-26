@@ -11,7 +11,7 @@ const PORT = Number(process.argv[2]) || 8765;
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.json': 'application/json', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8', '.svg': 'image/svg+xml',
-  '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2',
+  '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.mp4': 'video/mp4',
 };
 
 function hash(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -32,7 +32,32 @@ function createServer(chat) { return http.createServer((req, res) => {
   if (!file.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
   if (fs.existsSync(file) && fs.statSync(file).isFile()) {
-    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
+    const stat = fs.statSync(file);
+    const type = TYPES[path.extname(file)] || 'application/octet-stream';
+    const range = req.headers.range;
+    if (range) {
+      const m = /^bytes=(\d*)-(\d*)$/.exec(range);
+      if (m) {
+        const start = m[1] ? parseInt(m[1], 10) : 0;
+        const end = m[2] ? Math.min(stat.size - 1, parseInt(m[2], 10)) : stat.size - 1;
+        if (start <= end && start < stat.size) {
+          res.writeHead(206, {
+            'Content-Type': type,
+            'Accept-Ranges': 'bytes',
+            'Content-Range': `bytes ${start}-${end}/${stat.size}`,
+            'Content-Length': end - start + 1,
+            'Cache-Control': 'no-store',
+          });
+          return fs.createReadStream(file, { start, end }).pipe(res);
+        }
+      }
+    }
+    res.writeHead(200, {
+      'Content-Type': type,
+      'Content-Length': stat.size,
+      'Accept-Ranges': 'bytes',
+      'Cache-Control': 'no-store',
+    });
     return fs.createReadStream(file).pipe(res);
   }
   if (p.startsWith('/assets/images/')) {

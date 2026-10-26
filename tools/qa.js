@@ -105,8 +105,16 @@ function pagesFromSitemap() {
   ok(L.clean(msgs).length === 0, 'home console clean: ' + JSON.stringify(L.clean(msgs)));
 
   sect('Home: hero timeline, communities, services, testimonials');
-  const tl = await page.evaluate(async () => { const hero = document.querySelector('.hero'); return { beats: hero.querySelectorAll('[data-beat]').length, reveal: !!hero.querySelector('.hero__reveal-name'), name: hero.querySelector('.hero__reveal-name').textContent.trim(), phase: hero.dataset.phase }; });
-  ok(tl.beats === 3 && tl.reveal && tl.name === 'SWK PROPERTIES', `hero has 3 hook beats and a logo reveal with the company name ${JSON.stringify(tl)}`);
+  const tl = await page.evaluate(async () => { const hero = document.querySelector('.hero'); return { beats: hero.querySelectorAll('[data-beat]').length, chapters: hero.querySelectorAll('[data-hero-chapter]').length, reveal: !!hero.querySelector('.hero__reveal-name'), name: hero.querySelector('.hero__reveal-name').textContent.trim(), phase: hero.dataset.phase }; });
+  ok(tl.beats === 3 && tl.chapters === 4 && tl.reveal && tl.name === 'SWK PROPERTIES', `hero has 3 hook beats, 4 interactive chapters, and a logo reveal with the company name ${JSON.stringify(tl)}`);
+  const phases = [];
+  for (const f of [0, 0.38, 0.67, 0.95]) {
+    await page.evaluate((f) => { const w = document.querySelector('.hero-cine'); scrollTo({ top: w.offsetTop + (w.offsetHeight - innerHeight) * f, behavior: 'instant' }); }, f);
+    await page.waitForTimeout(450);
+    phases.push(await page.evaluate(() => ({ p: parseFloat(document.querySelector('.hero').style.getPropertyValue('--p')), phase: document.querySelector('.hero').dataset.phase })));
+  }
+  ok(phases[0].phase === 'b1' && phases[1].phase === 'b2' && phases[2].phase === 'b3' && phases[3].phase === 'logo', `hero scroll animation advances through b1 -> b2 -> b3 -> logo ${JSON.stringify(phases)}`);
+  await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await page.waitForTimeout(300);
   const rows = await page.evaluate(() => { const c = [...document.querySelectorAll('.place-card')]; return { n: c.length, tops: [...new Set(c.map((e) => Math.round(e.getBoundingClientRect().top + scrollY)))].length, sizes: new Set(c.map((e) => Math.round(e.getBoundingClientRect().width))).size }; });
   ok(rows.n === 8 && rows.tops === 2 && rows.sizes === 1, `communities: 8 equal tiles in exactly 2 rows ${JSON.stringify(rows)}`);
   const svc = await page.evaluate(() => ({ n: document.querySelectorAll('.svc-grid .svc-card').length, cols: getComputedStyle(document.querySelector('.svc-grid')).gridTemplateColumns.split(' ').length }));

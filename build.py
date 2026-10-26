@@ -912,8 +912,8 @@ def build_home():
         review_heading = "What you can expect from SWK"
         review_intro = "Our service commitments. Client reviews will appear here once verified and approved."
 
-    body = f"""<div class="hero-cine"><section class="hero" data-phase="b1" aria-label="Introduction">
-<div class="hero__bg"><video class="hero__video" autoplay muted loop playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk.mp4" type="video/mp4"></video></div>
+    body = f"""<div class="hero-cine" data-hero-cine><section class="hero" data-phase="b1" aria-label="Introduction">
+<div class="hero__bg"><video class="hero__video" muted loop playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk.mp4" type="video/mp4"></video></div>
 <div class="hero__content container">
 <h1 class="sr-only">SWK Properties: Dubai off-plan and ready property, with direct access to the UAE's leading developers</h1>
 <div class="hero__stage" aria-hidden="true">
@@ -927,7 +927,16 @@ def build_home():
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
 </div>
-<div class="hero__reveal" aria-hidden="true"><div class="hero__reveal-inner"><img class="hero__reveal-logo" src="/assets/images/brand/swk-logo-white.png" alt="" width="676" height="550" decoding="async"><span class="hero__reveal-rule"></span><strong class="hero__reveal-name">SWK PROPERTIES</strong><span class="hero__reveal-tag">Private Real Estate Advisory &middot; RERA ORN 51517</span></div></div>
+<div class="hero__reveal" aria-hidden="true"><div class="hero__reveal-inner"><img class="hero__reveal-logo" src="/assets/images/brand/swk-logo-white.png" alt="" width="676" height="550" decoding="async"><span class="hero__reveal-rule"></span><strong class="hero__reveal-name">SWK PROPERTIES</strong><span class="hero__reveal-tag">Private Real Estate Advisory &middot; RERA ORN 51517</span><div class="hero__reveal-actions"><a href="/properties/" class="btn btn-gold btn-lg" tabindex="-1">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline btn-lg" tabindex="-1">Book a Consultation</a></div></div></div>
+<div class="hero__scrubber" data-hero-scrubber role="group" aria-label="Scroll journey chapters">
+<div class="hero__scrub-track" data-hero-track title="Drag or click to scrub the aerial journey"><span class="hero__scrub-fill"></span><span class="hero__scrub-thumb"></span></div>
+<div class="hero__chapters">
+<button type="button" class="hero__chapter is-active" data-hero-chapter="0" aria-current="step"><span class="hero__chapter-num">01</span><span class="hero__chapter-label">Sheikh Zayed Rd</span></button>
+<button type="button" class="hero__chapter" data-hero-chapter="0.38"><span class="hero__chapter-num">02</span><span class="hero__chapter-label">SWK Reception</span></button>
+<button type="button" class="hero__chapter" data-hero-chapter="0.67"><span class="hero__chapter-num">03</span><span class="hero__chapter-label">Advisory Lounge</span></button>
+<button type="button" class="hero__chapter" data-hero-chapter="0.95"><span class="hero__chapter-num">04</span><span class="hero__chapter-label">Burj Panorama</span></button>
+</div>
+</div>
 <span class="hero-art-credit">AI-generated video</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
 </section></div>
 
