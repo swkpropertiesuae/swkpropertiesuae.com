@@ -5855,3 +5855,11 @@ main .project-feature__copy h3:not(#_) { font-size: var(--t-h3-lg); }
 .hero__dubai { display: inline-block; white-space: nowrap; }
 .hero__dubai img { display: inline-block; height: 1.0em; width: auto; vertical-align: -.02em; margin-right: .08em; }
 @media (prefers-reduced-motion: reduce) { .hero .hero__hook:not(#_) { animation: none; background-position: -60% 0, 0 0; } }
+
+/* Headline is fully static: no shine sweep, entrance, hover or transition effects. */
+.hero .hero__hook:not(#_), .hero .hero__hook:not(#_):hover, .hero__beat:hover .hero__hook:not(#_),
+.hero.is-idle[data-phase='b1'] .hero__hook:not(#_) {
+  animation: none !important; transition: none !important; transform: none !important;
+  background-position: 62% 0, 0 0;
+  filter: drop-shadow(0 2px 3px rgba(4, 10, 22, .55)) drop-shadow(0 14px 34px rgba(4, 10, 22, .5));
+}
