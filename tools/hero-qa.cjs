@@ -8,7 +8,7 @@ const sizes = [[1920,1080],[1440,900],[1280,720],[1024,768],[768,1024],[390,844]
 const intersects = (a,b) => a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+b.height && a.y+a.height > b.y;
 (async () => {
   fs.mkdirSync(out, { recursive:true });
-  const browser = await chromium.launch({args:['--no-sandbox']});
+  const browser = await chromium.launch({channel:process.env.HERO_BROWSER_CHANNEL || 'chrome',args:['--no-sandbox']});
   const failures=[];
   for(const [width,height] of sizes) {
     const page=await browser.newPage({viewport:{width,height}, reducedMotion:'reduce'});
@@ -50,7 +50,7 @@ const intersects = (a,b) => a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+
     await page.waitForTimeout(400);
     assert(await page.locator('video').evaluate(e=>e.currentTime)>t,'Idle video does not advance');
     await page.evaluate(()=>scrollTo(0,400));
-    assert(await page.locator('video').evaluate(e=>e.paused),'Scroll did not pause idle playback');
+    await page.waitForFunction(()=>document.querySelector('video').paused,null,{timeout:600});
     await page.waitForFunction(()=>!document.querySelector('.hero__video').paused,{timeout:5000});
     await page.locator('video').evaluate(e=>{e.pause();e.currentTime=e.duration-0.2;e.playbackRate=1;e.play();});
     await page.waitForFunction(()=>document.querySelector('.hero').dataset.phase==='logo',{timeout:5000});
@@ -59,7 +59,7 @@ const intersects = (a,b) => a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+
     assert(await page.locator('.hero__logo-sheen').evaluate(e=>getComputedStyle(e).animationName==='swk-logo-sheen'),'Gloss animation missing');
     await page.screenshot({path:`${out}/closing-logo.png`});
     console.log('PASS idle playback, scroll takeover, resume, final-frame logo');
-  } catch(e) { failures.push(`playback: ${e.message}`); }
+  } catch(e) { failures.push(`playback: ${e.message}; ${JSON.stringify(await page.locator('video').evaluate(e=>({src:e.currentSrc,ready:e.readyState,paused:e.paused,time:e.currentTime,error:e.error&&e.error.message})))}`); }
   await page.close();
   const uhd=await browser.newPage({viewport:{width:1440,height:900},deviceScaleFactor:2});
   try {
@@ -67,7 +67,7 @@ const intersects = (a,b) => a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+
     await uhd.waitForFunction(()=>document.querySelector('video').videoWidth===3840);
     assert.equal(await uhd.locator('video').evaluate(e=>e.videoHeight),2160);
     console.log('PASS high-density display selects 3840x2160 delivery');
-  } catch(e) { failures.push(`4K selection: ${e.message}`); }
+  } catch(e) { failures.push(`4K selection: ${e.message}; ${JSON.stringify(await uhd.locator('video').evaluate(e=>({src:e.currentSrc,ready:e.readyState,width:e.videoWidth,error:e.error&&e.error.message})))}`); }
   await uhd.close();
   await browser.close();
   assert.equal(failures.length,0,failures.join('\n'));

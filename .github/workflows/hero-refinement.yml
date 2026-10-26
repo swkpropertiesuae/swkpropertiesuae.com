@@ -21,7 +21,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
           npm install --prefix /tmp/hero-browser --no-save playwright@1.56.1
-          /tmp/hero-browser/node_modules/.bin/playwright install --with-deps chromium
+          /tmp/hero-browser/node_modules/.bin/playwright install --with-deps chrome
       - name: Build 4K delivery and site
         run: |
           git show 71beb036a15243c398e5b14dffe4226d5230fe0f:src/assets/video/hero-swk.mp4 > /tmp/hero-original.mp4
