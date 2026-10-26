@@ -34,47 +34,20 @@ function drawCameraLayer(ctx, source, srcW, srcH, W, H, camX, camY, camScale) {
 }
 
 function drawEarthHud(ctx, W, H, p, mobile) {
-  if (mobile && W < 420) return;
+  if (mobile && W < 480) return;
   ctx.save();
   var alt = Math.round(lerp(680, 410, smootherstep(0, 1.0, p)));
-  var phaseLabel =
-    p < 0.16 ? 'SHEIKH ZAYED ROAD \u00b7 LIVE UHD AERIAL FOOTAGE' :
-    p < 0.45 ? 'DUBAI PRIME CORRIDOR \u00b7 DIRECT DEVELOPER ACCESS' :
-    p < 0.72 ? 'RERA ORN 51517 \u00b7 INSTITUTIONAL ADVISORY DESK' :
-               'SWK PROPERTIES \u00b7 SHEIKH ZAYED ROAD, DUBAI';
+  var hx = Math.max(24, W - (mobile ? 18 : 112));
+  var hy = H - (mobile ? 16 : 24);
 
-  var padX = 14;
-  var hudW = Math.min(W - 32, 384);
-  var hudH = 34;
-  var hx = Math.max(16, W - hudW - (mobile ? 16 : 108));
-  var hy = H - hudH - (mobile ? 14 : 20);
+  ctx.textAlign = 'right';
+  ctx.shadowColor = 'rgba(2, 8, 20, 0.9)';
+  ctx.shadowBlur = 10;
 
-  ctx.fillStyle = 'rgba(7, 13, 24, 0.82)';
-  ctx.strokeStyle = 'rgba(217, 177, 90, 0.55)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  if (ctx.roundRect) {
-    ctx.roundRect(hx, hy, hudW, hudH, 17);
-  } else {
-    ctx.rect(hx, hy, hudW, hudH);
-  }
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = '#4ade80';
-  ctx.beginPath();
-  ctx.arc(hx + 15, hy + hudH * 0.5, 3.2, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = 'rgba(255, 250, 240, 0.96)';
-  ctx.font = '600 9.5px system-ui, -apple-system, sans-serif';
-  ctx.fillText(phaseLabel, hx + 25, hy + 14);
-
-  ctx.fillStyle = 'rgba(240, 198, 108, 0.92)';
-  ctx.font = '500 8.5px monospace';
-  var coords = '25\u00b012\'50.1"N 55\u00b016\'40.7"E \u00b7 ALT ' + alt + 'm \u00b7 LIVE E11 CORRIDOR \u00b7 ORN 51517';
-  ctx.fillText(coords, hx + 25, hy + 26, hudW - padX * 2);
-
+  ctx.fillStyle = 'rgba(246, 212, 138, 0.78)';
+  ctx.font = '500 9px "General Sans", system-ui, sans-serif';
+  var coords = '25\u00b012\'50.1"N 55\u00b016\'40.7"E \u00b7 ALT ' + alt + 'm \u00b7 SHEIKH ZAYED ROAD \u00b7 ORN 51517';
+  ctx.fillText(coords, hx, hy);
   ctx.restore();
 }
 
@@ -229,23 +202,47 @@ export function createHeroScene(canvas, opts) {
     if ('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
     drawCameraLayer(ctx, vSrc.el, vSrc.w, vSrc.h, W, H, camX, camY, camScale);
 
-    // Smooth cinema contrast vignette for scroll hook chapters & corporate end frame
-    var hookShade = smoothstep(0.12, 0.24, p);
+    // 1. Crisp Prussian-Sapphire twilight sky & architectural contrast (keeps towers & highway luminous)
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    var skyTone = ctx.createLinearGradient(0, 0, 0, H);
+    skyTone.addColorStop(0.00, '#3a6696');
+    skyTone.addColorStop(0.45, '#5882ad');
+    skyTone.addColorStop(0.75, '#7a9ec2');
+    skyTone.addColorStop(1.00, '#8aa8c4');
+    ctx.fillStyle = skyTone;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    // 2. Warm golden-amber Sheikh Zayed Road highway light bloom + cyan skyline glass highlights
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    var vpX = W * 0.495;
+    var vpY = H * lerp(0.55, 0.48, tFlight);
+    var roadGlow = ctx.createRadialGradient(vpX, vpY, 0, vpX, vpY, Math.max(W, H) * 0.50);
+    roadGlow.addColorStop(0.00, 'rgba(255, 174, 82, 0.38)');
+    roadGlow.addColorStop(0.28, 'rgba(255, 134, 54, 0.18)');
+    roadGlow.addColorStop(0.65, 'rgba(28, 168, 236, 0.12)');
+    roadGlow.addColorStop(1.00, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = roadGlow;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    // 3. Subtle atmospheric horizon veil (zero box — keeps video vivid while anchoring pure white bold type)
+    var hookShade = smoothstep(0.10, 0.22, p);
     var endShade = smoothstep(0.68, 0.84, p);
-    if (hookShade > 0.01) {
-      ctx.save();
-      var grad = ctx.createRadialGradient(
-        W * 0.5, H * 0.5, Math.min(W, H) * 0.12,
-        W * 0.5, H * 0.5, Math.max(W, H) * 0.72
-      );
-      var centerA = lerp(0.16, 0.30, endShade) * hookShade;
-      var edgeA = lerp(0.36, 0.54, endShade) * hookShade;
-      grad.addColorStop(0, 'rgba(6, 12, 24, ' + centerA.toFixed(3) + ')');
-      grad.addColorStop(1, 'rgba(4, 9, 18, ' + edgeA.toFixed(3) + ')');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    }
+    ctx.save();
+    var atmo = ctx.createLinearGradient(0, 0, 0, H);
+    var topA = lerp(0.24, 0.34, hookShade);
+    var midA = lerp(0.16, lerp(0.26, 0.36, endShade), hookShade);
+    var botA = lerp(0.22, 0.34, endShade);
+    atmo.addColorStop(0.00, 'rgba(3, 14, 30, ' + topA.toFixed(3) + ')');
+    atmo.addColorStop(0.45, 'rgba(4, 18, 38, ' + midA.toFixed(3) + ')');
+    atmo.addColorStop(0.68, 'rgba(4, 18, 38, ' + (midA * 1.05).toFixed(3) + ')');
+    atmo.addColorStop(1.00, 'rgba(3, 12, 26, ' + botA.toFixed(3) + ')');
+    ctx.fillStyle = atmo;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
 
     drawEarthHud(ctx, W, H, p, mobile);
   }

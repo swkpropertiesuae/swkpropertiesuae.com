@@ -381,7 +381,7 @@
         var isLast = i === captions.length - 1;
         var o = SWK.clamp((progress - rg[0]) / fade, 0, 1) * (isLast ? 1 : SWK.clamp((rg[1] - progress) / fade, 0, 1));
         if (isLast) {
-          var te = SWK.clamp((progress - rg[0]) / 0.08, 0, 1);
+          var te = SWK.clamp((progress - rg[0]) / 0.14, 0, 1); var rv = te * te * (3 - 2 * te); hero.style.setProperty('--rv', rv.toFixed(4)); el.style.setProperty('--rv', rv.toFixed(4));
           el.style.setProperty('--o', o.toFixed(3));
           el.style.setProperty('--y', ((1 - te) * 22).toFixed(1) + 'px');
           el.style.setProperty('--s', (0.96 + te * 0.04).toFixed(3));
