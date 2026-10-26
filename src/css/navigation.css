@@ -2,6 +2,7 @@
    floating-island treatments on 21st.dev; no React runtime or UI dependency. */
 :root { --header-h: 76px; --header-h-scrolled: 68px; }
 .has-ann { --ann-h: 32px; }
+.has-ann.ann-off { --ann-h: 0px; }
 .announce { min-height: 32px; padding-block: 5px; font-size: 11px; letter-spacing: .025em; background: #0d192b; }
 .announce a { color: #e8cc92; text-decoration: none; border-bottom: 1px solid #9c8355; }
 .announce__close { width: 26px; height: 26px; font-size: 18px; }
@@ -60,6 +61,7 @@
 .site-header .site-header__cta::before { content: ''; position: absolute; inset: -50%; background: linear-gradient(110deg, transparent 35%, #fff6 48%, transparent 60%); transform: translateX(-100%); transition: transform .6s ease; }
 .site-header .site-header__cta:hover::before { transform: translateX(100%); }
 .site-header .nav-toggle { width: 38px; height: 38px; border-radius: 11px; border: 1px solid #d9b77860; background: transparent; color: #f3d7a0; }
+.site-header .nav-toggle:hover, .site-header .nav-toggle[aria-expanded="true"] { background: #493845; color: #f3d7a0; border-color: #d9b778; }
 .site-header .mobile-menu { top: calc(100% + 10px); border: 1px solid #e5ddce; border-radius: 20px; background: #fcfaf5; max-height: calc(100dvh - var(--ann-h) - 112px); }
 .site-header .menu-scrim { position: fixed; inset: -100px -100vw; height: 150vh; z-index: -1; background: #07102070; }
 .site-header .mobile-menu__nav a { font-size: 16px; font-weight: 500; }

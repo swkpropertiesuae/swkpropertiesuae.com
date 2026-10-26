@@ -43,8 +43,9 @@
 
     // Use the upscaled 4K encode on large/high-density displays; retain the lighter
     // 1080p encode on phones and honour the data-saver early return above.
-    if (window.innerWidth * (window.devicePixelRatio || 1) >= 2560 && video.dataset.src4k) {
-      video.src = video.dataset.src4k;
+    var uhdSrc = video.getAttribute('data-src-4k');
+    if (window.innerWidth * (window.devicePixelRatio || 1) >= 2560 && uhdSrc) {
+      video.src = uhdSrc;
       video.load();
     }
     video.loop = false;
