@@ -5346,6 +5346,7 @@ main > section.section--obsidian .section-header p { color: rgba(232, 238, 248, 
     padding: 6px var(--space-5) 16px; margin-inline: calc(var(--space-5) * -1);
   }
   .place-grid::-webkit-scrollbar { display: none; }
+  .place-grid { scroll-padding-inline: var(--space-5); }
   .place-card { scroll-snap-align: start; }
 }
 
@@ -5895,7 +5896,7 @@ main .project-feature__copy h3:not(#_) { font-size: var(--t-h3-lg); }
   .hero .hero__search-wrap .search-field select { font-size: 14px; min-height: 26px; padding: 0 20px 0 0; }
   .hero .hero__search-wrap .search-bar .btn { min-height: 46px; margin-top: 4px; }
   /* Keep the dark reading scrim for the whole film so beige type stays legible over the bright lobby. */
-  .hero__bg::after { opacity: 1; background: radial-gradient(ellipse 90% 55% at 50% 38%, rgba(5, 12, 24, .5) 0%, rgba(5, 12, 24, .2) 60%, rgba(5, 12, 24, 0) 90%), linear-gradient(180deg, rgba(4, 10, 20, .42) 0%, rgba(4, 10, 20, .1) 40%, rgba(4, 10, 20, .2) 75%, rgba(4, 10, 20, .5) 100%); }
+  .hero__bg::after { opacity: 1; background: radial-gradient(ellipse 90% 55% at 50% 38%, rgba(5, 12, 24, .38) 0%, rgba(5, 12, 24, .14) 60%, rgba(5, 12, 24, 0) 90%), linear-gradient(180deg, rgba(4, 10, 20, .32) 0%, rgba(4, 10, 20, .06) 40%, rgba(4, 10, 20, .14) 75%, rgba(4, 10, 20, .42) 100%); }
   .hero-art-credit { bottom: 6px; left: 12px; }
 }
 @media (max-width: 767px) and (max-height: 640px) {
@@ -5926,4 +5927,48 @@ main .project-feature__copy h3:not(#_) { font-size: var(--t-h3-lg); }
   .hero .hero__ctas .btn { font-size: .72rem; padding: 0 8px; }
   .hero .hero__ctas .btn svg { display: none; }
   .hero .hero__content { padding-left: 12px !important; padding-right: 12px !important; }
+}
+
+/* ==========================================================================
+   Site-wide polish (review pass)
+   ========================================================================== */
+.hero-art-credit { font-size: .72rem; }
+.footer-legal { flex-wrap: wrap; row-gap: var(--space-2); column-gap: var(--space-5); }
+.footer-newsletter__row input { min-width: 0; text-overflow: ellipsis; }
+@media (max-width: 767px) {
+  /* Cookie consent: compact, and always clear of the chatbot launcher. */
+  .cookie-banner { left: 12px; right: 12px; bottom: calc(max(14px, 9.26svh - 29px) + 58px + 12px); padding: 12px 14px; gap: 10px; border-radius: 18px; }
+  .cookie-banner h2 { font-size: 1.05rem; }
+  .cookie-banner p { font-size: .8rem; line-height: 1.4; }
+  .cookie-banner__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cookie-banner__actions .btn { padding: .55rem .6rem; font-size: .82rem; min-height: 40px; }
+  .cookie-banner__actions .btn:first-child { grid-column: 1 / -1; }
+  .footer-bottom { gap: var(--space-3); }
+  .footer-legal { gap: .35rem 1.1rem; }
+}
+@media (min-width: 1024px) { .hero .hero__search-wrap { max-width: min(980px, calc(100vw - 210px)); } }
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
+  .hero .hero__hook:not(#_) { font-size: clamp(3.4rem, 9.4vw, 5rem); max-width: 12ch; }
+  .hero .hero__lead { font-size: clamp(1.25rem, 2.9vw, 1.6rem); }
+  .hero .hero__kicker { font-size: .9rem; }
+}
+
+/* Touch targets: comfortable hit areas without changing the visual rhythm. */
+@media (pointer: coarse) {
+  .announce__close { width: 40px; height: 40px; font-size: 22px; display: inline-grid; place-items: center; }
+  .footer-col a, .footer-bottom a, .footer-contact a { display: inline-block; padding-block: .5rem; }
+  .footer-col li { margin: 0; }
+  .breadcrumbs a { display: inline-block; padding-block: .6rem; }
+  a.photo-credit, .photo-credit a { display: inline-block; padding-block: .5rem; }
+  .form-check input, .footer-newsletter input[type='checkbox'] { width: 20px; height: 20px; }
+}
+@media (max-width: 767px) and (min-height: 800px) {
+  .hero .hero__search-wrap .search-field select { min-height: 32px; }
+}
+
+/* Journal cards on phones: readable 1-up width. Teasers (home, article footer) scroll sideways; the index stacks. */
+@media (max-width: 767px) {
+  .blog-grid { grid-auto-columns: min(82vw, 330px); gap: 16px; padding: 4px var(--space-5) 18px; margin-inline: calc(var(--space-5) * -1); scroll-padding-inline: var(--space-5); }
+  .blog-grid[data-blog-grid] { display: grid; grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: 1fr; overflow: visible; padding: 0; margin-inline: 0; }
+  .blog-card__body h3 { font-size: 1.1rem; line-height: 1.25; }
 }

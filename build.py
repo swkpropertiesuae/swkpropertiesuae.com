@@ -424,7 +424,7 @@ def footer():
 <div class="footer-news__copy"><h2 class="footer-news__title">Stay ahead of the market</h2><p>New launches, price moves and community guides, once a month.</p></div>
 <form class="footer-newsletter" data-form="newsletter" data-endpoint="{e(SITE['formEndpoint'])}" aria-label="Newsletter signup" novalidate>
 <div class="footer-newsletter__row"><label for="newsletter-email" class="sr-only">Email address</label>
-<input type="email" id="newsletter-email" name="email" placeholder="Your email address" autocomplete="email" required>
+<input type="email" id="newsletter-email" name="email" placeholder="Email address" autocomplete="email" required>
 <button type="submit" class="btn btn-primary">Join</button></div>
 <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
 <label class="form-check"><input type="checkbox" name="consent" required><span>I agree to receive market updates and accept the <a href="/privacy/">Privacy Policy</a>.</span></label>
@@ -1169,7 +1169,7 @@ def build_blog():
 <section class="section section--alt ambient-glow-host" style="text-align:center">{GLOW}<div class="container"><h2>Want market updates in your inbox?</h2>
 <p style="max-width:52ch; margin:var(--space-4) auto var(--space-5)">Subscribe for monthly notes on UAE launches, buying rules and payment-plan changes.</p>
 <form class="nl-inline" data-form="newsletter" data-endpoint="{e(SITE['formEndpoint'])}" aria-label="Blog newsletter signup" novalidate>
-<div class="nl-inline__row"><label for="nl-blog" class="sr-only">Email address</label><input type="email" id="nl-blog" name="email" placeholder="Your email address" autocomplete="email" required>
+<div class="nl-inline__row"><label for="nl-blog" class="sr-only">Email address</label><input type="email" id="nl-blog" name="email" placeholder="Email address" autocomplete="email" required>
 <button type="submit" class="btn btn-primary">Subscribe</button></div>
 <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
 <label class="form-check"><input type="checkbox" name="consent" required><span>I agree to receive market updates and accept the <a href="/privacy/">Privacy Policy</a>.</span></label>
