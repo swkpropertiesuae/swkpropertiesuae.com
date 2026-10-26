@@ -22,11 +22,6 @@
 
 .hero-cine { position: relative; }
 
-.js .hero-cine { height: 280vh; height: 280svh; }
-@media (max-width: 767px) {
-  .js .hero-cine { height: 260vh; height: 260svh; }
-}
-
 .hero {
   position: relative;
   height: 100vh; height: 100svh;
@@ -41,152 +36,28 @@
   isolation: isolate;
 }
 
-.js .hero-cine .hero { position: sticky; top: 0; }
-
 .hero__bg {
   position: absolute;
   inset: 0;
   z-index: 0;
-  transition: opacity 1.6s var(--ease-luxury);
+  overflow: hidden;
+  background: #0f1a2e;
 }
 
-.hero__bg picture { display: block; width: 100%; height: 100%; }
-.hero__bg img { width: 100%; height: 100%; object-fit: cover; }
-
-.hero__gl {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+/* One looping, muted clip that fills the hero edge to edge. */
+.hero__video {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
-  opacity: 0;
-  transition: opacity 1.6s var(--ease-luxury);
-  touch-action: pan-y;
-}
-
-/* Once the first WebGL frame is on screen, crossfade the photo out. The photo
-   stays as the poster / fallback (no WebGL, reduced motion, load failure). */
-.hero.is-gl .hero__gl { opacity: 1; }
-.hero.is-gl .hero__bg { opacity: 0; }
-
-.hero__scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background:
-    linear-gradient(90deg, rgba(250, 244, 233, 0.9) 0%, rgba(250, 244, 233, 0.62) 30%, rgba(250, 244, 233, 0) 60%),
-    linear-gradient(to top, rgba(250, 247, 242, 0.85) 0%, rgba(250, 247, 242, 0.3) 22%, rgba(250, 247, 242, 0) 46%);
-  /* Only needed while the headline is on screen; fades as the camera starts to fly. */
-  opacity: clamp(0, calc(1.1 - var(--p, 0) * 3), 1);
-  pointer-events: none;
-}
-
-/* Dissolve the last frames of the fly-through into the page background. */
-.hero::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 18%;
-  z-index: 3;
-  pointer-events: none;
-  background: linear-gradient(to bottom, transparent, var(--color-bg));
-  opacity: clamp(0, calc((var(--p, 0) - 0.92) * 8), 0.72);
-}
-
-/* Soft sunset bloom where the street meets the horizon (hides the hard canyon edge). */
-.hero__glow {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  background: radial-gradient(ellipse 20% 15% at 50% 61%, rgba(255, 214, 150, 0.6), rgba(255, 190, 140, 0.22) 55%, transparent 80%);
-  opacity: clamp(0, calc(1 - var(--p, 0) * 5), 1);
-}
-
-.hero__vignette {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: radial-gradient(ellipse at 50% 45%, transparent 62%, rgba(226, 196, 156, 0.4) 100%);
-}
-
-/* Anamorphic light streak across the horizon, fades as the camera climbs. */
-.hero__streak {
-  position: absolute;
-  left: -10%; right: -10%;
-  top: 58%;
-  height: 2px;
-  z-index: 2;
-  pointer-events: none;
-  opacity: calc(0.75 - var(--p, 0) * 1.4);
-  background: linear-gradient(90deg, transparent, rgba(255, 140, 90, 0.0) 12%, rgba(255, 140, 90, 0.55) 50%, rgba(255, 140, 90, 0.0) 88%, transparent);
-  filter: blur(1.2px);
-  box-shadow: 0 0 22px 3px rgba(255, 184, 96, 0.3);
-}
-
-/* Chapter captions — shown in turn as the camera flies through the skyline. */
-.hero__captions {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-  text-align: center;
-  padding-inline: var(--space-5);
-}
-
-.hero__caption {
-  grid-area: 1 / 1;
-  font-family: var(--font-feature);
-  font-weight: 400;
-  font-size: clamp(2rem, 5.2vw, 4.6rem);
-  line-height: 1.08;
-  letter-spacing: -0.01em;
-  color: var(--navy-950);
-  text-shadow: 0 0 26px rgba(255, 250, 240, 0.95), 0 0 56px rgba(255, 250, 240, 0.85);
-  opacity: var(--o, 0);
-  transform: translate3d(0, var(--y, 24px), 0) scale(var(--s, 0.96));
-  will-change: opacity, transform;
-}
-
-.hero__caption em {
-  font-style: italic;
-  color: var(--gold-700);
-}
-
-.hero__caption:nth-child(3) {
-  align-self: end;
-  justify-self: start;
-  margin: 0 0 24px 28px;
-  padding: 10px 22px;
-  font-size: clamp(1.35rem, 2.4vw, 2.15rem);
-  background: rgba(250, 247, 242, 0.86);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(217, 177, 90, 0.6);
-  border-radius: 999px;
-  box-shadow: 0 12px 32px rgba(15, 26, 46, 0.24);
-}
-@media (max-width: 767px) {
-  .hero__caption:nth-child(3) {
-    justify-self: center;
-    margin: 0 16px 88px;
-    font-size: 1.35rem;
-  }
+  object-fit: cover;
+  object-position: center;
 }
 
 .hero__content {
   position: relative;
   z-index: 4;
   padding-block: calc(var(--header-h) + var(--space-7)) var(--space-8);
-  transform: translate3d(0, calc(var(--p, 0) * -9vh), 0);
-  opacity: clamp(0, calc(1.1 - var(--p, 0) * 5), 1);
 }
-
-.hero.is-leaving .hero__content { pointer-events: none; }
 
 /* Clears the mobile brand mark plus a bit of breathing room. */
 @media (max-width: 767px) {
@@ -261,7 +132,6 @@
   gap: var(--space-2);
   font-size: var(--fs-xs);
   color: var(--color-text-muted);
-  opacity: clamp(0, calc(1 - var(--p, 0) * 6), 1);
   pointer-events: none;
 }
 
@@ -278,7 +148,7 @@
   100% { transform: scaleY(1); opacity: 0; }
 }
 
-/* Mobile: the search form must fit inside the one-screen sticky stage. */
+/* Mobile: the search form must fit inside the one-screen hero. */
 @media (max-width: 767px) {
   .hero__title { font-size: 3.1rem; }
   .hero__eyebrow { font-size: var(--fs-xs); }
@@ -295,14 +165,10 @@
   .hero__content { padding-top: 96px; padding-block-end: var(--space-8); }
 }
 
-/* ---- Hero without WebGL / with reduced motion: a plain one-screen hero ---- */
+/* ---- Reduced motion: hold the poster frame, no cue animation ---- */
 
 @media (prefers-reduced-motion: reduce) {
-  .js .hero-cine { height: auto; }
-  .js .hero-cine .hero { position: relative; }
   .hero__scroll-cue .line { animation: none; }
-  .hero__content { transform: none; opacity: 1; }
-  .hero__captions { display: none; }
 }
 
 /* ---- 3D tilt ---- */
@@ -454,15 +320,6 @@
 .noscript-note { padding: var(--space-4); text-align: center; background: var(--color-surface-alt); font-size: var(--fs-sm); }
 
 /* ---- Hero fallbacks / headline effects ---- */
-
-/* No WebGL (or it failed): collapse the tall scroll runway to a plain hero. */
-.js .hero-cine.is-flat { height: auto; }
-.js .hero-cine.is-flat .hero { position: relative; }
-.hero-cine.is-flat .hero__captions,
-.hero-cine.is-flat .hero__gl,
-.hero-cine.is-flat .hero__streak { display: none; }
-.hero-cine.is-flat .hero__content { transform: none; opacity: 1; }
-.hero-cine.is-flat .hero__scroll-cue { opacity: 1; }
 
 /* Hide the headline's plain text only while JS is about to split it. */
 .js [data-typewriter]:not([data-tw-init]) { visibility: hidden; }

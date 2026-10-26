@@ -120,10 +120,9 @@
 
 /* ---- Print ---- */
 @media print {
-  .site-header, .announce, .cookie-banner, .toasts, .back-top, .whatsapp-float, .preloader, .footer-news, .scroll-progress, .dialog, .hero__gl { display: none !important; }
+  .site-header, .announce, .cookie-banner, .toasts, .back-top, .whatsapp-float, .preloader, .footer-news, .scroll-progress, .dialog { display: none !important; }
   body { background: #fff !important; color: #000; }
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.8em; }
-  .hero-cine { height: auto !important; }
 }
 
 /* ---- Hero: clear the announcement bar and keep the scroll cue off the search pill on short screens ---- */
@@ -170,13 +169,6 @@ h1, h2, h3, .section-header h2, .section-head-row h2 { -webkit-text-stroke: 0.5p
 .hero__subtitle, .page-hero p { font-weight: 500; color: #263249; text-shadow: 0 1px 14px rgba(255, 248, 236, 0.95); }
 .hero__eyebrow { font-weight: 700; color: #8a4a12; text-shadow: 0 1px 12px rgba(255, 248, 236, 0.95); }
 p, li { text-rendering: optimizeLegibility; }
-
-/* Stronger light halo behind hero copy so it is readable over any frame */
-.hero__scrim {
-  background:
-    radial-gradient(ellipse 70% 80% at 18% 50%, rgba(252, 247, 238, 0.82) 0%, rgba(252, 247, 238, 0.5) 45%, rgba(252, 247, 238, 0) 75%),
-    linear-gradient(to top, rgba(250, 247, 242, 0.88) 0%, rgba(250, 247, 242, 0.3) 22%, rgba(250, 247, 242, 0) 46%);
-}
 
 /* ---- Cinematic interior heroes: sunset sky, drifting light, skyline silhouettes, film vignette ---- */
 .page-hero {

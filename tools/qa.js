@@ -93,35 +93,16 @@ function pagesFromSitemap() {
   console.log(`  ${urls.length} pages checked`);
 
   // ---------------------------------------------------------------- home deep dive
-  sect('Home: WebGL hero, scroll scrub, captions');
+  sect('Home: hero video');
   msgs.length = 0;
-  await page.goto(L.BASE + '/?scene=3d', { waitUntil: 'load' });
-  await page.waitForFunction(() => document.querySelector('.hero.is-gl'), null, { timeout: 20000 }).catch(() => {});
-  ok(await page.evaluate(() => !!document.querySelector('.hero.is-gl')), 'hero reached is-gl');
-  await page.waitForTimeout(3600);
+  await page.goto(L.BASE + '/', { waitUntil: 'load' });
+  await page.waitForTimeout(1500);
   await shot(page, 'home-top');
-  const cvs = await page.evaluate(() => { const c = document.querySelector('.hero__gl'); return { w: c.width, h: c.height, cw: c.clientWidth }; });
-  ok(cvs.w > 800 && cvs.h > 400, `canvas size ${cvs.w}x${cvs.h}`);
-  const png = (await page.screenshot({ clip: { x: 0, y: 0, width: 1440, height: 640 } })).toString('base64');
-  const lit = await page.evaluate(async (b64) => { // sample the composited frame for real, varied content
-    const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode();
-    const t = document.createElement('canvas'); t.width = 96; t.height = 40; const x = t.getContext('2d'); x.drawImage(img, 0, 0, 96, 40);
-    const d = x.getImageData(0, 0, 96, 40).data; let bright = 0; const set = new Set();
-    for (let i = 0; i < d.length; i += 4) { if (d[i] + d[i + 1] + d[i + 2] > 150) bright++; set.add((d[i] >> 4) + ',' + (d[i + 1] >> 4) + ',' + (d[i + 2] >> 4)); }
-    return { bright, colors: set.size };
-  }, png);
-  ok(lit.colors > 25 && lit.bright > 40, `hero frame has real 3D content ${JSON.stringify(lit)}`);
-  const progs = [];
-  for (const f of [0, 0.35, 0.65, 1]) {
-    await page.evaluate((f) => { const w = document.querySelector('.hero-cine'); scrollTo({ top: w.offsetTop + (w.offsetHeight - innerHeight) * f, behavior: 'instant' }); }, f);
-    await page.waitForTimeout(900);
-    progs.push(await page.evaluate(() => ({ p: parseFloat(document.querySelector('.hero').style.getPropertyValue('--p')), caps: [...document.querySelectorAll('.hero__caption')].map((c) => parseFloat(c.style.getPropertyValue('--o') || 0)) })));
-  }
-  ok(progs[0].p === 0 && progs[3].p === 1 && progs[1].p > 0.3 && progs[1].p < 0.4, `scroll progress ${JSON.stringify(progs.map((x) => x.p))}`);
-  ok(progs[1].caps[0] > 0.9 && progs[2].caps[1] > 0.9 && progs[3].caps[2] > 0.9, `captions per chapter ${JSON.stringify(progs.map((x) => x.caps))}`);
-  await shot(page, 'home-fly');
-  await page.evaluate(() => scrollTo(0, 0));
-  ok(L.clean(msgs).length === 0, 'home console clean after scrub: ' + JSON.stringify(L.clean(msgs)));
+  const hv = await page.evaluate(() => { const v = document.querySelector('.hero__video'), h = document.querySelector('.hero').getBoundingClientRect(), r = v.getBoundingClientRect();
+    return { fit: getComputedStyle(v).objectFit, muted: v.muted, loop: v.loop, inline: v.hasAttribute('playsinline'), poster: !!v.poster, fills: Math.abs(r.width - h.width) < 2 && Math.abs(r.height - h.height) < 2, overlays: document.querySelectorAll('.hero__scrim,.hero__glow,.hero__vignette,.hero__streak,.hero__gl').length }; });
+  ok(hv.fit === 'cover' && hv.fills, `hero video fills the hero ${JSON.stringify(hv)}`);
+  ok(hv.muted && hv.loop && hv.inline && hv.poster && hv.overlays === 0, 'hero video is muted, looping, inline, has a poster and no overlays');
+  ok(L.clean(msgs).length === 0, 'home console clean: ' + JSON.stringify(L.clean(msgs)));
 
   sect('Home: nav bar, tilt, slider');
   await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(500);
@@ -261,8 +242,7 @@ function pagesFromSitemap() {
   sect('Mobile 390x844');
   const m = await newPage(b, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
   await m.page.goto(L.BASE + '/', { waitUntil: 'load' });
-  await m.page.waitForFunction(() => document.querySelector('.hero.is-gl'), null, { timeout: 20000 }).catch(() => {});
-  await m.page.waitForTimeout(3600);
+  await m.page.waitForTimeout(1500);
   await shot(m.page, 'mobile-top');
   const mo = await m.page.evaluate(() => {
     const r = (s) => { const e = document.querySelector(s); return e && e.getBoundingClientRect(); };
@@ -299,18 +279,13 @@ function pagesFromSitemap() {
   }
 
   // ---------------------------------------------------------------- fallbacks
-  sect('Fallbacks: reduced motion, ?nowebgl, no JS');
+  sect('Fallbacks: reduced motion, no JS');
   const rm = await newPage(b, { reducedMotion: 'reduce' });
   await rm.page.goto(L.BASE + '/', { waitUntil: 'load' }); await rm.page.waitForTimeout(1200);
-  const r1 = await rm.page.evaluate(() => ({ gl: !!document.querySelector('.hero.is-gl'), flat: document.querySelector('.hero-cine').classList.contains('is-flat'), h: document.querySelector('.hero-cine').offsetHeight, vh: innerHeight, vis: [...document.querySelectorAll('[data-reveal]')].every((e) => getComputedStyle(e).opacity === '1'), h1: document.querySelector('h1').innerText.length > 5, typed: !document.querySelector('.tw-char') }));
-  ok(!r1.gl && r1.flat && r1.h <= r1.vh + 2 && r1.vis && r1.typed, `reduced motion ${JSON.stringify(r1)}`);
+  const r1 = await rm.page.evaluate(() => ({ paused: document.querySelector('.hero__video').paused, poster: !!document.querySelector('.hero__video').poster, h: document.querySelector('.hero-cine').offsetHeight, vh: innerHeight, vis: [...document.querySelectorAll('[data-reveal]')].every((e) => getComputedStyle(e).opacity === '1'), h1: document.querySelector('h1').innerText.length > 5, typed: !document.querySelector('.tw-char') }));
+  ok(r1.paused && r1.poster && r1.h <= r1.vh + 2 && r1.vis && r1.typed, `reduced motion holds the poster frame ${JSON.stringify(r1)}`);
   ok(L.clean(rm.msgs).length === 0, 'reduced-motion console clean');
   await rm.ctx.close();
-  const nw = await newPage(b);
-  await nw.page.goto(L.BASE + '/?nowebgl', { waitUntil: 'load' }); await nw.page.waitForTimeout(1500);
-  ok(await nw.page.evaluate(() => !document.querySelector('.hero.is-gl') && document.querySelector('.hero-cine').classList.contains('is-flat')), '?nowebgl keeps the photo hero');
-  ok(L.clean(nw.msgs).length === 0, 'nowebgl console clean ' + JSON.stringify(L.clean(nw.msgs)));
-  await nw.ctx.close();
   const nj = await newPage(b, { javaScriptEnabled: false });
   await nj.page.goto(L.BASE + '/', { waitUntil: 'load' });
   const j = await nj.page.evaluate(() => ({ h1: document.querySelector('.hero__title').innerText.replace(/\s+/g, ' ').trim(), cards: [...document.querySelectorAll('.property-card--feature')].every((c) => getComputedStyle(c).opacity === '1'), imgs: [...document.querySelectorAll('img')].filter((i) => getComputedStyle(i).opacity === '0').length, tall: document.querySelector('.hero-cine').offsetHeight <= innerHeight + 2 }));

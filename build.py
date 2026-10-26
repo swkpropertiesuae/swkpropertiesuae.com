@@ -309,24 +309,19 @@ ASSET_V = ""
 
 
 def build_assets():
-    """Concatenate CSS and JS, fingerprint them, and copy vendor files."""
+    """Concatenate CSS and JS, fingerprint them, and copy root files."""
     global ASSET_V
     css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium"]
     css = "\n".join((SRC / "css" / f"{n}.css").read_text(encoding="utf-8") for n in css_order)
     css = css.replace("../assets/", "/assets/")
     mods = sorted((SRC / "js" / "modules").glob("*.js"))
     js = "\n".join(m.read_text(encoding="utf-8") for m in mods)
-    scene = (SRC / "js" / "hero-scene.js").read_text(encoding="utf-8")
-    ASSET_V = hashlib.sha1((css + js + scene).encode("utf-8")).hexdigest()[:8]
+    ASSET_V = hashlib.sha1((css + js).encode("utf-8")).hexdigest()[:8]
 
     (OUT / "assets" / "css").mkdir(parents=True, exist_ok=True)
     (OUT / "assets" / "js").mkdir(parents=True, exist_ok=True)
-    (OUT / "assets" / "vendor").mkdir(parents=True, exist_ok=True)
     (OUT / "assets" / "css" / "site.css").write_text(css, encoding="utf-8")
     (OUT / "assets" / "js" / "main.js").write_text(js, encoding="utf-8")
-    (OUT / "assets" / "js" / "hero-scene.js").write_text(scene, encoding="utf-8")
-    for f in (SRC / "vendor").iterdir():
-        shutil.copy(f, OUT / "assets" / "vendor" / f.name)
     for f in (SRC / "root").iterdir():
         shutil.copy(f, OUT / f.name)
     # Brand assets: images (logo, hero, listings, team...) and self-hosted fonts.
@@ -636,7 +631,7 @@ def page(path, title, desc, body, *, image=PAGE_HERO_IMG, ld=None, og_type="webs
 {footer()}
 {ui_markup()}
 {chat_markup()}
-<script>window.SWK_V="{ASSET_V}";window.SWK_ASSETS="/assets/js/";</script>
+<script>window.SWK_V="{ASSET_V}";</script>
 <script src="/assets/js/main.js?v={ASSET_V}" defer></script>
 </body>
 </html>
@@ -911,24 +906,16 @@ def build_home():
       team = f'''<div class="review-carousel" data-review-carousel aria-label="{review_heading}">{slides}<div class="review-controls"><button type="button" class="tc-arrow" data-review-prev aria-label="Previous story">{PREV}</button><span data-review-count>1 / {len(reviews) if reviews else 8}</span><button type="button" class="tc-arrow" data-review-next aria-label="Next story">{NEXT}</button><button type="button" class="review-pause" data-review-pause aria-pressed="false">Pause</button></div></div>'''
 
     body = f"""<div class="hero-cine"><section class="hero" aria-label="Introduction">
-<div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/earth-top-szr.webp">
-<img src="/assets/images/hero/earth-top-szr.webp" alt="Aerial view of Sheikh Zayed Road, Dubai" width="1920" height="1080" fetchpriority="high" decoding="async"></picture></div>
-<canvas class="hero__gl" aria-hidden="true"></canvas>
-<div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div><div class="hero__streak" aria-hidden="true"></div>
-<div class="hero__captions" aria-hidden="true">
-<div class="hero__caption hero__caption--hook"><div class="hero__monument"><span class="hero__hook-kicker">Direct Developer Access</span><strong class="hero__hook-title">OWN DUBAI</strong></div><span class="hero__hook-lead">Don&rsquo;t Just Watch the Skyline Rise &mdash; Command the Address That Defines It.</span><span class="hero__hook-sub">Priority off-plan &amp; ready allocations across Emaar, Sobha, DAMAC &amp; Omniyat with 0% buyer commission.</span></div>
-<div class="hero__caption hero__caption--hook"><div class="hero__monument"><span class="hero__hook-kicker">RERA Licensed &middot; ORN 51517</span><strong class="hero__hook-title">TRUE YIELD</strong></div><span class="hero__hook-lead">Institutional Due Diligence on Every Dirham You Commit.</span><span class="hero__hook-sub">Verified DLD escrow milestones, net rental yield modelling &amp; Golden Visa structuring from one private desk.</span></div>
-<div class="hero__caption hero__caption--endframe"><div class="hero__endcard"><div class="hero__endlogo-wrap"><img src="/assets/images/brand/swk-logo.png" alt="" class="hero__endlogo" width="338" height="275" decoding="async"></div><div class="hero__monument hero__monument--end"><span class="hero__endkicker">Sheikh Zayed Road &middot; Dubai</span><strong class="hero__endtitle">SWK PROPERTIES</strong></div><p class="hero__endlead">Where Global Capital Secures Dubai&rsquo;s Finest Real Estate.</p><p class="hero__endsub">Private UAE real estate brokerage &amp; investment advisory &mdash; direct developer access from first shortlist to title deed.</p><div class="hero__endmetrics"><span><b>RERA ORN 51517</b><small>Licensed Dubai Brokerage</small></span><span><b>15+ Master Developers</b><small>Direct Tier-1 Allocations</small></span><span><b>0% Buyer Commission</b><small>On Off-Plan Acquisitions</small></span></div><div class="hero__endactions"><a href="/properties/" class="btn btn-gold btn-lg" tabindex="-1">Explore Curated Portfolio {ARROW}</a><a href="/contact/" class="btn btn-outline btn-lg" tabindex="-1">Book a Private Consultation</a></div></div></div>
-</div>
+<div class="hero__bg"><video class="hero__video" autoplay muted loop playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster.webp" width="720" height="1280" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk.mp4" type="video/mp4"></video></div>
 <div class="hero__content container">
-<span class="hero__eyebrow">RERA ORN 51517 &middot; Sheikh Zayed Road &middot; Private Real Estate Advisory</span>
-<h1 class="hero__title"><span class="sr-only">Acquire Where Dubai Commands Value. Direct Master Developer Access.</span><span class="hero__title-monument" aria-hidden="true"><span class="hero__title-kicker">Direct Master Developer Allocations</span><span class="hero__title-main">DISCOVER DUBAI</span></span><span class="hero__title-hook" aria-hidden="true">Invest Where the Skyline Commands Global Value.</span></h1>
-<p class="hero__subtitle">Priority off-plan and ready residences across Emaar, Sobha, DAMAC, Omniyat &amp; Nakheel &mdash; structured around your capital growth, net rental yield, and Golden Visa horizon.</p>
-<div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Curated Portfolio {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Book a Private Consultation</a></div>
+<span class="hero__eyebrow">RERA ORN 51517 &middot; Sheikh Zayed Road</span>
+<h1 class="hero__title">Discover Dubai</h1>
+<p class="hero__subtitle">Off-plan and ready residences from the UAE&rsquo;s leading developers.</p>
+<div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Book a Consultation</a></div>
 <div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
-<span class="hero-art-credit">AI-created architectural visualisation</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
+<span class="hero-art-credit">AI-generated video</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
 </section></div>
 
 {VALUES}
@@ -977,7 +964,7 @@ def build_home():
     write("/", page("/", "SWK Properties | UAE Property Advisory — Off-Plan and Ready Homes",
                     "SWK Properties is a RERA-registered UAE property advisory — off-plan and ready homes in freehold communities, with mortgage, payment-plan and rental-yield advice from shortlist to handover.",
                     body, ld=ld,
-                    preload=[("/assets/images/hero/earth-top-szr.webp", ' fetchpriority="high"')]))
+                    preload=[("/assets/images/hero/hero-swk-poster.webp", ' fetchpriority="high"')]))
 
 
 def build_properties():
