@@ -51,7 +51,7 @@
     var idlePlaying = false;
     var inView = true;
     // The scroll film opens at 0.8s, the moment the idle clip hands over to it.
-    var FILM_START = 0.8;
+    var FILM_START = mobile ? 0 : 0.8;
     var IDLE_XFADE = 0.9;
     var IDLE_MAX_P = 0.012;
 
@@ -68,10 +68,13 @@
       video.src = video.getAttribute('data-src-hq');
     }
     video.load();
-    idleVids.forEach(function (v) {
-      v.src = (mobile && v.getAttribute('data-src-mobile')) || v.getAttribute('data-src');
-      v.load();
-    });
+    // Desktop idles on a moving loop; phones hold the film's first frame perfectly still until the first scroll.
+    if (!mobile) {
+      idleVids.forEach(function (v) {
+        v.src = v.getAttribute('data-src');
+        v.load();
+      });
+    }
     video.loop = false;
 
     function idleTick() {
@@ -97,6 +100,7 @@
     function startIdle() {
       clearTimeout(idleHide);
       if (idlePlaying || !idleVids.length || document.hidden || !inView || curP > IDLE_MAX_P) return;
+      if (mobile) { hero.classList.add('is-idle'); return; }
       idlePlaying = true;
       hero.classList.add('is-idle');
       var v = idleVids[idleFront];
