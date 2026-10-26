@@ -617,6 +617,41 @@ def head(path, title, desc, image, ld, og_type, robots, preload):
 {ld_json}</head>"""
 
 
+_TONE_DARK = {"section--obsidian", "section--dark", "cta-section", "value-strip", "stat-strip"}
+
+
+def tone_sections(body):
+    """Alternate light and dark bands after the hero. Obsidian, CTA and value-strip bands stay dark.
+    Free bands pick the tones that leave the fewest same-tone neighbours (the hero counts as dark)."""
+    import itertools
+
+    def banded(cls):
+        return "page-hero" not in cls and "hero-cine" not in cls and bool({"section", "value-strip", "stat-strip"} & set(cls))
+
+    found = [m for m in re.finditer(r'<(section|article) class="([^"]*)"', body) if banded(m.group(2).split())]
+    forced = [bool(_TONE_DARK & set(m.group(2).split())) for m in found]
+    free = [i for i, f in enumerate(forced) if not f]
+    best = None
+    for combo in itertools.product(("light", "dark"), repeat=len(free)):
+        tones = ["dark"] * len(found)
+        for i, t in zip(free, combo):
+            tones[i] = t
+        seq = ["dark"] + tones
+        score = (sum((2 if a == "light" else 1) for a, b in zip(seq, seq[1:]) if a == b), 0)
+        if best is None or score < best[0]:
+            best = (score, tones)
+    if not found:
+        return body
+    tones = best[1]
+    out, last = [], 0
+    for m, t in zip(found, tones):
+        out.append(body[last:m.start()])
+        out.append(f'<{m.group(1)} class="{m.group(2)} tw-{t}"')
+        last = m.end()
+    out.append(body[last:])
+    return "".join(out)
+
+
 def page(path, title, desc, body, *, image=PAGE_HERO_IMG, ld=None, og_type="website", robots=None, preload=None):
     out = head(path, title, desc, image, ld, og_type, robots, preload) + f"""
 <body>
@@ -626,7 +661,7 @@ def page(path, title, desc, body, *, image=PAGE_HERO_IMG, ld=None, og_type="webs
 {announce_bar()}
 {site_header(path)}
 <main id="main">
-{body}
+{tone_sections(body)}
 </main>
 {footer()}
 {ui_markup()}
@@ -917,9 +952,9 @@ def build_home():
 <div class="hero__content container">
 <h1 class="sr-only">SWK Properties: Dubai off-plan and ready property, with direct access to the UAE's leading developers</h1>
 <div class="hero__stage" aria-hidden="true">
-<div class="hero__beat" data-beat="b1"><span class="hero__kicker">Quietly curated addresses &middot; Dubai</span><p class="hero__hook">Dubai never stops rising.</p><p class="hero__lead">Make sure your address rises with it.</p></div>
-<div class="hero__beat" data-beat="b2"><span class="hero__kicker">0% income tax &middot; Golden Visa routes</span><p class="hero__hook">Where <em>returns</em> meet residency.</p><p class="hero__lead">Off-plan and ready homes, guided by one private advisor.</p></div>
-<div class="hero__beat" data-beat="b3"><span class="hero__kicker">Off-plan &middot; Ready &middot; Freehold</span><p class="hero__hook">Don&rsquo;t watch the skyline. <em>Own it.</em></p><p class="hero__lead">Direct access to the UAE&rsquo;s leading developers.</p></div>
+<div class="hero__beat" data-beat="b1"><span class="hero__kicker">Quietly curated addresses &middot; Dubai</span><p class="hero__hook"><span class="hl">Dubai never</span> <span class="hl">stops rising.</span></p><p class="hero__lead">Make sure your address rises with it.</p></div>
+<div class="hero__beat" data-beat="b2"><span class="hero__kicker">0% income tax &middot; Golden Visa routes</span><p class="hero__hook"><span class="hl">Where <em>returns</em></span> <span class="hl">meet residency.</span></p><p class="hero__lead">Off-plan and ready homes, guided by one private advisor.</p></div>
+<div class="hero__beat" data-beat="b3"><span class="hero__kicker">Off-plan &middot; Ready &middot; Freehold</span><p class="hero__hook"><span class="hl">Don&rsquo;t watch the skyline.</span> <span class="hl"><em>Own it.</em></span></p><p class="hero__lead">Direct access to the UAE&rsquo;s leading developers.</p></div>
 </div>
 <div class="hero__dock">
 <div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Book a Consultation</a></div>
