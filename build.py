@@ -565,7 +565,7 @@ def csp_for(html_text):
         connect += ["https://www.google-analytics.com", "https://*.google-analytics.com", "https://*.analytics.google.com", "https://www.googletagmanager.com"]
     if fb:
         connect += ["https://www.facebook.com", "https://connect.facebook.net"]
-    return ("default-src 'self'; script-src " + " ".join(script_src) + "; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; "
+    return ("default-src 'self'; script-src " + " ".join(script_src) + "; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: data:; "
             "font-src 'self'; connect-src " + " ".join(connect) + "; frame-src https://www.google.com https://maps.google.com; worker-src 'self' blob:; "
             "object-src 'none'; base-uri 'self'; form-action 'self' mailto:")
 
@@ -915,7 +915,7 @@ def build_home():
 <img src="/assets/images/hero/earth-top-szr.webp" alt="Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai" width="1600" height="900" fetchpriority="high" decoding="async"></picture></div>
 <canvas class="hero__gl" aria-hidden="true"></canvas>
 <div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div><div class="hero__streak" aria-hidden="true"></div>
-<div class="hero__captions" aria-hidden="true"><p class="hero__caption">Sheikh Zayed Road, <em>from above.</em></p><p class="hero__caption">Al Saqr Business Tower, <em>Dubai.</em></p><p class="hero__caption">Welcome to <em>SWK Properties.</em></p></div>
+<div class="hero__captions" aria-hidden="true"><p class="hero__caption">Sheikh Zayed Road, <em>from above.</em></p><p class="hero__caption">Al Saqr Business Tower, <em>25th Floor.</em></p><p class="hero__caption">Welcome to <em>SWK Properties.</em></p></div>
 <div class="hero__content container">
 <span class="hero__eyebrow">UAE Property Advisory · RERA-registered</span>
 <h1 class="hero__title"><span class="sr-only">Invest where the UAE is heading. Live where it already shines.</span><span data-typewriter aria-hidden="true">Invest where the UAE is heading.<br><em>Live where it already shines.</em></span></h1>
