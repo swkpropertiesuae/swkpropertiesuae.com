@@ -311,7 +311,7 @@ ASSET_V = ""
 def build_assets():
     """Concatenate CSS and JS, fingerprint them, and copy root files."""
     global ASSET_V
-    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium", "system"]
+    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium", "system", "navigation"]
     css = "\n".join((SRC / "css" / f"{n}.css").read_text(encoding="utf-8") for n in css_order)
     css = css.replace("../assets/", "/assets/")
     mods = sorted((SRC / "js" / "modules").glob("*.js"))
@@ -348,10 +348,10 @@ def site_header(path):
         f"""<a href="{h}"{' aria-current="page"' if current(h) else ""}><span>{l}</span>{ARROW}</a>""" for h, l in NAV)
     menu_icon = '<span class="nav-toggle__bars" aria-hidden="true"><i></i><i></i><i></i></span>'
     return (f'<header class="site-header" data-site-header><div class="site-header__inner container">'
-            f'<a href="/" class="site-brand" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" class="brand-logo" width="338" height="275" decoding="async" fetchpriority="high"></a>'
-            f'<nav class="site-nav" aria-label="Primary">{links}</nav>'
+            f'<a href="/" class="site-brand" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" class="brand-logo" width="338" height="275" decoding="async" fetchpriority="high"><span class="site-brand__type"><strong>SWK</strong><small>PROPERTIES</small></span></a>'
+            f'<nav class="site-nav" aria-label="Primary"><span class="site-nav__track" aria-hidden="true"></span>{links}</nav>'
             f'<div class="site-header__actions"><a href="{WA_DEFAULT}" class="site-header__wa" target="_blank" rel="noopener noreferrer" aria-label="Chat with SWK on WhatsApp">{WHATSAPP}</a>'
-            f'<a href="/contact/" class="btn btn-primary btn-sm site-header__cta">Book a consultation<span class="site-header__go" aria-hidden="true">{ARROW}</span></a>'
+            f'<a href="/contact/" class="btn btn-primary btn-sm site-header__cta">Let’s talk<span class="site-header__go" aria-hidden="true">{ARROW}</span></a>'
             f'<button type="button" class="nav-toggle" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">{menu_icon}</button></div></div>'
             f'<div class="menu-scrim" data-menu-scrim hidden></div>'
             f'<div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>'
@@ -914,7 +914,10 @@ def build_home():
 
     body = f"""<div class="hero-cine" data-hero-cine><section class="hero" data-phase="b1" aria-label="Introduction">
 <div class="hero__bg"><video class="hero__video" muted loop playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster-hq.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk-hq.mp4" type="video/mp4"></video></div>
-<div class="hero__office-signature"><strong>SWK PROPERTIES</strong><span>Al Saqr Business Tower</span><small>Sheikh Zayed Road &middot; Dubai, UAE</small></div>
+<a class="hero__office-signature" href="/contact/" aria-label="Meet SWK at Al Saqr Business Tower, Sheikh Zayed Road, Dubai">
+<span class="hero__office-orbit" aria-hidden="true"><svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36"/><path d="M19 59h42M26 58V24l20-5v39M46 32h10v26M31 30h9M31 36h9M31 42h9M31 48h9M31 54h9"/><path d="M13 42h7M60 38h7M40 6v7M40 67v7"/></svg></span>
+<span class="hero__office-copy"><small>YOUR DUBAI CONNECTION</small><strong>Meet SWK in Dubai<span aria-hidden="true">{ARROW}</span></strong><span>Al Saqr Business Tower</span><em>Sheikh Zayed Road &middot; Private viewings</em></span>
+</a>
 <div class="hero__content container">
 <h1 class="sr-only">SWK Properties: Dubai off-plan and ready property, with direct access to the UAE's leading developers</h1>
 <div class="hero__stage" aria-hidden="true">
