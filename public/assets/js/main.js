@@ -451,6 +451,8 @@
       return SWK.clamp(-wrap.getBoundingClientRect().top / extent, 0, 1);
     }
 
+    function ease(t) { return t * t * (3 - 2 * t); }
+
     function setBeatStyle(el, o, y, s, blur) {
       if (!el) return;
       el.style.setProperty('--beat-o', o.toFixed(3));
@@ -472,23 +474,23 @@
       }
 
       // Opening dock (CTAs + glass search bar) glides down and dissolves as camera enters the tower window.
-      var dockT = SWK.clamp((p - 0.11) / 0.12, 0, 1);
+      var dockT = ease(SWK.clamp((p - 0.04) / 0.14, 0, 1));
       hero.style.setProperty('--dock-o', (1 - dockT).toFixed(3));
       hero.style.setProperty('--dock-y', (dockT * 30).toFixed(1) + 'px');
       hero.style.setProperty('--dock-s', (1 - dockT * 0.05).toFixed(3));
 
       // Beat 1: Sheikh Zayed Road approach (0.00 -> 0.25)
-      var o1 = SWK.clamp((0.24 - p) / 0.08, 0, 1);
-      var t1 = SWK.clamp(p / 0.24, 0, 1);
+      var o1 = ease(SWK.clamp((0.24 - p) / 0.10, 0, 1));
+      var t1 = ease(SWK.clamp(p / 0.24, 0, 1));
       setBeatStyle(beats[0], o1, -t1 * 26, 1 + t1 * 0.06, (1 - o1) * 7);
 
       // Beat 2: SWK Properties reception lobby (0.25 -> 0.56)
-      var o2 = SWK.clamp((p - 0.25) / 0.06, 0, 1) * SWK.clamp((0.55 - p) / 0.06, 0, 1);
+      var o2 = ease(SWK.clamp((p - 0.25) / 0.08, 0, 1)) * ease(SWK.clamp((0.55 - p) / 0.08, 0, 1));
       var t2 = SWK.clamp((p - 0.25) / 0.30, 0, 1);
       setBeatStyle(beats[1], o2, (0.5 - t2) * 36, 0.95 + t2 * 0.08, (1 - o2) * 6);
 
       // Beat 3: Executive lounge to panoramic window (0.56 -> 0.81)
-      var o3 = SWK.clamp((p - 0.56) / 0.06, 0, 1) * SWK.clamp((0.80 - p) / 0.06, 0, 1);
+      var o3 = ease(SWK.clamp((p - 0.56) / 0.08, 0, 1)) * ease(SWK.clamp((0.80 - p) / 0.08, 0, 1));
       var t3 = SWK.clamp((p - 0.56) / 0.24, 0, 1);
       setBeatStyle(beats[2], o3, (0.5 - t3) * 36, 0.95 + t3 * 0.08, (1 - o3) * 6);
 
@@ -514,7 +516,7 @@
       if (Math.abs(diff) > 0.24) {
         curP = targetP;
       } else {
-        var alpha = 1 - Math.exp(-dt * 16);
+        var alpha = 1 - Math.exp(-dt * 11);
         curP += diff * alpha;
         if (Math.abs(targetP - curP) < 0.0004) curP = targetP;
       }

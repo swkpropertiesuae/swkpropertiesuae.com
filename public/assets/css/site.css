@@ -5786,3 +5786,15 @@ main .project-feature__copy h3:not(#_) { font-size: var(--t-h3-lg); }
   .hero__idle, .hero__idle-video { transition: none; }
 }
 .hero .hero__scroll-cue { display: none; }
+
+/* --- Hand-over: idle clip dissolves with a soft push-in so the film opens as one continuous move --- */
+.hero__idle {
+  transition: opacity 1s cubic-bezier(.4, 0, .2, 1), transform 1.4s cubic-bezier(.16, 1, .3, 1), filter 1s ease, visibility 0s linear 1s;
+  transform: scale(1); will-change: opacity, transform; visibility: hidden;
+}
+.hero.is-idle .hero__idle { visibility: visible; transition-delay: 0s; }
+.hero:not(.is-idle) .hero__idle { transform: scale(1.05); filter: blur(6px); }
+/* Vignette lightens as the film takes over, so the real footage reads cleaner. */
+.hero__bg::after { opacity: clamp(.35, calc(1 - var(--p, 0) * 3), 1); }
+.hero__video, .hero__idle-video { image-rendering: high-quality; backface-visibility: hidden; transform: translateZ(0); }
+@media (prefers-reduced-motion: reduce) { .hero:not(.is-idle) .hero__idle { transform: none; filter: none; } }
