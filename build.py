@@ -928,15 +928,6 @@ def build_home():
 </div>
 </div>
 <div class="hero__reveal" aria-hidden="true"><div class="hero__reveal-inner"><img class="hero__reveal-logo" src="/assets/images/brand/swk-logo-white.png" alt="" width="676" height="550" decoding="async"><span class="hero__reveal-rule"></span><strong class="hero__reveal-name">SWK PROPERTIES</strong><span class="hero__reveal-tag">Private Real Estate Advisory &middot; RERA ORN 51517</span><div class="hero__reveal-actions"><a href="/properties/" class="btn btn-gold btn-lg" tabindex="-1">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline btn-lg" tabindex="-1">Book a Consultation</a></div></div></div>
-<div class="hero__scrubber" data-hero-scrubber role="group" aria-label="Scroll journey chapters">
-<div class="hero__scrub-track" data-hero-track title="Drag or click to scrub the aerial journey"><span class="hero__scrub-fill"></span><span class="hero__scrub-thumb"></span></div>
-<div class="hero__chapters">
-<button type="button" class="hero__chapter is-active" data-hero-chapter="0" aria-current="step"><span class="hero__chapter-num">01</span><span class="hero__chapter-label">Sheikh Zayed Rd</span></button>
-<button type="button" class="hero__chapter" data-hero-chapter="0.38"><span class="hero__chapter-num">02</span><span class="hero__chapter-label">SWK Reception</span></button>
-<button type="button" class="hero__chapter" data-hero-chapter="0.67"><span class="hero__chapter-num">03</span><span class="hero__chapter-label">Advisory Lounge</span></button>
-<button type="button" class="hero__chapter" data-hero-chapter="0.95"><span class="hero__chapter-num">04</span><span class="hero__chapter-label">Burj Panorama</span></button>
-</div>
-</div>
 <span class="hero-art-credit">AI-generated video</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
 </section></div>
 

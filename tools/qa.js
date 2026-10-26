@@ -105,8 +105,8 @@ function pagesFromSitemap() {
   ok(L.clean(msgs).length === 0, 'home console clean: ' + JSON.stringify(L.clean(msgs)));
 
   sect('Home: hero timeline, communities, services, testimonials');
-  const tl = await page.evaluate(async () => { const hero = document.querySelector('.hero'); return { beats: hero.querySelectorAll('[data-beat]').length, chapters: hero.querySelectorAll('[data-hero-chapter]').length, reveal: !!hero.querySelector('.hero__reveal-name'), name: hero.querySelector('.hero__reveal-name').textContent.trim(), phase: hero.dataset.phase }; });
-  ok(tl.beats === 3 && tl.chapters === 4 && tl.reveal && tl.name === 'SWK PROPERTIES', `hero has 3 hook beats, 4 interactive chapters, and a logo reveal with the company name ${JSON.stringify(tl)}`);
+  const tl = await page.evaluate(async () => { const hero = document.querySelector('.hero'); return { beats: hero.querySelectorAll('[data-beat]').length, reveal: !!hero.querySelector('.hero__reveal-name'), name: hero.querySelector('.hero__reveal-name').textContent.trim(), phase: hero.dataset.phase }; });
+  ok(tl.beats === 3 && tl.reveal && tl.name === 'SWK PROPERTIES', `hero has 3 hook beats and a logo reveal with the company name ${JSON.stringify(tl)}`);
   const phases = [];
   for (const f of [0, 0.38, 0.67, 0.95]) {
     await page.evaluate((f) => { const w = document.querySelector('.hero-cine'); scrollTo({ top: w.offsetTop + (w.offsetHeight - innerHeight) * f, behavior: 'instant' }); }, f);

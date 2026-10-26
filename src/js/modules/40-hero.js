@@ -1,5 +1,5 @@
 // Hero: interactive scroll-animated aerial-to-office fly-through video with 3D scroll beats,
-// closing SWK logo reveal, interactive chapter scrubber, and pointer camera parallax.
+// closing SWK logo reveal, and pointer camera parallax / cursor-tracked gloss.
 // Reduced-motion and data-saver visitors keep the single-screen poster frame with the opening hook.
 (function () {
   'use strict';
@@ -29,15 +29,12 @@
       SWK.$('[data-beat="b2"]', hero),
       SWK.$('[data-beat="b3"]', hero)
     ];
-    var chapters = SWK.$$('[data-hero-chapter]', hero);
-    var track = SWK.$('[data-hero-track]', hero);
 
     var targetP = 0;
     var curP = 0;
     var rafId = 0;
     var lastTick = performance.now();
     var phase = '';
-    var activeChapter = -1;
     var pendingTime = null;
     var blobLoaded = false;
 
@@ -116,17 +113,6 @@
         hero.setAttribute('data-phase', nextPhase);
       }
 
-      var chapIdx = p < 0.25 ? 0 : p < 0.56 ? 1 : p < 0.81 ? 2 : 3;
-      if (chapIdx !== activeChapter) {
-        activeChapter = chapIdx;
-        chapters.forEach(function (btn, i) {
-          var on = i === chapIdx;
-          btn.classList.toggle('is-active', on);
-          if (on) btn.setAttribute('aria-current', 'step');
-          else btn.removeAttribute('aria-current');
-        });
-      }
-
       // Opening dock (CTAs + glass search bar) glides down and dissolves as camera enters the tower window.
       var dockT = SWK.clamp((p - 0.11) / 0.12, 0, 1);
       hero.style.setProperty('--dock-o', (1 - dockT).toFixed(3));
@@ -183,46 +169,6 @@
         lastTick = performance.now();
         rafId = requestAnimationFrame(step);
       }
-    }
-
-    function scrollToFraction(f, smooth) {
-      var extent = getExtent();
-      if (extent <= 0) return;
-      var top = wrap.offsetTop + extent * SWK.clamp(f, 0, 1);
-      window.scrollTo({ top: top, behavior: smooth ? 'smooth' : 'instant' });
-    }
-
-    // Interactive chapter buttons: click to fly smoothly to any chapter.
-    chapters.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var f = parseFloat(btn.getAttribute('data-hero-chapter') || '0');
-        scrollToFraction(f, true);
-      });
-    });
-
-    // Interactive scrub rail: click or drag to scrub the aerial journey directly.
-    if (track) {
-      var dragging = false;
-      var scrubAt = function (clientX) {
-        var r = track.getBoundingClientRect();
-        if (!r.width) return;
-        var f = SWK.clamp((clientX - r.left) / r.width, 0, 1);
-        scrollToFraction(f, false);
-      };
-      track.addEventListener('pointerdown', function (ev) {
-        dragging = true;
-        if (track.setPointerCapture) {
-          try { track.setPointerCapture(ev.pointerId); } catch (e) {}
-        }
-        scrubAt(ev.clientX);
-      });
-      track.addEventListener('pointermove', function (ev) {
-        if (!dragging) return;
-        scrubAt(ev.clientX);
-      });
-      var endDrag = function () { dragging = false; };
-      track.addEventListener('pointerup', endDrag);
-      track.addEventListener('pointercancel', endDrag);
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
