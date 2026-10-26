@@ -70,7 +70,8 @@
     video.load();
     // While the page rests at the top, a seamless loop plays: landscape on desktop, portrait on phones.
     idleVids.forEach(function (v) {
-      v.src = (mobile && v.getAttribute('data-src-mobile')) || v.getAttribute('data-src');
+      var idle4k = !mobile && window.innerWidth * (window.devicePixelRatio || 1) >= 2560 && v.getAttribute('data-src-4k');
+      v.src = (mobile && v.getAttribute('data-src-mobile')) || idle4k || v.getAttribute('data-src');
       v.load();
     });
     video.loop = false;
@@ -221,7 +222,7 @@
       hero.style.setProperty('--dock-y', (dockT * 30).toFixed(1) + 'px');
       hero.style.setProperty('--dock-s', (1 - dockT * 0.05).toFixed(3));
 
-      // Beat 1: Sheikh Zayed Road approach (0.00 -> 0.25)
+      // Beat 1: opening aerial approach (0.00 -> 0.25)
       var o1 = ease(SWK.clamp((0.24 - p) / 0.10, 0, 1));
       var t1 = ease(SWK.clamp(p / 0.24, 0, 1));
       setBeatStyle(beats[0], o1, -t1 * 26, 1 + t1 * 0.06, (1 - o1) * 7);
