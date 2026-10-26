@@ -1,5 +1,5 @@
 // Hero: interactive scroll-animated aerial-to-office fly-through video with 3D scroll beats,
-// closing SWK logo reveal, and pointer camera parallax / cursor-tracked gloss.
+// closing SWK logo reveal, and cursor-tracked search interaction.
 // Reduced-motion and data-saver visitors keep the single-screen poster frame with the opening hook.
 (function () {
   'use strict';
@@ -45,7 +45,7 @@
         pendingTime = t;
         return;
       }
-      var clamped = SWK.clamp(t, 0.02, Math.max(0.05, dur - 0.08));
+      var clamped = SWK.clamp(t, 0, Math.max(0.05, dur - 0.08));
       if (Math.abs(video.currentTime - clamped) < 0.012) return;
       if (video.seeking) {
         pendingTime = clamped;
@@ -73,7 +73,7 @@
       // upgrade to an in-memory Blob URL so random-access scroll seeking still works seamlessly.
       if (!blobLoaded && (!video.seekable || !video.seekable.length || video.seekable.end(0) < 1)) {
         blobLoaded = true;
-        fetch('/assets/video/hero-swk.mp4').then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) {
+        fetch('/assets/video/hero-swk-hq.mp4').then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) {
           if (!b) return;
           video.src = URL.createObjectURL(b);
           video.load();
@@ -177,26 +177,6 @@
     targetP = readScrollProgress();
     curP = targetP;
     applyProgress(curP);
-
-    // Subtle 3D camera parallax & glass search bar tilt on fine pointers.
-    if (SWK.fine) {
-      hero.addEventListener('pointermove', function (ev) {
-        if (ev.pointerType === 'touch') return;
-        var r = hero.getBoundingClientRect();
-        var nx = ((ev.clientX - r.left) / r.width - 0.5) * 2;
-        var ny = ((ev.clientY - r.top) / r.height - 0.5) * 2;
-        hero.classList.add('is-pointer');
-        hero.style.setProperty('--cam-x', (-nx * 14).toFixed(1) + 'px');
-        hero.style.setProperty('--cam-y', (-ny * 9).toFixed(1) + 'px');
-        hero.style.setProperty('--gloss-x', ((0.5 + nx * 0.45) * 100).toFixed(1) + '%');
-      });
-      hero.addEventListener('pointerleave', function () {
-        hero.classList.remove('is-pointer');
-        hero.style.setProperty('--cam-x', '0px');
-        hero.style.setProperty('--cam-y', '0px');
-        hero.style.setProperty('--gloss-x', '12%');
-      });
-    }
 
     var bar = SWK.$('.search-bar', hero);
     if (bar && SWK.fine) {
