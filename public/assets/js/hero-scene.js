@@ -1,10 +1,7 @@
-// SWK Properties — Ultra-HD Extended 3-Act Sheikh Zayed Road Real Aerial Video Engine
-// Plays an extended ~35.5-second 1080p HD real drone flight along Sheikh Zayed Road:
-//   Act I   (p = 0.00 -> 0.34): Low-altitude forward flight over Sheikh Zayed Road highway & Metro viaduct
-//   Act II  (p = 0.34 -> 0.68): Ascending climb through the Sheikh Zayed Road skyscraper canyon (Al Saqr & Al Yaqoub)
-//   Act III (p = 0.68 -> 1.00): High-altitude sweep across the Financial Centre Interchange revealing Burj Khalifa & Downtown
-// Coupled with scroll-driven timeline progression, dynamic aerial camera travel, corporate investment hooks,
-// and the SWK Properties flagship end-frame showcase.
+// SWK Properties — Glitch-Free Ultra-HD Sheikh Zayed Road Real Aerial Video Engine
+// Plays a continuous, seamless 20-second 1080p HD single-shot drone flight along Sheikh Zayed Road
+// with zero H.264 decoder seek-stutters, monotonic silk-smooth optical camera travel, and smooth
+// scroll-coupled playback acceleration.
 
 function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
 function lerp(a, b, t) { return a + (b - a) * t; }
@@ -17,8 +14,7 @@ function smootherstep(a, b, x) {
   return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
-// Draw the active video/poster source at native HiDPI resolution with optional subtle aerial banking
-function drawCameraLayer(ctx, source, srcW, srcH, W, H, camX, camY, camScale, bankRad) {
+function drawCameraLayer(ctx, source, srcW, srcH, W, H, camX, camY, camScale) {
   if (!source || !srcW || !srcH) return;
   var cAspect = W / H;
   var sAspect = srcW / srcH;
@@ -28,39 +24,27 @@ function drawCameraLayer(ctx, source, srcW, srcH, W, H, camX, camY, camScale, ba
   } else {
     baseW = srcH * cAspect;
   }
-  var extraScale = bankRad && Math.abs(bankRad) > 0.001 ? 1.045 : 1.0;
-  var effScale = camScale * extraScale;
-  var viewW = baseW / effScale;
-  var viewH = baseH / effScale;
+  var viewW = baseW / camScale;
+  var viewH = baseH / camScale;
   var sx = camX * srcW - viewW * 0.5;
   var sy = camY * srcH - viewH * 0.5;
   sx = clamp(sx, 0, Math.max(0, srcW - viewW));
   sy = clamp(sy, 0, Math.max(0, srcH - viewH));
-
-  if (bankRad && Math.abs(bankRad) > 0.0005) {
-    ctx.save();
-    ctx.translate(W * 0.5, H * 0.5);
-    ctx.rotate(bankRad);
-    ctx.drawImage(source, sx, sy, viewW, viewH, -W * 0.5, -H * 0.5, W, H);
-    ctx.restore();
-  } else {
-    ctx.drawImage(source, sx, sy, viewW, viewH, 0, 0, W, H);
-  }
+  ctx.drawImage(source, sx, sy, viewW, viewH, 0, 0, W, H);
 }
 
-// Architectural telemetry HUD pill at bottom-right (clears SWK Concierge button)
 function drawEarthHud(ctx, W, H, p, mobile) {
   if (mobile && W < 420) return;
   ctx.save();
-  var alt = Math.round(lerp(280, 740, smootherstep(0, 0.92, p)));
+  var alt = Math.round(lerp(680, 410, smootherstep(0, 1.0, p)));
   var phaseLabel =
-    p < 0.16 ? 'ACT I \u00b7 SHEIKH ZAYED ROAD E11 EXPRESSWAY FLIGHT' :
-    p < 0.45 ? 'ACT II \u00b7 FINANCIAL CENTRE SKYSCRAPER CANYON ASCENT' :
-    p < 0.72 ? 'ACT III \u00b7 DOWNTOWN & BURJ KHALIFA INTERCHANGE SWEEP' :
+    p < 0.16 ? 'SHEIKH ZAYED ROAD \u00b7 LIVE UHD AERIAL FOOTAGE' :
+    p < 0.45 ? 'DUBAI PRIME CORRIDOR \u00b7 DIRECT DEVELOPER ACCESS' :
+    p < 0.72 ? 'RERA ORN 51517 \u00b7 INSTITUTIONAL ADVISORY DESK' :
                'SWK PROPERTIES \u00b7 SHEIKH ZAYED ROAD, DUBAI';
 
   var padX = 14;
-  var hudW = Math.min(W - 32, 396);
+  var hudW = Math.min(W - 32, 384);
   var hudH = 34;
   var hx = Math.max(16, W - hudW - (mobile ? 16 : 108));
   var hy = H - hudH - (mobile ? 14 : 20);
@@ -88,7 +72,7 @@ function drawEarthHud(ctx, W, H, p, mobile) {
 
   ctx.fillStyle = 'rgba(240, 198, 108, 0.92)';
   ctx.font = '500 8.5px monospace';
-  var coords = '25\u00b012\'50.1"N 55\u00b016\'40.7"E \u00b7 ALT ' + alt + 'm \u00b7 SCROLL FLIGHT ' + Math.round(p * 100) + '%';
+  var coords = '25\u00b012\'50.1"N 55\u00b016\'40.7"E \u00b7 ALT ' + alt + 'm \u00b7 LIVE E11 CORRIDOR \u00b7 ORN 51517';
   ctx.fillText(coords, hx + 25, hy + 26, hudW - padX * 2);
 
   ctx.restore();
@@ -104,13 +88,12 @@ export function createHeroScene(canvas, opts) {
   var W = 0, H = 0;
   var progress = 0;
   var targetProgress = 0;
-  var lastSyncedProgress = 0;
   var ptrX = 0, ptrY = 0;
   var curPtrX = 0, curPtrY = 0;
+  var curRate = 1.0;
   var running = false;
   var rafId = 0;
   var readyFired = false;
-  var startTime = performance.now();
   var lastScrollTime = 0;
   var lastFrameTime = performance.now();
 
@@ -147,24 +130,9 @@ export function createHeroScene(canvas, opts) {
     if (p && typeof p.catch === 'function') p.catch(function () {});
   }
 
-  function syncVideoToScroll(v, pVal, force) {
-    if (!v || v.readyState < 2 || !v.duration || !isFinite(v.duration)) return;
-    var dur = v.duration;
-    // Map scroll p in [0, 1] across the 3-act 35.5s aerial video so scrolling visibly flies
-    // from Act I (highway) -> Act II (skyscraper canyon ascent) -> Act III (Burj Khalifa & Downtown panorama)
-    var winStart = clamp(pVal * (dur * 0.74), 0, Math.max(0, dur - 4.0));
-    var winEnd = Math.min(dur - 0.4, winStart + Math.max(4.5, dur * 0.24));
-    if (force || v.currentTime < winStart - 0.6 || v.currentTime > winEnd + 0.6) {
-      try {
-        v.currentTime = winStart + 0.35;
-      } catch (e) {}
-    }
-  }
-
   var onFastReady = function () {
     if (activeVid !== vidHD) {
       activeVid = vidFast;
-      syncVideoToScroll(vidFast, targetProgress, true);
       tryPlay(vidFast);
     }
     fireReady();
@@ -174,18 +142,12 @@ export function createHeroScene(canvas, opts) {
 
   if (vidHD) {
     var onHDReady = function () {
-      if (vidHD.readyState >= 2 && activeVid !== vidHD) {
-        try {
-          if (vidFast.currentTime > 0) vidHD.currentTime = vidFast.currentTime;
-          else syncVideoToScroll(vidHD, targetProgress, true);
-        } catch (e) {}
+      if (vidHD.readyState >= 3 && activeVid !== vidHD) {
         activeVid = vidHD;
         tryPlay(vidHD);
       }
       fireReady();
     };
-    vidHD.addEventListener('loadeddata', onHDReady);
-    vidHD.addEventListener('canplay', onHDReady);
     vidHD.addEventListener('canplaythrough', onHDReady);
   }
 
@@ -211,97 +173,69 @@ export function createHeroScene(canvas, opts) {
   }
 
   function getVideoSource() {
-    if (vidHD && vidHD.readyState >= 2 && vidHD.videoWidth > 0 && !vidHD.seeking) {
-      return { el: vidHD, w: vidHD.videoWidth, h: vidHD.videoHeight, t: vidHD.currentTime };
+    if (activeVid === vidHD && vidHD && vidHD.readyState >= 2 && vidHD.videoWidth > 0) {
+      return { el: vidHD, w: vidHD.videoWidth, h: vidHD.videoHeight };
     }
     if (vidFast && vidFast.readyState >= 2 && vidFast.videoWidth > 0) {
-      return { el: vidFast, w: vidFast.videoWidth, h: vidFast.videoHeight, t: vidFast.currentTime };
+      return { el: vidFast, w: vidFast.videoWidth, h: vidFast.videoHeight };
     }
     if (vidHD && vidHD.readyState >= 2 && vidHD.videoWidth > 0) {
-      return { el: vidHD, w: vidHD.videoWidth, h: vidHD.videoHeight, t: vidHD.currentTime };
+      return { el: vidHD, w: vidHD.videoWidth, h: vidHD.videoHeight };
     }
     if (imgPoster.complete && imgPoster.naturalWidth > 0) {
-      return { el: imgPoster, w: imgPoster.naturalWidth, h: imgPoster.naturalHeight, t: 0.0 };
+      return { el: imgPoster, w: imgPoster.naturalWidth, h: imgPoster.naturalHeight };
     }
     return null;
   }
 
   function render(now) {
     if (!W || !H) return;
-    var elapsed = (now - startTime) * 0.001;
-    var dt = clamp((now - lastFrameTime) * 0.001, 0.001, 0.25);
+    var dt = clamp((now - lastFrameTime) * 0.001, 0.001, 0.1);
     lastFrameTime = now;
 
-    var dp = Math.abs(targetProgress - progress);
-    var alphaP = dp > 0.08 ? 0.88 : (1 - Math.exp(-dt * 16));
+    // Smooth exponential damping on scroll progress (zero jump cuts)
+    var alphaP = 1 - Math.exp(-dt * 12);
     progress += (targetProgress - progress) * alphaP;
-    if (Math.abs(targetProgress - progress) < 0.0005) progress = targetProgress;
+    if (Math.abs(targetProgress - progress) < 0.0002) progress = targetProgress;
 
-    curPtrX += (ptrX - curPtrX) * 0.12;
-    curPtrY += (ptrY - curPtrY) * 0.12;
+    curPtrX += (ptrX - curPtrX) * 0.10;
+    curPtrY += (ptrY - curPtrY) * 0.10;
 
     var p = clamp(progress, 0, 1);
-    var curVid = (vidHD && vidHD.readyState >= 2) ? vidHD : vidFast;
+    var vSrc = getVideoSource();
 
-    // Couple scroll progress with the extended 35.5-second 3-act drone timeline
+    // Smoothly modulate playbackRate during active scroll (1.0x -> 1.85x) without seeking
+    var curVid = (activeVid === vidHD && vidHD) ? vidHD : vidFast;
     if (curVid && curVid.readyState >= 2) {
-      if (Math.abs(p - lastSyncedProgress) > 0.045) {
-        lastSyncedProgress = p;
-        syncVideoToScroll(vidFast, p, false);
-        if (vidHD && vidHD.readyState >= 2) syncVideoToScroll(vidHD, p, false);
-      } else {
-        // Keep looping smoothly within the current scroll act's window when idle
-        syncVideoToScroll(curVid, p, false);
-      }
-      var isScrolling = (now - lastScrollTime < 260);
-      var scrollBoost = isScrolling ? 2.25 : 1.0;
-      if (Math.abs(curVid.playbackRate - scrollBoost) > 0.05) {
-        curVid.playbackRate = scrollBoost;
+      var targetRate = (now - lastScrollTime < 220) ? 1.85 : 1.0;
+      curRate += (targetRate - curRate) * 0.15;
+      if (Math.abs(curVid.playbackRate - curRate) > 0.04) {
+        curVid.playbackRate = clamp(curRate, 1.0, 2.0);
       }
       if (running && curVid.paused) tryPlay(curVid);
     }
 
-    var vSrc = getVideoSource();
     ctx.fillStyle = '#070d18';
     ctx.fillRect(0, 0, W, H);
     if (!vSrc) return;
 
-    // Expressive 3-act aerial camera choreography across p = 0.00 -> 1.00
-    var t1 = smootherstep(0.00, 0.36, p);
-    var t2 = smootherstep(0.36, 0.70, p);
-    var t3 = smootherstep(0.70, 1.00, p);
-
-    // Act I -> Act II -> Act III camera framing & forward push
-    var camX = lerp(0.500, 0.455, t1);
-    var camY = lerp(0.450, 0.575, t1);
-    var camScale = lerp(1.01, 1.24, t1);
-
-    camX = lerp(camX, 0.545, t2);
-    camY = lerp(camY, 0.435, t2);
-    camScale = lerp(camScale, 1.28, t2);
-
-    // Act III (End Frame): Wide panoramic reveal of Burj Khalifa, Emaar Square & Sheikh Zayed Road Interchange
-    camX = lerp(camX, 0.485 + Math.sin(elapsed * 0.38) * 0.008, t3);
-    camY = lerp(camY, 0.475 + Math.cos(elapsed * 0.30) * 0.006, t3);
-    camScale = lerp(camScale, 1.08, t3);
-
-    camX += curPtrX * 0.012;
-    camY -= curPtrY * 0.010;
-
-    // Subtle helicopter banking roll during the mid-scroll ascent
-    var bankRad = Math.sin(p * Math.PI * 2.0) * 0.018 * smoothstep(0.05, 0.25, p) * (1 - smoothstep(0.78, 0.95, p));
+    // Single monotonic, silk-smooth forward camera glide across p = 0.00 -> 1.00
+    var tFlight = smootherstep(0.00, 1.00, p);
+    var camX = lerp(0.500, 0.492, tFlight) + curPtrX * 0.008;
+    var camY = lerp(0.415, 0.565, tFlight) - curPtrY * 0.006;
+    var camScale = lerp(1.00, 1.26, tFlight);
 
     ctx.imageSmoothingEnabled = true;
     if ('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
-    drawCameraLayer(ctx, vSrc.el, vSrc.w, vSrc.h, W, H, camX, camY, camScale, bankRad);
+    drawCameraLayer(ctx, vSrc.el, vSrc.w, vSrc.h, W, H, camX, camY, camScale);
 
-    // Cinema contrast vignette during scroll hook chapters & corporate end frame
-    var hookShade = smoothstep(0.13, 0.25, p);
+    // Smooth cinema contrast vignette for scroll hook chapters & corporate end frame
+    var hookShade = smoothstep(0.12, 0.24, p);
     var endShade = smoothstep(0.68, 0.84, p);
     if (hookShade > 0.01) {
       ctx.save();
       var grad = ctx.createRadialGradient(
-        W * 0.5, H * 0.5, Math.min(W, H) * 0.10,
+        W * 0.5, H * 0.5, Math.min(W, H) * 0.12,
         W * 0.5, H * 0.5, Math.max(W, H) * 0.72
       );
       var centerA = lerp(0.16, 0.30, endShade) * hookShade;
@@ -328,7 +262,7 @@ export function createHeroScene(canvas, opts) {
     setProgress: function (p) {
       targetProgress = clamp(p, 0, 1);
       lastScrollTime = performance.now();
-      render(lastScrollTime);
+      if (!running) render(lastScrollTime);
     },
     setPointer: function (x, y) {
       ptrX = clamp(x, -1, 1);
@@ -338,6 +272,7 @@ export function createHeroScene(canvas, opts) {
     start: function () {
       if (running) return;
       running = true;
+      lastFrameTime = performance.now();
       tryPlay(activeVid || vidFast);
       rafId = requestAnimationFrame(tick);
     },
