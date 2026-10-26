@@ -195,7 +195,7 @@
       var nextPhase = p < 0.25 ? 'b1' : p < 0.56 ? 'b2' : p < 0.81 ? 'b3' : 'logo';
       if (nextPhase !== phase) {
         phase = nextPhase;
-        hero.setAttribute('data-phase', nextPhase);
+        hero.setAttribute('data-phase', nextPhase === 'logo' ? 'logo' : 'b1');
       }
 
       // Opening dock (CTAs + glass search bar) glides down and dissolves as camera enters the tower window.
@@ -204,20 +204,12 @@
       hero.style.setProperty('--dock-y', (dockT * 30).toFixed(1) + 'px');
       hero.style.setProperty('--dock-s', (1 - dockT * 0.05).toFixed(3));
 
-      // Beat 1: Sheikh Zayed Road approach (0.00 -> 0.25)
-      var o1 = ease(SWK.clamp((0.24 - p) / 0.10, 0, 1));
-      var t1 = ease(SWK.clamp(p / 0.24, 0, 1));
-      setBeatStyle(beats[0], o1, -t1 * 26, 1 + t1 * 0.06, (1 - o1) * 7);
-
-      // Beat 2: SWK Properties reception lobby (0.25 -> 0.56)
-      var o2 = ease(SWK.clamp((p - 0.25) / 0.08, 0, 1)) * ease(SWK.clamp((0.55 - p) / 0.08, 0, 1));
-      var t2 = SWK.clamp((p - 0.25) / 0.30, 0, 1);
-      setBeatStyle(beats[1], o2, (0.5 - t2) * 36, 0.95 + t2 * 0.08, (1 - o2) * 6);
-
-      // Beat 3: Executive lounge to panoramic window (0.56 -> 0.81)
-      var o3 = ease(SWK.clamp((p - 0.56) / 0.08, 0, 1)) * ease(SWK.clamp((0.80 - p) / 0.08, 0, 1));
-      var t3 = SWK.clamp((p - 0.56) / 0.24, 0, 1);
-      setBeatStyle(beats[2], o3, (0.5 - t3) * 36, 0.95 + t3 * 0.08, (1 - o3) * 6);
+      // One headline, fixed in place for the whole film: no travel, scale, blur or fade between chapters.
+      // It only yields to the closing logo reveal.
+      var oHold = 1 - ease(SWK.clamp((p - 0.78) / 0.05, 0, 1));
+      setBeatStyle(beats[0], oHold, 0, 1, 0);
+      setBeatStyle(beats[1], 0, 0, 1, 0);
+      setBeatStyle(beats[2], 0, 0, 1, 0);
 
       // Closing logo reveal over Burj Khalifa skyline (0.80 -> 1.00)
       var rvRaw = SWK.clamp((p - 0.80) / 0.13, 0, 1);
