@@ -37,6 +37,10 @@
     var phase = '';
     var pendingTime = null;
     var blobLoaded = false;
+    var road = SWK.$('.hero__road-video', hero);
+    var roadLayer = SWK.$('.hero__road-layer', hero);
+    var roadReset = 0;
+    var resettingRoad = false;
     var idleTimer = 0;
     var idlePlaying = false;
     var inView = true;
@@ -52,7 +56,11 @@
 
     function stopIdle() {
       clearTimeout(idleTimer);
+      clearTimeout(roadReset);
       idlePlaying = false;
+      resettingRoad = false;
+      if (road) road.pause();
+      if (roadLayer) roadLayer.classList.remove('is-resetting');
       video.pause();
       hero.classList.remove('is-idle');
     }
@@ -60,13 +68,41 @@
     function queueIdle() {
       clearTimeout(idleTimer);
       idleTimer = setTimeout(function () {
-        if (document.hidden || !inView || video.readyState < 2 || video.ended || curP >= 0.995 || video.seeking) return;
+        // The scroll film never autoplays. Hold the cinematic finale at its end.
+        if (!road || document.hidden || !inView || curP >= 0.81) return;
+        if (!road.getAttribute('src')) road.src = video.currentSrc || video.src || '/assets/video/hero-swk-hq.mp4';
         idlePlaying = true;
         hero.classList.add('is-idle');
-        video.playbackRate = 0.8;
-        var play = video.play();
-        if (play && play.catch) play.catch(function () { stopIdle(); });
+        applyProgress(0, false);
+        video.pause();
+        if (road.currentTime >= 1.05) road.currentTime = 0;
+        road.muted = true;
+        road.playbackRate = 0.65;
+        var play = road.play();
+        if (play && play.catch) play.catch(function () { stopIdle(); applyProgress(curP, false); });
       }, 700);
+    }
+
+    if (road) {
+      road.addEventListener('timeupdate', function () {
+        // Stay before the camera turns toward the tower. Blend the reset into
+        // the matching opening poster, so no interior or aerial chapter leaks in.
+        if (!idlePlaying || resettingRoad || road.currentTime < 1.05) return;
+        resettingRoad = true;
+        road.pause();
+        roadLayer.classList.add('is-resetting');
+        roadReset = setTimeout(function () {
+          if (!idlePlaying) return;
+          road.currentTime = 0;
+        }, 180);
+      });
+      road.addEventListener('seeked', function () {
+        if (!idlePlaying || !resettingRoad) return;
+        resettingRoad = false;
+        roadLayer.classList.remove('is-resetting');
+        var play = road.play();
+        if (play && play.catch) play.catch(stopIdle);
+      });
     }
 
     // Non-blocking hardware decoder seek queue: never cancels an in-flight decode frame.
@@ -94,13 +130,6 @@
         pendingTime = null;
         seekTo(next);
       } else if (!idlePlaying) queueIdle();
-    });
-    video.addEventListener('timeupdate', function () {
-      if (idlePlaying && video.duration) applyProgress(SWK.clamp(video.currentTime / (video.duration - 0.08), 0, 1), false);
-    });
-    video.addEventListener('ended', function () {
-      idlePlaying = false;
-      applyProgress(1, false);
     });
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) stopIdle(); else queueIdle();
