@@ -1,63 +1,34 @@
-// Testimonials: staggered reveal, gentle auto-advance (pausable), arrow/keyboard paging and progress dots.
+// Testimonials: two opposing marquee rows. The server renders one copy of each row (scrollable without JS);
+// here each row is cloned until it can loop seamlessly. Hover, focus, the Pause button and reduced motion all stop it.
 (function () {
   'use strict';
   var S = window.SWK;
   S.reg('testimonials', function () {
-    var root = S.$('[data-testi]');
+    var root = S.$('[data-voices]');
     if (!root) return;
-    var track = S.$('[data-testi-track]', root), cards = S.$$('.testi-card', root);
-    var dotsWrap = S.$('[data-testi-dots]', root), pauseBtn = S.$('[data-testi-pause]', root);
-    var timer = null, userPaused = false, hovering = false, inView = false;
+    var rows = S.$$('[data-voices-row]', root), pauseBtn = S.$('[data-voices-pause]', root);
+    if (!rows.length) return;
 
-    cards.forEach(function () { var d = document.createElement('i'); dotsWrap.appendChild(d); });
-    var dots = S.$$('i', dotsWrap);
-
-    function step() { var c = cards[0]; return c ? c.getBoundingClientRect().width + 20 : 320; }
-    function index() { return Math.round(track.scrollLeft / step()); }
-    function maxLeft() { return track.scrollWidth - track.clientWidth - 4; }
-    function go(dir) {
-      var behavior = S.reduced ? 'auto' : 'smooth';
-      if (dir > 0 && track.scrollLeft >= maxLeft()) track.scrollTo({ left: 0, behavior: behavior });
-      else if (dir < 0 && track.scrollLeft <= 4) track.scrollTo({ left: track.scrollWidth, behavior: behavior });
-      else track.scrollBy({ left: dir * step(), behavior: behavior });
-    }
-    function paint() {
-      var i = Math.min(dots.length - 1, index());
-      dots.forEach(function (d, n) { d.className = n === i ? 'is-on' : ''; });
-    }
-    function stop() { clearInterval(timer); timer = null; }
-    function sync() {
-      stop();
-      if (S.reduced || userPaused || hovering || !inView || document.hidden) return;
-      timer = setInterval(function () { go(1); }, 4800);
-    }
-
-    S.$('[data-testi-prev]', root).addEventListener('click', function () { go(-1); });
-    S.$('[data-testi-next]', root).addEventListener('click', function () { go(1); });
-    track.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+    rows.forEach(function (row) {
+      var track = S.$('.voices__track', row), originals = Array.prototype.slice.call(track.children);
+      var w = track.scrollWidth, need = Math.max(2, Math.ceil((row.clientWidth * 2) / Math.max(w, 1)) + 1);
+      // Whole-set copies, an even number in total, so translating by -50% lands exactly on the start.
+      if (need % 2) need++;
+      for (var c = 1; c < need; c++) originals.forEach(function (card) {
+        var copy = card.cloneNode(true); copy.setAttribute('aria-hidden', 'true'); track.appendChild(copy);
+      });
+      track.style.setProperty('--voices-dur', Math.max(40, Math.round((w * need) / 2 / 34)) + 's');
     });
-    track.addEventListener('scroll', S.raf(paint), { passive: true });
-    ['mouseenter', 'focusin', 'touchstart'].forEach(function (ev) { root.addEventListener(ev, function () { hovering = true; sync(); }, { passive: true }); });
-    ['mouseleave', 'focusout'].forEach(function (ev) { root.addEventListener(ev, function () { hovering = false; sync(); }); });
-    root.addEventListener('touchend', function () { setTimeout(function () { hovering = false; sync(); }, 6000); }, { passive: true });
-    pauseBtn.addEventListener('click', function () {
+
+    var userPaused = false;
+    function apply() { root.classList.toggle('is-paused', userPaused); }
+    if (pauseBtn) pauseBtn.addEventListener('click', function () {
       userPaused = !userPaused;
       pauseBtn.setAttribute('aria-pressed', String(userPaused));
       pauseBtn.textContent = userPaused ? 'Play' : 'Pause';
-      sync();
+      apply();
     });
-    document.addEventListener('visibilitychange', sync);
-
-    root.classList.add('is-ready');
-    if ('IntersectionObserver' in window && !S.reduced) {
-      new IntersectionObserver(function (en) {
-        inView = en[0].isIntersecting;
-        if (inView) root.classList.add('is-in');
-        sync();
-      }, { threshold: 0.35 }).observe(root);
-    } else { root.classList.add('is-in'); inView = !S.reduced; sync(); }
-    paint();
+    if (!S.reduced) root.classList.add('is-marquee');
+    else if (pauseBtn) pauseBtn.hidden = true;
   });
 })();

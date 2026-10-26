@@ -258,10 +258,18 @@
       var last = parseInt(store('swk_lead') || '0', 10);
       if (last && Date.now() - last < 14 * 864e5) return false;
       if (banner && !banner.hidden && !consent) return false;
+      var hc = SWK.$('.hero-cine');
+      if (hc && hc.getBoundingClientRect().bottom > window.innerHeight * 0.6) return false;
       return true;
     }
     function showLead() {
-      if (!leadAllowed()) return;
+      if (!leadAllowed()) {
+        var hc = SWK.$('.hero-cine');
+        if (hc && !leadShown && hc.getBoundingClientRect().bottom > window.innerHeight * 0.6) {
+          setTimeout(showLead, 20000);
+        }
+        return;
+      }
       leadShown = true;
       store('swk_lead', String(Date.now()));
       lead.open(null);

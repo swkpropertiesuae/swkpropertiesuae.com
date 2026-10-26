@@ -47,8 +47,27 @@ def disc(size, mark_w=0.8, ring=0.07, bg=NAVY):
     return canvas.resize((size, size), Image.LANCZOS)
 
 
-disc(32, 0.84, 0.05).save(brand / "favicon-32.png", optimize=True)
-disc(180).save(brand / "favicon.png", optimize=True)
-disc(256).save(ROOT / "src" / "root" / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
-tile(180, 0.1, mark).convert("RGB").save(brand / "favicon-app.png", optimize=True)   # iOS rounds and masks its own icon
-print("circular favicons written")
+# Detailed favicons: tight-cropped SWK mark filling a rounded navy tile with a fine gold keyline.
+from PIL import ImageDraw
+_tight = mark.crop(mark.getchannel("A").point(lambda v: 255 if v > 24 else 0).getbbox())
+
+
+def fav(size, fill=0.9, radius=0.22):
+    k = 8
+    big = size * k
+    c = Image.new("RGBA", (big, big), (0, 0, 0, 0))
+    d = ImageDraw.Draw(c)
+    d.rounded_rectangle((0, 0, big - 1, big - 1), radius=int(big * radius), fill=(201, 154, 61, 255))
+    b = max(k, int(big * 0.035))
+    d.rounded_rectangle((b, b, big - 1 - b, big - 1 - b), radius=max(0, int(big * radius) - b), fill=NAVY)
+    w = int(big * fill)
+    m = _tight.resize((w, int(w * _tight.height / _tight.width)), Image.LANCZOS)
+    c.alpha_composite(m, ((big - m.width) // 2, (big - m.height) // 2))
+    return c.resize((size, size), Image.LANCZOS)
+
+
+fav(32).save(brand / "favicon-32.png", optimize=True)
+fav(180).save(brand / "favicon.png", optimize=True)
+fav(256).save(ROOT / "src" / "root" / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
+fav(180, 0.88, 0).convert("RGB").save(brand / "favicon-app.png", optimize=True)   # iOS rounds and masks its own icon
+print("detailed favicons written")

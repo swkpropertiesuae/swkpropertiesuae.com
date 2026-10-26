@@ -25,20 +25,7 @@
     S.$('[data-chat-form]').addEventListener('submit',function(e){e.preventDefault();var text=input.value.trim();if(!text)return;reply(text.slice(0,1000));input.value='';});
     S.$$('[data-chat-topic]').forEach(function(b){b.addEventListener('click',function(){reply(b.textContent);});});
   });
-  S.reg('review-stories',function(){
-    var root=S.$('[data-review-carousel]');if(!root)return;
-    var slides=S.$$('[data-review-slide]',root),i=0,paused=S.reduced,timer,pause=S.$('[data-review-pause]',root);
-    function show(n){i=(n+slides.length)%slides.length;slides.forEach(function(s,k){s.hidden=k!==i;});S.$('[data-review-count]',root).textContent=(i+1)+' / '+slides.length;}
-    function stop(){clearInterval(timer);}
-    function start(){stop();if(!paused&&!document.hidden)timer=setInterval(function(){show(i+1);},8000);}
-    S.$('[data-review-prev]',root).addEventListener('click',function(){show(i-1);start();});
-    S.$('[data-review-next]',root).addEventListener('click',function(){show(i+1);start();});
-    function label(){pause.textContent=paused?'Play':'Pause';pause.setAttribute('aria-pressed',String(paused));}
-    pause.addEventListener('click',function(){paused=!paused;label();start();});
-    root.addEventListener('mouseenter',stop);root.addEventListener('mouseleave',start);
-    root.addEventListener('focusin',stop);root.addEventListener('focusout',function(e){if(!root.contains(e.relatedTarget))start();});
-    document.addEventListener('visibilitychange',start);label();start();
-  });
+
   S.reg('premium-pointer',function(){
     if(S.reduced||!S.fine)return;
     S.$$('.service-card').forEach(function(card){

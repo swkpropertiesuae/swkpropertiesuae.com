@@ -281,13 +281,13 @@ GLOW = ('<div class="ambient-glow" aria-hidden="true"><div class="ambient-glow__
 
 # ---------------------------------------------------------------- icons
 
-ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
-PIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>'
-SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'
-CHEV = '<svg class="calc-disclosure__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>'
-PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>'
-NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'
-WHATSAPP = ('<svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.52 0-10 4.48-10 10 0 1.77.46 3.45 1.27 4.9L2 22l5.24-1.38a9.96 9.96 0 0 0 4.8 1.22h.01c5.52 0 10-4.48 10-10s-4.49-9.84-10.01-9.84Zm5.8 14.2c-.24.68-1.4 1.3-1.93 1.38-.5.08-1.12.11-1.8-.11-.42-.14-.95-.3-1.64-.6-2.88-1.24-4.76-4.15-4.9-4.34-.14-.19-1.17-1.56-1.17-2.98 0-1.41.74-2.1 1-2.39.26-.28.58-.35.77-.35.19 0 .39 0 .55.01.18.01.42-.07.65.5.24.58.82 2 .89 2.15.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.16-.29.36-.42.48-.14.14-.28.29-.12.57.16.28.72 1.19 1.55 1.93 1.06.95 1.96 1.24 2.24 1.38.28.14.44.12.6-.07.16-.19.68-.79.86-1.06.18-.28.36-.23.6-.14.24.09 1.55.73 1.82.87.27.14.45.21.51.32.07.12.07.65-.17 1.33Z"/></svg>')
+ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M3 12h15"/><path class="ic-a" d="M13 6.5 19 12l-6 5.5"/><path d="M19 12h2.2" class="ic-a"/></svg>'
+PIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 21.5 5.5 12.2A7.2 7.2 0 0 1 12 2.5a7.2 7.2 0 0 1 6.5 9.7z"/><path class="ic-a" d="M12 7.2 15 10l-3 2.8L9 10z"/></svg>'
+SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M10.5 3.5 17 7v7l-6.5 3.5L4 14V7z"/><path class="ic-a" d="m15 15.5 5.5 5.5"/></svg>'
+CHEV = '<svg class="calc-disclosure__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path class="ic-a" d="m5 9 7 7 7-7"/></svg>'
+PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path class="ic-a" d="M15.5 4 7.5 12l8 8"/></svg>'
+NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path class="ic-a" d="m8.5 4 8 8-8 8"/></svg>'
+WHATSAPP = ('<svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#25D366"/><path fill="#fff" transform="translate(12 12) scale(.66) translate(-12 -12)" d="M12.04 2c-5.52 0-10 4.48-10 10 0 1.77.46 3.45 1.27 4.9L2 22l5.24-1.38a9.96 9.96 0 0 0 4.8 1.22h.01c5.52 0 10-4.48 10-10s-4.49-9.84-10.01-9.84Zm5.8 14.2c-.24.68-1.4 1.3-1.93 1.38-.5.08-1.12.11-1.8-.11-.42-.14-.95-.3-1.64-.6-2.88-1.24-4.76-4.15-4.9-4.34-.14-.19-1.17-1.56-1.17-2.98 0-1.41.74-2.1 1-2.39.26-.28.58-.35.77-.35.19 0 .39 0 .55.01.18.01.42-.07.65.5.24.58.82 2 .89 2.15.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.16-.29.36-.42.48-.14.14-.28.29-.12.57.16.28.72 1.19 1.55 1.93 1.06.95 1.96 1.24 2.24 1.38.28.14.44.12.6-.07.16-.19.68-.79.86-1.06.18-.28.36-.23.6-.14.24.09 1.55.73 1.82.87.27.14.45.21.51.32.07.12.07.65-.17 1.33Z"/></svg>')
 
 SERVICE_ICONS = {
     "buying-selling": '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
@@ -309,24 +309,19 @@ ASSET_V = ""
 
 
 def build_assets():
-    """Concatenate CSS and JS, fingerprint them, and copy vendor files."""
+    """Concatenate CSS and JS, fingerprint them, and copy root files."""
     global ASSET_V
-    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium"]
+    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium", "system", "navigation"]
     css = "\n".join((SRC / "css" / f"{n}.css").read_text(encoding="utf-8") for n in css_order)
     css = css.replace("../assets/", "/assets/")
     mods = sorted((SRC / "js" / "modules").glob("*.js"))
     js = "\n".join(m.read_text(encoding="utf-8") for m in mods)
-    scene = (SRC / "js" / "hero-scene.js").read_text(encoding="utf-8")
-    ASSET_V = hashlib.sha1((css + js + scene).encode("utf-8")).hexdigest()[:8]
+    ASSET_V = hashlib.sha1((css + js).encode("utf-8")).hexdigest()[:8]
 
     (OUT / "assets" / "css").mkdir(parents=True, exist_ok=True)
     (OUT / "assets" / "js").mkdir(parents=True, exist_ok=True)
-    (OUT / "assets" / "vendor").mkdir(parents=True, exist_ok=True)
     (OUT / "assets" / "css" / "site.css").write_text(css, encoding="utf-8")
     (OUT / "assets" / "js" / "main.js").write_text(js, encoding="utf-8")
-    (OUT / "assets" / "js" / "hero-scene.js").write_text(scene, encoding="utf-8")
-    for f in (SRC / "vendor").iterdir():
-        shutil.copy(f, OUT / "assets" / "vendor" / f.name)
     for f in (SRC / "root").iterdir():
         shutil.copy(f, OUT / f.name)
     # Brand assets: images (logo, hero, listings, team...) and self-hosted fonts.
@@ -354,9 +349,9 @@ def site_header(path):
     menu_icon = '<span class="nav-toggle__bars" aria-hidden="true"><i></i><i></i><i></i></span>'
     return (f'<header class="site-header" data-site-header><div class="site-header__inner container">'
             f'<a href="/" class="site-brand" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" class="brand-logo" width="338" height="275" decoding="async" fetchpriority="high"></a>'
-            f'<nav class="site-nav" aria-label="Primary">{links}</nav>'
+            f'<nav class="site-nav" aria-label="Primary"><span class="site-nav__track" aria-hidden="true"></span>{links}</nav>'
             f'<div class="site-header__actions"><a href="{WA_DEFAULT}" class="site-header__wa" target="_blank" rel="noopener noreferrer" aria-label="Chat with SWK on WhatsApp">{WHATSAPP}</a>'
-            f'<a href="/contact/" class="btn btn-primary btn-sm site-header__cta">Book a consultation<span class="site-header__go" aria-hidden="true">{ARROW}</span></a>'
+            f'<a href="/contact/" class="btn btn-primary btn-sm site-header__cta">Let’s talk<span class="site-header__go" aria-hidden="true">{ARROW}</span></a>'
             f'<button type="button" class="nav-toggle" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">{menu_icon}</button></div></div>'
             f'<div class="menu-scrim" data-menu-scrim hidden></div>'
             f'<div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>'
@@ -383,16 +378,16 @@ PRELOADER = """<div class="preloader" role="status" aria-live="polite">
 </script>"""
 
 
-ICON_PHONE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>'
-ICON_MAIL = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
-ICON_PIN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>'
-ICON_CLOCK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
+ICON_PHONE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M6 3h3.5l1.8 4.6-2.2 1.6a10.5 10.5 0 0 0 5.7 5.7l1.6-2.2L21 14.5V18a2.5 2.5 0 0 1-2.7 2.5A16.5 16.5 0 0 1 3.5 5.7 2.5 2.5 0 0 1 6 3z"/><path class="ic-a" d="M14.5 3.5a6 6 0 0 1 6 6"/></svg>'
+ICON_MAIL = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path class="ic-a" d="m3 6 9 7.5L21 6"/></svg>'
+ICON_PIN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 21.5 5.5 12.2A7.2 7.2 0 0 1 12 2.5a7.2 7.2 0 0 1 6.5 9.7z"/><path class="ic-a" d="M12 7.2 15 10l-3 2.8L9 10z"/></svg>'
+ICON_CLOCK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 2.5 20.2 7.2v9.6L12 21.5l-8.2-4.7V7.2z"/><path class="ic-a" d="M12 7v5.2l3.4 2"/></svg>'
 
 
-ICON_SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>'
-ICON_CHART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'
-ICON_HEADSET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="14" width="4" height="6" rx="1.5"/><rect x="17.5" y="14" width="4" height="6" rx="1.5"/><path d="M20 20c0 1.5-1.5 2-4 2h-2"/></svg>'
-ICON_HEART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-8-4.6-8-10.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8 2.5C20 15.4 12 20 12 20z"/></svg>'
+ICON_SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 2.5 20 5.5v6.2c0 4.6-3.3 7.8-8 9.8-4.7-2-8-5.200-8-9.800V5.500z"/><path class="ic-a" d="m8 12 3 3 5.500-6"/></svg>'
+ICON_CHART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M3 21h18"/><path d="M5.500 21v-6M11 21V9"/><path class="ic-a" d="M16.500 21V4.500M5.500 15l5.500-6 5.500-4.500"/></svg>'
+ICON_HEADSET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M2.5 14h4v6h-4zM17.500 14h4v6h-4z"/><path class="ic-a" d="M19.500 20v1a2 2 0 0 1-2 2H13"/></svg>'
+ICON_HEART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 21 4.200 13A5 5 0 0 1 12 6.500 5 5 0 0 1 19.800 13z"/><path class="ic-a" d="M8 11.500h2.500l1.500-2.500 1.500 4 1-1.500H16"/></svg>'
 VALUE_ITEMS = [(ICON_SHIELD, "RERA-registered, fully disclosed", "Fees, commission and payment-plan clauses explained before you sign."),
                (ICON_CHART, "Yields, not slogans", "Return projections built on registered UAE transaction data."),
                (ICON_HEADSET, "One accountable consultant", "The adviser who takes your first call stays with you to handover."),
@@ -403,7 +398,7 @@ VALUES = ('<section class="value-strip" aria-labelledby="values-title"><h2 id="v
 
 STATS = [("10", "+", "Years in the UAE"), ("100", "+", "Homes Sold"), ("40", "+", "Consultants"), ("100", "%", "Client Satisfaction")]
 STORY = ('<section class="section container story ambient-glow-host">' + GLOW + '<div class="story__grid">'
-         '<div class="story__media" data-reveal>' + img("assets/images/about/swk-office.webp", "SWK Properties office overlooking Business Bay", sizes="(min-width: 900px) 600px, 100vw") + '</div>'
+         '<div class="story__media" data-reveal>' + img("assets/images/about/swk-office.webp", "SWK Properties office in Al Saqr Business Tower, Sheikh Zayed Road, Dubai", sizes="(min-width: 900px) 600px, 100vw") + '</div>'
          '<div class="story__copy" data-reveal><span class="eyebrow">Why SWK</span><h2>Built by agents, run for clients</h2>'
          '<p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in the UAE could feel for outsiders. '
          'Every fee, every payment plan clause and every ROI figure gets explained in plain language before you sign anything.</p>'
@@ -463,7 +458,7 @@ def footer():
 ANN = SITE.get("announcement") or {}
 POPUP = SITE.get("popup") or {}
 ANALYTICS = SITE.get("analytics") or {}
-ICON_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'
+ICON_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 21V4"/><path class="ic-a" d="M5.500 10.500 12 4l6.500 6.500"/></svg>'
 
 
 def announce_bar():
@@ -565,7 +560,7 @@ def csp_for(html_text):
         connect += ["https://www.google-analytics.com", "https://*.google-analytics.com", "https://*.analytics.google.com", "https://www.googletagmanager.com"]
     if fb:
         connect += ["https://www.facebook.com", "https://connect.facebook.net"]
-    return ("default-src 'self'; script-src " + " ".join(script_src) + "; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; "
+    return ("default-src 'self'; script-src " + " ".join(script_src) + "; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: data:; "
             "font-src 'self'; connect-src " + " ".join(connect) + "; frame-src https://www.google.com https://maps.google.com; worker-src 'self' blob:; "
             "object-src 'none'; base-uri 'self'; form-action 'self' mailto:")
 
@@ -636,7 +631,7 @@ def page(path, title, desc, body, *, image=PAGE_HERO_IMG, ld=None, og_type="webs
 {footer()}
 {ui_markup()}
 {chat_markup()}
-<script>window.SWK_V="{ASSET_V}";window.SWK_ASSETS="/assets/js/";</script>
+<script>window.SWK_V="{ASSET_V}";</script>
 <script src="/assets/js/main.js?v={ASSET_V}" defer></script>
 </body>
 </html>
@@ -728,7 +723,7 @@ def dev_card(dev, i=0, reveal=True):
     mono = "".join(w[0] for w in dev["name"].replace("&", " ").split()[:2]).upper()
     rv = f' data-reveal data-reveal-delay="{(i % 3) * 70}"' if reveal else ""
     return f"""<a class="dev-card" href="/properties/{dev['slug']}/"{rv} style="--dc:{dev['hue']}" aria-label="{e(dev['name'])}: {len(dev['projects'])} featured projects">
-<div class="dev-card__media">{project_media(dev, dev["projects"][0])}</div><div class="dev-card__brand">{dev_logo(dev) or f'<span class="dev-card__mono" aria-hidden="true">{mono}</span>'}</div><h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
+<div class="dev-card__media">{project_media(dev, dev["projects"][0], lazy=(i >= 6))}</div><div class="dev-card__brand">{dev_logo(dev) or f'<span class="dev-card__mono" aria-hidden="true">{mono}</span>'}</div><h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
 <ul>{names}</ul><span class="dev-card__count">{len(dev['projects'])} featured projects {ARROW}</span></a>"""
 
 
@@ -828,33 +823,48 @@ def flag_emoji(code):
     return "".join(chr(0x1F1E6 + ord(ch) - 65) for ch in c) if len(c) == 2 and c.isalpha() else ""
 
 
-def testimonials_markup(reviews):
-    """Snap-scrolling testimonial cards. Only entries with approved=true in data/testimonials.json are shown."""
-    hues = ["215 70% 38%", "180 62% 30%", "16 72% 46%", "38 86% 40%", "276 40% 42%", "150 48% 31%"]
-    cards = ""
-    for i, r in enumerate(reviews):
-        rating = max(1, min(5, int(r.get("rating", 5))))
-        initials = "".join(w[0] for w in r["name"].split()[:2]).upper()
-        country = r.get("country", "")
-        cards += (f'<figure class="testi-card" style="--tc:{hues[i % 6]};--i:{i}"><div class="testi-card__top">'
-                  f'<span class="testi-card__country"><span aria-hidden="true">{flag_emoji(r.get("flag", ""))}</span> {e(country)}</span>'
-                  f'<span class="testi-card__stars" role="img" aria-label="{rating} out of 5">{"★" * rating}{"☆" * (5 - rating)}</span></div>'
-                  f'<blockquote>{e(r["quote"])}</blockquote>'
-                  f'<figcaption><span class="testi-card__avatar" aria-hidden="true">{e(initials)}</span>'
-                  f'<span><strong>{e(r["name"])}</strong><small>{e(r.get("context", ""))}</small></span></figcaption></figure>')
-    seen, tags = set(), ""
-    for r in reviews:
-        k = r.get("country", "")
-        if k and k not in seen:
-            seen.add(k)
-            tags += f'<span>{flag_emoji(r.get("flag", ""))} {e(k)}</span>'
-    return (f'<div class="testi" data-testi><div class="testi__track" data-testi-track tabindex="0" role="region" aria-label="Client testimonials">{cards}</div>'
-            f'<div class="testi__nav"><button type="button" class="tc-arrow" data-testi-prev aria-label="Previous testimonials">{PREV}</button>'
-            f'<button type="button" class="tc-arrow" data-testi-next aria-label="Next testimonials">{NEXT}</button>'
-            f'<span class="testi__dots" data-testi-dots aria-hidden="true"></span>'
-            f'<button type="button" class="review-pause" data-testi-pause aria-pressed="false">Pause</button></div>'
-            f'<div class="testi__countries" aria-label="Where our clients are from">{tags}</div></div>')
+def service_cards(link=True):
+    """Hairline bento of the six services. link=True makes each cell a link to /services/ (home teaser)."""
+    out = ""
+    for i, sv in enumerate(SERVICES):
+        tag, attrs = ("a", ' href="/services/"') if link else ("div", "")
+        more = f'<span class="svc-card__more">Learn more {ARROW}</span>' if link else ""
+        out += (f'<{tag} class="svc-card"{attrs} data-spotlight><span class="svc-card__num" aria-hidden="true">{i + 1:02d}</span>'
+                f'<span class="svc-card__icon" aria-hidden="true">{service_icon(sv["id"])}</span>'
+                f'<h3>{e(sv["title"])}</h3><p>{e(sv["description"])}</p>{more}</{tag}>')
+    return out
 
+
+def testimonials_markup(items, commitments=False):
+    """Two opposing marquee rows of quote cards. items: dicts with quote, name and optional context/country/flag/rating.
+    The server renders one copy of each row (scrollable without JS); 87-testimonials.js clones it to loop."""
+    def card(i, r):
+        rating = max(1, min(5, int(r.get("rating", 5)))) if not commitments else 0
+        name = r["name"]
+        initials = "".join(w[0] for w in name.replace("&", " ").split()[:2]).upper()
+        country = r.get("country", "")
+        stars = f'<span class="voice__stars" role="img" aria-label="{rating} out of 5">{"★" * rating}</span>' if rating else ""
+        chip = f'<span class="voice__country"><span aria-hidden="true">{flag_emoji(r.get("flag", ""))}</span> {e(country)}</span>' if country else ""
+        return (f'<figure class="voice"><div class="voice__top">{stars}{chip}</div>'
+                f'<blockquote>{e(r["quote"])}</blockquote>'
+                f'<figcaption><span class="voice__avatar" aria-hidden="true">{e(initials)}</span>'
+                f'<span><strong>{e(name)}</strong><small>{e(r.get("context", ""))}</small></span></figcaption></figure>')
+    half = (len(items) + 1) // 2
+    rows = [items[:half], items[half:]]
+    html = ""
+    for n, row in enumerate(rows):
+        cards = "".join(card(i, r) for i, r in enumerate(row))
+        html += (f'<div class="voices__row" data-voices-row data-dir="{"left" if n == 0 else "right"}" tabindex="0" role="region" '
+                 f'aria-label="{"Client testimonials" if not commitments else "Service commitments"}, row {n + 1}"><div class="voices__track">{cards}</div></div>')
+    summary = ""
+    if not commitments:
+        countries = {r.get("country") for r in items if r.get("country")}
+        avg = sum(max(1, min(5, int(r.get("rating", 5)))) for r in items) / len(items)
+        summary = (f'<ul class="voices__stats"><li><strong>{avg:.1f}</strong><span>Average rating</span></li>'
+                   f'<li><strong>{len(items)}</strong><span>Client stories</span></li>'
+                   f'<li><strong>{len(countries)}</strong><span>Countries</span></li></ul>')
+    return (f'<div class="voices" data-voices>{summary}{html}'
+            f'<button type="button" class="voices__pause" data-voices-pause aria-pressed="false">Pause</button></div>')
 
 
 def build_home():
@@ -877,19 +887,15 @@ def build_home():
     for i, c in enumerate(COMMUNITIES):
         n = sum(1 for q in ALL_PROJECTS if q["community"] == c["name"])
         label = f"{n} featured project{'s' if n != 1 else ''}" if n else "Ask about launches"
-        comm_cards += f"""<a class="community-card" data-reveal data-reveal-delay="{(i % 4) * 70}" href="/properties/?community={quote(c['name'])}" aria-label="View projects in {e(c['name'])}">
-{img(c['image'], f"{c['name']}, Dubai", sizes="(min-width: 1100px) 290px, (min-width: 640px) 25vw, 50vw")}<div class="community-card__overlay"><h3>{e(c['name'])}</h3><span class="community-card__count">{label}</span></div></a>"""
+        comm_cards += f"""<a class="place-card" data-reveal data-reveal-delay="{(i % 4) * 70}" href="/properties/?community={quote(c['name'])}" aria-label="View projects in {e(c['name'])}">
+{img(c['image'], f"{c['name']}, Dubai", lazy=i > 3, sizes="(min-width: 1100px) 300px, (min-width: 640px) 33vw, 62vw")}<span class="place-card__num" aria-hidden="true">{i + 1:02d}</span><span class="place-card__go" aria-hidden="true">{ARROW}</span>
+<div class="place-card__body"><h3>{e(c['name'])}</h3><span class="place-card__count">{label}</span></div></a>"""
 
-    svc_cards = ""
-    for i, s in enumerate(SERVICES):
-        svc_cards += f"""<div class="service-card service-card--themed" data-tilt="5" style="--theme-color:{SERVICE_THEMES[i % 6]}">
-<div class="service-card__body"><h3>{e(s['title'])}</h3><a href="/services/" class="service-card__link" aria-label="Learn more about {e(s['title'])}">Learn more
-<svg class="service-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a></div>
-<div class="service-card__decor" aria-hidden="true">{service_icon(s['id'])}</div></div>"""
+    svc_cards = service_cards(link=True)
 
     reviews = [r for r in load("testimonials") if r.get("approved") is True]
     if reviews:
-        slides = testimonials_markup(reviews)
+        team = testimonials_markup(reviews)
         review_heading = "What our clients say"
         review_intro = "In their own words, shared with permission."
     else:
@@ -902,29 +908,27 @@ def build_home():
             ("Rental assumptions you can inspect", "Separate the advertised rent from service charges, vacancy and maintenance when considering an investment."),
             ("One clear next step", "Whether you are still exploring or ready to make an offer, leave the conversation knowing what happens next."),
             ("Support after the shortlist", "Keep your consultant in the conversation as you move from viewings to documents and handover.")]
-        slides = "".join(f'<figure class="review-slide" data-review-slide {"hidden" if i else ""}><blockquote>{e(text)}</blockquote><figcaption>{e(title)}</figcaption></figure>' for i, (title, text) in enumerate(commitments))
+        team = testimonials_markup([{"name": t, "quote": q} for t, q in commitments], commitments=True)
         review_heading = "What you can expect from SWK"
         review_intro = "Our service commitments. Client reviews will appear here once verified and approved."
-    if reviews:
-        team = slides
-    else:
-      team = f'''<div class="review-carousel" data-review-carousel aria-label="{review_heading}">{slides}<div class="review-controls"><button type="button" class="tc-arrow" data-review-prev aria-label="Previous story">{PREV}</button><span data-review-count>1 / {len(reviews) if reviews else 8}</span><button type="button" class="tc-arrow" data-review-next aria-label="Next story">{NEXT}</button><button type="button" class="review-pause" data-review-pause aria-pressed="false">Pause</button></div></div>'''
 
-    body = f"""<div class="hero-cine"><section class="hero" aria-label="Introduction">
-<div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/dubai-cinema-home.webp">
-<img src="/assets/images/hero/dubai-cinema-home.webp" alt="AI-created cinematic UAE architectural visualisation" width="1600" height="1067" fetchpriority="high" decoding="async"></picture></div>
-<canvas class="hero__gl" aria-hidden="true"></canvas>
-<div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div><div class="hero__streak" aria-hidden="true"></div>
-<div class="hero__captions" aria-hidden="true"><p class="hero__caption">The UAE, <em>from above.</em></p><p class="hero__caption">Down to <em>the street.</em></p><p class="hero__caption">Find <em>yours.</em></p></div>
+    body = f"""<div class="hero-cine" data-hero-cine><section class="hero is-idle" data-phase="b1" aria-label="Introduction">
+<div class="hero__bg"><video class="hero__video" data-src-4k="/assets/video/hero-swk-4k.mp4" muted playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster-hq.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk-hq.mp4" type="video/mp4"></video><div class="hero__idle" aria-hidden="true"><video class="hero__idle-video" src="/assets/video/hero-idle.mp4" muted playsinline preload="auto" poster="/assets/images/hero/hero-idle-poster.webp" tabindex="-1"></video><video class="hero__idle-video" src="/assets/video/hero-idle.mp4" muted playsinline preload="auto" tabindex="-1"></video></div></div>
 <div class="hero__content container">
-<span class="hero__eyebrow">UAE Property Advisory · RERA-registered</span>
-<h1 class="hero__title"><span class="sr-only">Invest where the UAE is heading. Live where it already shines.</span><span data-typewriter aria-hidden="true">Invest where the UAE is heading.<br><em>Live where it already shines.</em></span></h1>
-<p class="hero__subtitle">Off-plan and ready homes across the UAE's freehold communities, with mortgage, payment-plan and rental-yield advisory from first shortlist to handover.</p>
-<div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Talk to an advisor</a></div>
+<h1 class="sr-only">SWK Properties: Dubai off-plan and ready property, with direct access to the UAE's leading developers</h1>
+<div class="hero__stage" aria-hidden="true">
+<div class="hero__beat" data-beat="b1"><span class="hero__kicker">Sheikh Zayed Road &middot; Dubai</span><p class="hero__hook">Dubai never stops rising.</p><p class="hero__lead">Make sure your address rises with it.</p></div>
+<div class="hero__beat" data-beat="b2"><span class="hero__kicker">0% income tax &middot; Golden Visa routes</span><p class="hero__hook">Where <em>returns</em> meet residency.</p><p class="hero__lead">Off-plan and ready homes, guided by one private advisor.</p></div>
+<div class="hero__beat" data-beat="b3"><span class="hero__kicker">Off-plan &middot; Ready &middot; Freehold</span><p class="hero__hook">Don&rsquo;t watch the skyline. <em>Own it.</em></p><p class="hero__lead">Direct access to the UAE&rsquo;s leading developers.</p></div>
+</div>
+<div class="hero__dock">
+<div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Book a Consultation</a></div>
 <div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
-<span class="hero-art-credit">AI-created architectural visualisation</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
+</div>
+<div class="hero__reveal" aria-hidden="true"><div class="hero__reveal-inner"><span class="hero__logo-cinema"><img class="hero__reveal-logo" src="/assets/images/brand/swk-logo-white.png" alt="" width="676" height="550" decoding="async"><i class="hero__logo-sheen" aria-hidden="true"></i></span><span class="hero__reveal-rule"></span><strong class="hero__reveal-name">SWK PROPERTIES</strong><span class="hero__reveal-tag">Private Real Estate Advisory &middot; RERA ORN 51517</span><div class="hero__reveal-actions"><a href="/properties/" class="btn btn-gold btn-lg" tabindex="-1">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-white btn-lg" tabindex="-1">Book a Consultation</a></div></div></div>
+<span class="hero-art-credit">AI-generated video</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
 </section></div>
 
 {VALUES}
@@ -948,20 +952,20 @@ def build_home():
 <p>We work directly with the master developers behind the city's skyline, so pricing and payment plans come straight from source.</p></div>
 <div class="marquee" data-developer-marquee><div class="marquee__track">{one}{two}</div></div></div></section>
 
-<section class="section container ambient-glow-host">{GLOW}<div class="section-header center"><span class="eyebrow">Where to Live</span>{h2_cascade("Explore Dubai's communities")}
+<section class="section section--obsidian ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Where to Live</span>{h2_cascade("Explore Dubai's communities")}
 <p>Every neighbourhood has a different rhythm — from Marina's waterfront energy to the quiet greenery of Arabian Ranches.</p></div>
-<div class="communities-grid" data-communities-grid>{comm_cards}</div></section>
+<div class="place-grid" data-communities-grid>{comm_cards}</div></div></section>
 
 <section class="section section--alt ambient-glow-host">{GLOW}<div class="container">
 <div class="section-header center"><span class="eyebrow">How We Help</span>{h2_cascade("Full-service, start to handover")}
 <p>From your first shortlist to renewing Ejari five years later — one team, one point of contact.</p></div>
-<div class="services-grid" data-services-teaser data-reveal>{svc_cards}</div></div></section>
+<div class="svc-grid" data-services-teaser data-reveal>{svc_cards}</div></div></section>
 
 <section class="section ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Plan Your Purchase</span>{h2_cascade("Estimate your monthly mortgage")}
 <p>Adjust the figures below for an instant estimate, or get a personalised rate comparison on our mortgage page.</p></div>
 {calculator("/mortgage/", "Analyze")}</div></section>
 
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">The SWK Experience</span><h2>{review_heading}</h2><p>{review_intro}</p></div>{team}</div></section>
+<section class="section section--obsidian ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">The SWK Experience</span><h2>{review_heading}</h2><p>{review_intro}</p></div></div>{team}</section>
 
 <section class="section ambient-glow-host">{GLOW}<div class="container">
 <div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Insights</span>{h2_cascade("From the SWK journal")}</div>
@@ -973,7 +977,7 @@ def build_home():
     write("/", page("/", "SWK Properties | UAE Property Advisory — Off-Plan and Ready Homes",
                     "SWK Properties is a RERA-registered UAE property advisory — off-plan and ready homes in freehold communities, with mortgage, payment-plan and rental-yield advice from shortlist to handover.",
                     body, ld=ld,
-                    preload=[("/assets/images/hero/dubai-cinema-home.webp", ' fetchpriority="high"')]))
+                    preload=[("/assets/images/hero/hero-idle-poster.webp", ' fetchpriority="high"')]))
 
 
 def build_properties():
@@ -1058,7 +1062,7 @@ def build_about():
     stat_html = "".join(f'<div><div class="stat-num" data-count="{n}" data-suffix="{s}">{n}{s}</div><div class="stat-label">{l}</div></div>' for n, s, l in stats)
     trail = [("Home", "/"), ("About", None)]
     body = f"""{page_hero("Ten years of getting Dubai property right", "SWK Properties was founded on a simple idea: buying a home in Dubai — whether you live down the road or on the other side of the world — should feel transparent, not transactional.", trail, bg="about")}
-<section class="section container ambient-glow-host">{GLOW}<div class="split-block">{img("assets/images/about/swk-office.webp", "SWK Properties office overlooking Business Bay", sizes="(min-width: 900px) 600px, 100vw")}
+<section class="section container ambient-glow-host">{GLOW}<div class="split-block">{img("assets/images/about/swk-office.webp", "SWK Properties office in Al Saqr Business Tower, Sheikh Zayed Road, Dubai", sizes="(min-width: 900px) 600px, 100vw")}
 <div data-reveal><span class="eyebrow">Our Story</span><h2>Built by agents, run for clients</h2>
 <p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in the UAE could feel for outsiders. Today we're a full-service brokerage of over 40 consultants, but the founding principle hasn't changed: every fee, every payment plan clause, and every ROI figure gets explained in plain language before you sign anything.</p>
 <p style="margin-top:var(--space-4)">We work across off-plan and secondary sales, mortgage arrangement, and long-term property management — so the relationship doesn't end at handover.</p>
@@ -1074,8 +1078,7 @@ def build_about():
 
 
 def build_services():
-    cards = "".join(f"""<div class="service-card service-card--themed service-card--detailed" data-tilt="5" style="--theme-color:{SERVICE_THEMES[i % 6]}">
-<div class="service-card__body"><h3>{e(s['title'])}</h3><p>{e(s['description'])}</p></div><div class="service-card__decor" aria-hidden="true">{service_icon(s['id'])}</div></div>""" for i, s in enumerate(SERVICES))
+    cards = service_cards(link=False)
     process = [("Discovery Call", "We learn your budget, must-haves, and whether you're buying to live or to invest."),
                ("Curated Shortlist", "A shortlist matched to your brief within 24 hours, including off-market options."),
                ("Viewings & Offer", "In-person or virtual viewings, followed by negotiation on your behalf."),
@@ -1083,7 +1086,7 @@ def build_services():
     steps = "".join(f'<div class="step-item" data-reveal data-reveal-delay="{i * 80}"><div class="num">{i + 1:02d}</div><div><h3>{e(t)}</h3><p>{e(d)}</p></div></div>' for i, (t, d) in enumerate(process))
     trail = [("Home", "/"), ("Services", None)]
     body = f"""{page_hero("Full-service support, start to handover", "Buying, selling, financing or managing a Dubai property — one team handles every step, with a single consultant as your point of contact throughout.", trail, bg="services")}
-<section class="section container ambient-glow-host">{GLOW}<h2 class="sr-only">Our services</h2><div class="services-grid" data-reveal>{cards}</div></section>
+<section class="section container ambient-glow-host">{GLOW}<h2 class="sr-only">Our services</h2><div class="svc-grid" data-reveal>{cards}</div></section>
 <section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">How It Works</span><h2>Our process</h2></div><div class="step-list">{steps}</div></div></section>
 {cta_section("Not sure which service you need?", "Start with a free consultation — we'll recommend the right path for your goals.")}"""
     write("/services/", page("/services/", "Our Services | SWK Properties",

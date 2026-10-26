@@ -119,7 +119,7 @@
       ]
     },
     {
-      "source": "/assets/(css|js|vendor)/(.*)",
+      "source": "/assets/(css|js)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
