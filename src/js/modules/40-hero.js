@@ -79,7 +79,7 @@
       if (explicit3d) {
         var source = SWK.$('.hero__bg source', hero), poster = SWK.$('.hero__bg img', hero);
         if (source) source.srcset = '/assets/images/hero/hero-scene-mobile-satellite.webp';
-        if (poster) { poster.src = '/assets/images/hero/hero-scene-satellite.webp'; poster.alt = 'Satellite view of a stylised Dubai street grid rendered in 3D'; }
+        if (poster) { poster.src = '/assets/images/hero/earth-top-szr.webp'; poster.alt = 'Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai'; }
       }
     } else {
       hero.classList.add('is-photo-mode');
@@ -114,8 +114,8 @@
       hero.classList.remove('is-gl', 'is-gl-pending', 'is-spatial-mode');
       hero.classList.add('is-photo-mode');
       var fallbackSource = SWK.$('.hero__bg source', hero), fallbackImage = SWK.$('.hero__bg img', hero);
-      if (fallbackSource) fallbackSource.srcset = '/assets/images/hero/dubai-cinema-home.webp';
-      if (fallbackImage) { fallbackImage.src = '/assets/images/hero/dubai-cinema-home.webp'; fallbackImage.alt = 'AI-created cinematic Dubai architectural visualisation'; }
+      if (fallbackSource) fallbackSource.srcset = '/assets/images/hero/earth-top-szr.webp';
+      if (fallbackImage) { fallbackImage.src = '/assets/images/hero/earth-top-szr.webp'; fallbackImage.alt = 'Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai'; }
       // Retain the scroll stage and chapter transitions when switching away from a slow GPU.
       // Collapsing the stage during a journey would move the entire page under the visitor.
       if (SWK.reduced) wrap.classList.add('is-flat');

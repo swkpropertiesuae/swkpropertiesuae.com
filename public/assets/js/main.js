@@ -325,7 +325,7 @@
       if (explicit3d) {
         var source = SWK.$('.hero__bg source', hero), poster = SWK.$('.hero__bg img', hero);
         if (source) source.srcset = '/assets/images/hero/hero-scene-mobile-satellite.webp';
-        if (poster) { poster.src = '/assets/images/hero/hero-scene-satellite.webp'; poster.alt = 'Satellite view of a stylised Dubai street grid rendered in 3D'; }
+        if (poster) { poster.src = '/assets/images/hero/earth-top-szr.webp'; poster.alt = 'Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai'; }
       }
     } else {
       hero.classList.add('is-photo-mode');
@@ -360,8 +360,8 @@
       hero.classList.remove('is-gl', 'is-gl-pending', 'is-spatial-mode');
       hero.classList.add('is-photo-mode');
       var fallbackSource = SWK.$('.hero__bg source', hero), fallbackImage = SWK.$('.hero__bg img', hero);
-      if (fallbackSource) fallbackSource.srcset = '/assets/images/hero/dubai-cinema-home.webp';
-      if (fallbackImage) { fallbackImage.src = '/assets/images/hero/dubai-cinema-home.webp'; fallbackImage.alt = 'AI-created cinematic Dubai architectural visualisation'; }
+      if (fallbackSource) fallbackSource.srcset = '/assets/images/hero/earth-top-szr.webp';
+      if (fallbackImage) { fallbackImage.src = '/assets/images/hero/earth-top-szr.webp'; fallbackImage.alt = 'Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai'; }
       // Retain the scroll stage and chapter transitions when switching away from a slow GPU.
       // Collapsing the stage during a journey would move the entire page under the visitor.
       if (SWK.reduced) wrap.classList.add('is-flat');
@@ -1504,10 +1504,18 @@
       var last = parseInt(store('swk_lead') || '0', 10);
       if (last && Date.now() - last < 14 * 864e5) return false;
       if (banner && !banner.hidden && !consent) return false;
+      var hc = SWK.$('.hero-cine');
+      if (hc && hc.getBoundingClientRect().bottom > window.innerHeight * 0.6) return false;
       return true;
     }
     function showLead() {
-      if (!leadAllowed()) return;
+      if (!leadAllowed()) {
+        var hc = SWK.$('.hero-cine');
+        if (hc && !leadShown && hc.getBoundingClientRect().bottom > window.innerHeight * 0.6) {
+          setTimeout(showLead, 20000);
+        }
+        return;
+      }
       leadShown = true;
       store('swk_lead', String(Date.now()));
       lead.open(null);

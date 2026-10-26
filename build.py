@@ -403,7 +403,7 @@ VALUES = ('<section class="value-strip" aria-labelledby="values-title"><h2 id="v
 
 STATS = [("10", "+", "Years in the UAE"), ("100", "+", "Homes Sold"), ("40", "+", "Consultants"), ("100", "%", "Client Satisfaction")]
 STORY = ('<section class="section container story ambient-glow-host">' + GLOW + '<div class="story__grid">'
-         '<div class="story__media" data-reveal>' + img("assets/images/about/swk-office.webp", "SWK Properties office overlooking Business Bay", sizes="(min-width: 900px) 600px, 100vw") + '</div>'
+         '<div class="story__media" data-reveal>' + img("assets/images/about/swk-office.webp", "SWK Properties office in Al Saqr Business Tower, Sheikh Zayed Road, Dubai", sizes="(min-width: 900px) 600px, 100vw") + '</div>'
          '<div class="story__copy" data-reveal><span class="eyebrow">Why SWK</span><h2>Built by agents, run for clients</h2>'
          '<p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in the UAE could feel for outsiders. '
          'Every fee, every payment plan clause and every ROI figure gets explained in plain language before you sign anything.</p>'
@@ -911,11 +911,11 @@ def build_home():
       team = f'''<div class="review-carousel" data-review-carousel aria-label="{review_heading}">{slides}<div class="review-controls"><button type="button" class="tc-arrow" data-review-prev aria-label="Previous story">{PREV}</button><span data-review-count>1 / {len(reviews) if reviews else 8}</span><button type="button" class="tc-arrow" data-review-next aria-label="Next story">{NEXT}</button><button type="button" class="review-pause" data-review-pause aria-pressed="false">Pause</button></div></div>'''
 
     body = f"""<div class="hero-cine"><section class="hero" aria-label="Introduction">
-<div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/dubai-cinema-home.webp">
-<img src="/assets/images/hero/dubai-cinema-home.webp" alt="AI-created cinematic UAE architectural visualisation" width="1600" height="1067" fetchpriority="high" decoding="async"></picture></div>
+<div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/earth-top-szr.webp">
+<img src="/assets/images/hero/earth-top-szr.webp" alt="Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai" width="1600" height="900" fetchpriority="high" decoding="async"></picture></div>
 <canvas class="hero__gl" aria-hidden="true"></canvas>
 <div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div><div class="hero__streak" aria-hidden="true"></div>
-<div class="hero__captions" aria-hidden="true"><p class="hero__caption">The UAE, <em>from above.</em></p><p class="hero__caption">Down to <em>the street.</em></p><p class="hero__caption">Find <em>yours.</em></p></div>
+<div class="hero__captions" aria-hidden="true"><p class="hero__caption">Sheikh Zayed Road, <em>from above.</em></p><p class="hero__caption">Al Saqr Business Tower, <em>Dubai.</em></p><p class="hero__caption">Welcome to <em>SWK Properties.</em></p></div>
 <div class="hero__content container">
 <span class="hero__eyebrow">UAE Property Advisory · RERA-registered</span>
 <h1 class="hero__title"><span class="sr-only">Invest where the UAE is heading. Live where it already shines.</span><span data-typewriter aria-hidden="true">Invest where the UAE is heading.<br><em>Live where it already shines.</em></span></h1>
@@ -973,7 +973,7 @@ def build_home():
     write("/", page("/", "SWK Properties | UAE Property Advisory — Off-Plan and Ready Homes",
                     "SWK Properties is a RERA-registered UAE property advisory — off-plan and ready homes in freehold communities, with mortgage, payment-plan and rental-yield advice from shortlist to handover.",
                     body, ld=ld,
-                    preload=[("/assets/images/hero/dubai-cinema-home.webp", ' fetchpriority="high"')]))
+                    preload=[("/assets/images/hero/earth-top-szr.webp", ' fetchpriority="high"')]))
 
 
 def build_properties():
@@ -1058,7 +1058,7 @@ def build_about():
     stat_html = "".join(f'<div><div class="stat-num" data-count="{n}" data-suffix="{s}">{n}{s}</div><div class="stat-label">{l}</div></div>' for n, s, l in stats)
     trail = [("Home", "/"), ("About", None)]
     body = f"""{page_hero("Ten years of getting Dubai property right", "SWK Properties was founded on a simple idea: buying a home in Dubai — whether you live down the road or on the other side of the world — should feel transparent, not transactional.", trail, bg="about")}
-<section class="section container ambient-glow-host">{GLOW}<div class="split-block">{img("assets/images/about/swk-office.webp", "SWK Properties office overlooking Business Bay", sizes="(min-width: 900px) 600px, 100vw")}
+<section class="section container ambient-glow-host">{GLOW}<div class="split-block">{img("assets/images/about/swk-office.webp", "SWK Properties office in Al Saqr Business Tower, Sheikh Zayed Road, Dubai", sizes="(min-width: 900px) 600px, 100vw")}
 <div data-reveal><span class="eyebrow">Our Story</span><h2>Built by agents, run for clients</h2>
 <p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in the UAE could feel for outsiders. Today we're a full-service brokerage of over 40 consultants, but the founding principle hasn't changed: every fee, every payment plan clause, and every ROI figure gets explained in plain language before you sign anything.</p>
 <p style="margin-top:var(--space-4)">We work across off-plan and secondary sales, mortgage arrangement, and long-term property management — so the relationship doesn't end at handover.</p>
