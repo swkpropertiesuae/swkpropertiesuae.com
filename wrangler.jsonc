@@ -19,10 +19,14 @@
       "/mortgage.html",
       "/blog.html",
       "/contact.html",
+      "/assets/video/*",
       "/properties/*",
       "/blog/*"
     ]
   },
+  "r2_buckets": [
+    { "binding": "MEDIA", "bucket_name": "swk-media" }
+  ],
   "routes": [
     { "pattern": "swkpropertiesuae.com", "custom_domain": true },
     { "pattern": "www.swkpropertiesuae.com", "custom_domain": true }

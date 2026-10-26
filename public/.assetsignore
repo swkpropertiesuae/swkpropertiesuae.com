@@ -1,0 +1,2 @@
+# Large hero films are served from R2 (bucket swk-media); static assets are capped at 25 MiB per file.
+assets/video/hero-swk-*.mp4

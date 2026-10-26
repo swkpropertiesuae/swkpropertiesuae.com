@@ -6,6 +6,32 @@ const RETIRED_LISTINGS = new Set([
   'jvc-boulevard-residences', 'palm-garden-homes',
 ]);
 
+// The two large hero films exceed the 25 MiB static-asset limit, so they live in R2 (binding MEDIA) and are
+// served here with byte-range support (required for scroll-scrubbed video seeking).
+const MEDIA_PATH = /^\/assets\/video\/(hero-swk-[a-z0-9-]+\.mp4)$/;
+
+async function serveMedia(request, env, key) {
+  const head = request.method === 'HEAD';
+  const object = await (head ? env.MEDIA.head(key) : env.MEDIA.get(key, { range: request.headers }));
+  if (!object) return new Response('Not found', { status: 404 });
+  const headers = new Headers({
+    'content-type': 'video/mp4',
+    'accept-ranges': 'bytes',
+    'cache-control': 'public, max-age=604800',
+    etag: object.httpEtag,
+  });
+  let status = 200;
+  let length = object.size;
+  if (object.range && request.headers.has('range')) {
+    const { offset = 0, length: len = object.size - offset } = object.range;
+    headers.set('content-range', `bytes ${offset}-${offset + len - 1}/${object.size}`);
+    length = len;
+    status = 206;
+  }
+  headers.set('content-length', String(length));
+  return new Response(head ? null : object.body, { status, headers });
+}
+
 const redirect = (url, path) => Response.redirect(new URL(path, url).toString(), 301);
 
 export default {
@@ -13,6 +39,9 @@ export default {
     const url = new URL(request.url);
     const { pathname } = url;
     const trimmed = pathname.replace(/\/$/, '');
+
+    const media = pathname.match(MEDIA_PATH);
+    if (media && env.MEDIA && (request.method === 'GET' || request.method === 'HEAD')) return serveMedia(request, env, media[1]);
 
     if (pathname === '/property-details.html') return redirect(url, '/properties/');
     if (pathname === '/index.html') return redirect(url, '/');
