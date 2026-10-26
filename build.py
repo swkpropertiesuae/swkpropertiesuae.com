@@ -764,7 +764,7 @@ def dev_card(dev, i=0, reveal=True):
     mono = "".join(w[0] for w in dev["name"].replace("&", " ").split()[:2]).upper()
     rv = f' data-reveal data-reveal-delay="{(i % 3) * 70}"' if reveal else ""
     return f"""<a class="dev-card" href="/properties/{dev['slug']}/"{rv} style="--dc:{dev['hue']}" aria-label="{e(dev['name'])}: {len(dev['projects'])} featured projects">
-<div class="dev-card__media">{project_media(dev, dev["projects"][0], lazy=(i >= 6))}</div><div class="dev-card__brand">{dev_logo(dev) or f'<span class="dev-card__mono" aria-hidden="true">{mono}</span>'}</div><h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
+<div class="dev-card__media">{project_media(dev, dev["projects"][0], lazy=(i >= 6))}</div><div class="dev-card__brand">{dev_logo(dev) or f'<span class="dev-card__mono" aria-hidden="true">{mono}</span>'}</div><h3{' class="sr-only"' if dev_logo(dev) else ''}>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
 <ul>{names}</ul><span class="dev-card__count">{len(dev['projects'])} featured projects {ARROW}</span></a>"""
 
 
