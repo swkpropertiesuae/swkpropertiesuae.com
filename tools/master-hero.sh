@@ -5,6 +5,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 test "$#" -eq 1 || { echo 'Provide the original 1920x1080 source clip.' >&2; exit 1; }
+mkdir -p src/assets/video src/assets/images/hero
 ffmpeg -y -v error -i "$1" \
   -vf "rotate='0.038397*max(0,1-t/4)':fillcolor=black,scale=w='trunc(1920*(1+0.075*max(0,1-t/4))/2)*2':h='trunc(1080*(1+0.075*max(0,1-t/4))/2)*2':eval=frame:flags=lanczos,crop=1920:1080,setsar=1,unsharp=5:5:0.35:3:3:0" \
   -an -c:v libx264 -preset slow -crf 16 -g 6 -keyint_min 6 \
