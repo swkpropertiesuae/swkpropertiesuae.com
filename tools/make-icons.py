@@ -5,7 +5,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 brand = ROOT / "src" / "assets" / "images" / "brand"
-logo = Image.open(brand / "swk-logo-dark.png").convert("RGBA")  # gold lock-up (tools/make-gold-logo.py)
+logo = Image.open(brand / "swk-logo-dark.png").convert("RGBA")  # white-champagne lock-up (tools/make-gold-logo.py)
 mark = Image.open(brand / "swk-mark.png").convert("RGBA")
 NAVY = (23, 36, 60, 255)
 
@@ -66,8 +66,7 @@ def fav(size, fill=0.94, radius=0.2, lift=True):
     w = int(big * fill)
     m = _tight.resize((w, int(w * _tight.height / _tight.width)), Image.LANCZOS)
     if lift and size <= 64:
-        rgb = ImageEnhance.Brightness(m.convert("RGB")).enhance(1.28)
-        rgb = ImageEnhance.Contrast(rgb).enhance(1.12)
+        rgb = ImageEnhance.Contrast(m.convert("RGB")).enhance(1.15)
         m = Image.merge("RGBA", (*rgb.split(), m.getchannel("A")))
     c.alpha_composite(m, ((big - m.width) // 2, (big - m.height) // 2))
     out = c.resize((size, size), Image.LANCZOS)

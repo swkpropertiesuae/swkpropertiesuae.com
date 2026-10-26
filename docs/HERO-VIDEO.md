@@ -57,3 +57,12 @@ the closing-logo state against the generated site in Chromium.
 with `delogo`, drops the audio track and rewrites `hero-idle-poster.webp` from the first frame. Displays
 with viewport width × pixel ratio of at least 2560 load the 4K file. It is a Lanczos upscale of a 1080p source, not
 native 4K or 8K detail. Both files stay under the 25 MiB static-asset cap.
+
+## Twilight theme
+
+`src/css/twilight.css` loads last and restyles every page: midnight navy and charcoal surfaces, ivory text,
+champagne hairlines, Raleway (headlines, navigation, buttons), Montserrat Light (body) and Bodoni Moda
+(numerals, quotes). The legacy `Clash Display`, `General Sans` and `Instrument Serif` families are re-pointed at
+those faces, so older rules resolve to the new type. The logo set comes from `tools/make-gold-logo.py` (white with a
+champagne cast). The cinematic grade on the films and photography is a CSS filter plus gradient veil; the video files
+themselves are not regraded.
