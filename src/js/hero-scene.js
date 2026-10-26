@@ -1,5 +1,6 @@
-// SWK Properties — Single-Shot Google Earth Studio -> Live Sheikh Zayed Road Traffic -> Al Saqr Business Tower (25th Floor) -> SWK Office
-// Continuous 60fps real-footage camera trajectory:
+// SWK Properties — idle aerial loop -> live Sheikh Zayed Road traffic -> Al Saqr Business Tower (25th Floor) -> SWK Office
+// While the page is idle a seamless 3.2s loop of Sheikh Zayed Road traffic (szr-idle-loop.mp4) plays as a fixed shot.
+// The first scroll tick dissolves (scroll-linked, no timers) into the real drone footage, which starts at 0.8s:
 //   p = 0.00 -> 0.40 : High-altitude Google Earth Studio aerial view of Sheikh Zayed Road zooming continuously down
 //                      into real HD drone footage of vehicles moving along the 12-lane highway (no synthetic 2D cars).
 //   p = 0.40 -> 0.68 : Camera sweeps up from the moving vehicles on Sheikh Zayed Road and zooms directly onto the
@@ -139,60 +140,17 @@ function drawTowerCallout(ctx, W, H, px, py, alpha, subtitle, floorLabel) {
   ctx.restore();
 }
 
-// Google Earth Studio telemetry HUD pill at bottom-right (clears SWK Concierge button)
-function drawEarthHud(ctx, W, H, p, mobile) {
-  if (mobile && W < 420) return;
-  ctx.save();
-  var alt = Math.round(lerp(680, 98, smootherstep(0, 0.85, p)));
-  var tilt = Math.round(lerp(52, 8, smootherstep(0, 0.82, p)));
-  var phaseLabel =
-    p < 0.18 ? 'GOOGLE EARTH STUDIO \u00b7 SHEIKH ZAYED ROAD AERIAL' :
-    p < 0.48 ? 'LIVE FOOTAGE \u00b7 SHEIKH ZAYED ROAD TRAFFIC (E11)' :
-    p < 0.82 ? 'AL SAQR BUSINESS TOWER \u00b7 25TH FLOOR APPROACH' :
-               'SWK PROPERTIES OFFICE \u00b7 25TH FLOOR, AL SAQR TOWER';
 
-  var padX = 14;
-  var hudW = Math.min(W - 32, 376);
-  var hudH = 34;
-  var hx = Math.max(16, W - hudW - (mobile ? 16 : 108));
-  var hy = H - hudH - (mobile ? 14 : 20);
-
-  ctx.fillStyle = 'rgba(11, 18, 31, 0.72)';
-  ctx.strokeStyle = 'rgba(217, 177, 90, 0.45)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  if (ctx.roundRect) {
-    ctx.roundRect(hx, hy, hudW, hudH, 17);
-  } else {
-    ctx.rect(hx, hy, hudW, hudH);
-  }
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = '#4ade80';
-  ctx.beginPath();
-  ctx.arc(hx + 15, hy + hudH * 0.5, 3.2, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = 'rgba(255, 250, 240, 0.94)';
-  ctx.font = '600 9.5px system-ui, -apple-system, sans-serif';
-  ctx.fillText(phaseLabel, hx + 25, hy + 14);
-
-  ctx.fillStyle = 'rgba(217, 177, 90, 0.88)';
-  ctx.font = '500 8.5px monospace';
-  var coords = p < 0.84
-    ? '25\u00b012\'50.1"N 55\u00b016\'40.7"E \u00b7 ALT ' + alt + 'm \u00b7 TILT ' + tilt + '\u00b0 \u00b7 25TH FL'
-    : '25TH FLOOR \u00b7 AL SAQR BUSINESS TOWER, SHEIKH ZAYED ROAD \u00b7 RERA ORN 51517';
-  ctx.fillText(coords, hx + 25, hy + 26, hudW - padX * 2);
-
-  ctx.restore();
-}
+var REAL_START = 0.8;      // real drone footage always starts here when scrolling begins
+var IDLE_TO_REAL = 0.10;   // scroll progress over which the idle loop dissolves into the real footage
 
 export function createHeroScene(canvas, opts) {
   opts = opts || {};
   var mobile = !!opts.mobile;
   var ctx = canvas.getContext('2d', { alpha: false });
   if (!ctx) throw new Error('2D canvas context unavailable');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
 
   var dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
   var W = 0, H = 0;
@@ -204,34 +162,34 @@ export function createHeroScene(canvas, opts) {
   var rafId = 0;
   var readyFired = false;
   var startTime = performance.now();
-  var lastScrollTime = 0;
+  var realPlaying = false;
 
   var sfx = mobile ? '-640.webp' : '.webp';
   var imgPoster = new Image();
   var imgMullions = new Image();
   var imgOffice = new Image();
-
   imgPoster.decoding = 'async';
   imgMullions.decoding = 'async';
   imgOffice.decoding = 'async';
 
-  // Dual-video ping-pong loop so real Sheikh Zayed Road traffic flows continuously with zero loop jump
-  function makeVideo(src) {
+  function makeVideo(src, loop) {
     var v = document.createElement('video');
-    v.src = src;
     v.muted = true;
     v.defaultMuted = true;
     v.playsInline = true;
     v.setAttribute('playsinline', '');
     v.setAttribute('muted', '');
     v.preload = 'auto';
-    v.loop = true;
+    v.loop = !!loop;
+    v.src = src;
     return v;
   }
 
-  var vidFast = makeVideo('/assets/video/szr-aerial-fast.mp4');
-  var vidHD = mobile ? null : makeVideo('/assets/video/szr-aerial-real.mp4');
-  var activeVid = null;
+  // Idle shot: a baked seamless loop, so there is no seek, stall or cross-dissolve at the loop point.
+  var vidIdle = makeVideo('/assets/video/szr-idle-loop.mp4', true);
+  // Real footage is fetched once the idle shot is on screen, so the first paint is never competing for bandwidth.
+  var vidReal = null;
+  var realSrc = mobile ? '/assets/video/szr-aerial-mid.mp4' : '/assets/video/szr-aerial-real.mp4';
 
   function fireReady() {
     if (readyFired) return;
@@ -241,38 +199,34 @@ export function createHeroScene(canvas, opts) {
 
   function tryPlay(v) {
     if (!v) return;
-    var p = v.play();
-    if (p && typeof p.catch === 'function') p.catch(function () {});
+    var pr = v.play();
+    if (pr && typeof pr.catch === 'function') pr.catch(function () {});
   }
 
-  vidFast.addEventListener('loadeddata', function () {
-    if (!activeVid) activeVid = vidFast;
-    tryPlay(vidFast);
+  function parkReal() {
+    if (!vidReal) return;
+    realPlaying = false;
+    if (!vidReal.paused) vidReal.pause();
+    try { if (Math.abs(vidReal.currentTime - REAL_START) > 0.05) vidReal.currentTime = REAL_START; } catch (e) {}
+  }
+
+  function loadReal() {
+    if (vidReal) return;
+    vidReal = makeVideo(realSrc, false);
+    vidReal.addEventListener('loadedmetadata', function () { parkReal(); });
+    vidReal.load();
+  }
+
+  vidIdle.addEventListener('loadeddata', function () {
+    tryPlay(vidIdle);
     fireReady();
+    loadReal();
   });
-
-  if (vidHD) {
-    var activateHD = function () {
-      try {
-        if (vidFast.currentTime > 0.1 && Math.abs(vidHD.currentTime - vidFast.currentTime) > 0.25) {
-          vidHD.currentTime = vidFast.currentTime;
-        }
-      } catch (e) {}
-      tryPlay(vidHD);
-      activeVid = vidHD;
-      fireReady();
-    };
-    vidHD.addEventListener('loadeddata', activateHD);
-    vidHD.addEventListener('canplay', activateHD);
-  }
-
   imgPoster.onload = function () { fireReady(); };
-  imgPoster.src = '/assets/images/hero/earth-top-szr' + sfx;
+  imgPoster.src = '/assets/images/hero/szr-idle-frame.webp';
   imgMullions.src = '/assets/images/hero/alsaqr-25th-mullions' + sfx;
   imgOffice.src = '/assets/images/hero/swk-office-alsaqr' + sfx;
-
-  vidFast.load();
-  if (vidHD) vidHD.load();
+  vidIdle.load();
 
   function resize() {
     var rect = canvas.getBoundingClientRect();
@@ -283,22 +237,11 @@ export function createHeroScene(canvas, opts) {
     canvas.width = Math.round(cw * dpr);
     canvas.height = Math.round(ch * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingQuality = 'high';
     render(performance.now());
   }
 
-  // Helper to draw the current live video frame (or poster fallback before video frame 1 decodes)
-  function getVideoSource() {
-    if (vidHD && vidHD.readyState >= 2 && vidHD.videoWidth > 0) {
-      return { el: vidHD, w: vidHD.videoWidth, h: vidHD.videoHeight, t: vidHD.currentTime };
-    }
-    if (vidFast && vidFast.readyState >= 2 && vidFast.videoWidth > 0) {
-      return { el: vidFast, w: vidFast.videoWidth, h: vidFast.videoHeight, t: vidFast.currentTime };
-    }
-    if (imgPoster.complete && imgPoster.naturalWidth > 0) {
-      return { el: imgPoster, w: imgPoster.naturalWidth, h: imgPoster.naturalHeight, t: 0.2 };
-    }
-    return null;
-  }
+  function videoReady(v) { return v && v.readyState >= 2 && v.videoWidth > 0 && !v.seeking; }
 
   var lastFrameTime = performance.now();
 
@@ -318,67 +261,84 @@ export function createHeroScene(canvas, opts) {
     curPtrY += (ptrY - curPtrY) * 0.12;
 
     var p = clamp(progress, 0, 1);
-    var vSrc = getVideoSource();
 
-    // Modulate video playback speed slightly during active scrolling, and slow slightly as drone hovers at 25th floor
-    var activeVidEl = (vidHD && vidHD === activeVid) ? vidHD : vidFast;
-    if (activeVidEl && activeVidEl.readyState >= 2) {
-      var scrollBoost = (now - lastScrollTime < 180) ? 1.25 : 1.0;
-      var hoverSlow = lerp(1.0, 0.65, smoothstep(0.45, 0.75, p));
-      var targetRate = clamp(scrollBoost * hoverSlow, 0.5, 1.5);
-      if (Math.abs(activeVidEl.playbackRate - targetRate) > 0.05) {
-        activeVidEl.playbackRate = targetRate;
+    // Idle loop -> real footage hand-off is driven purely by scroll progress.
+    var mixReal = smoothstep(0, IDLE_TO_REAL, p);
+    var realReady = videoReady(vidReal);
+
+    if (vidReal) {
+      if (p > 0.0008) {
+        if (!realPlaying && running) { realPlaying = true; tryPlay(vidReal); }
+        if (vidReal.currentTime > 14.2) { try { vidReal.currentTime = REAL_START; } catch (e) {} }
+        // Slow slightly as the drone hovers at the 25th floor
+        var rate = clamp(lerp(1.0, 0.65, smoothstep(0.45, 0.75, p)), 0.5, 1.5);
+        if (Math.abs(vidReal.playbackRate - rate) > 0.05) vidReal.playbackRate = rate;
+      } else if (realPlaying && mixReal === 0) {
+        parkReal();
       }
-      if (running && activeVidEl.paused) tryPlay(activeVidEl);
+    }
+    if (running) {
+      var idleNeeded = mixReal < 1 || !realReady;
+      if (idleNeeded && vidIdle.paused) tryPlay(vidIdle);
+      else if (!idleNeeded && !vidIdle.paused) vidIdle.pause();
     }
 
     ctx.fillStyle = '#0f1826';
     ctx.fillRect(0, 0, W, H);
-    if (!vSrc) return;
 
-    // Track exact 25th-floor coordinates on the tower in the live Sheikh Zayed Road video
+    var idleOK = videoReady(vidIdle);
+    var showReal = realReady && mixReal > 0;
+    var realAlpha = showReal ? mixReal : 0;
+
+    // 1. Idle shot: fixed camera, tiny pointer parallax only.
+    if (realAlpha < 1) {
+      var ix = 0.5 + curPtrX * 0.004, iy = 0.5 - curPtrY * 0.003;
+      if (idleOK) drawCameraLayer(ctx, vidIdle, vidIdle.videoWidth, vidIdle.videoHeight, W, H, ix, iy, 1.02);
+      else if (imgPoster.complete && imgPoster.naturalWidth > 0) drawCameraLayer(ctx, imgPoster, imgPoster.naturalWidth, imgPoster.naturalHeight, W, H, ix, iy, 1.02);
+    }
+    if (!showReal) return;
+
+    var vSrc = { el: vidReal, w: vidReal.videoWidth, h: vidReal.videoHeight, t: vidReal.currentTime };
     var track = getTowerTrack(vSrc.t);
 
     // =========================================================================
-    // SINGLE CONTINUOUS CAMERA TRAJECTORY (p = 0.00 -> 1.00)
-    //   Phase A (p = 0.00 -> 0.36): Aerial view -> Close-up of real moving vehicles on Sheikh Zayed Road
-    //   Phase B (p = 0.36 -> 0.66): Highway vehicles -> Panning & zooming up to Al Saqr Business Tower (25th Floor)
-    //   Phase C (p = 0.66 -> 1.00): Flying physically through the 25th-floor window into SWK Properties' office
+    // SINGLE CONTINUOUS CAMERA TRAJECTORY (p = 0.00 -> 1.00) on the real footage
+    //   Phase A (p = 0.00 -> 0.35): Aerial view -> Close-up of real moving vehicles on Sheikh Zayed Road
+    //   Phase B (p = 0.35 -> 0.60): Highway vehicles -> Panning & zooming up to Al Saqr Business Tower (25th Floor)
+    //   Phase C (p = 0.60 -> 1.00): Flying physically through the 25th-floor window into SWK Properties' office
     // =========================================================================
     var tDive = smootherstep(0.00, 0.35, p);
     var tTower = smootherstep(0.35, 0.60, p);
 
-    // Camera center (camX, camY) and zoom (camScale) on the live Sheikh Zayed Road video
     var highwayX = 0.482;
-    var highwayY = 0.635; // Crisp view of the 12 lanes of real moving vehicles + Dubai Metro viaduct
+    var highwayY = 0.635;
     var highwayScale = 1.65;
 
     var camX = lerp(0.500, highwayX, tDive);
     var camY = lerp(0.455, highwayY, tDive);
     var camScale = lerp(1.00, highwayScale, tDive);
 
-    // Sweep from the moving vehicles on Sheikh Zayed Road up to the 25th Floor of Al Saqr Business Tower
     camX = lerp(camX, track.x, tTower);
     camY = lerp(camY, track.y, tTower);
     camScale = lerp(camScale, 6.20 * track.s, tTower);
 
-    // Subtle pointer parallax
     camX += curPtrX * (0.012 / Math.sqrt(camScale));
     camY -= curPtrY * (0.009 / Math.sqrt(camScale));
 
-    // 1. Draw the live Sheikh Zayed Road aerial/traffic video as the continuous base layer
+    ctx.save();
+    ctx.globalAlpha = realAlpha;
     if (p < 0.88) {
-      // Once the 25th-floor portal locks in (p > 0.56), keep the left-side exterior video focused on the
-      // live moving traffic on Sheikh Zayed Road 25 floors below so real vehicles flow past the building edge!
       var bgLock = smootherstep(0.48, 0.60, p);
       var bgCamX = lerp(camX, 0.455, bgLock);
       var bgCamY = lerp(camY, 0.640, bgLock);
       var bgCamScale = lerp(camScale, 1.75, bgLock);
       drawCameraLayer(ctx, vSrc.el, vSrc.w, vSrc.h, W, H, bgCamX, bgCamY, bgCamScale);
     }
+    ctx.restore();
 
-    // Opening high-altitude Google Earth Studio grid (fades out as camera dives into live traffic)
-    var gridAlpha = 1 - smoothstep(0.02, 0.24, p);
+    // Overlays (grid, tower callout) only exist once the real flight is under way.
+    var uiA = smoothstep(IDLE_TO_REAL * 0.6, IDLE_TO_REAL * 1.6, p);
+    var gridAlpha = (1 - smoothstep(0.02, 0.24, p)) * uiA;
     drawEarthAerialGrid(ctx, W, H, gridAlpha, camX, camY, camScale);
 
     // 2. Nested 3D 25th-Floor Window Portal & SWK Properties 25th-Floor Office (p = 0.44 -> 1.00)
@@ -460,7 +420,7 @@ export function createHeroScene(canvas, opts) {
       var tRet = smootherstep(0.42, 0.58, p);
       rx = lerp(rx, W * 0.64, tRet);
       ry = lerp(ry, H * 0.44, tRet);
-      var retAlpha = (1 - smoothstep(0.70, 0.80, p)) * smoothstep(0.0, 0.04, p + 0.04);
+      var retAlpha = (1 - smoothstep(0.70, 0.80, p)) * uiA;
       drawTowerCallout(
         ctx, W, H, rx, ry, retAlpha,
         p < 0.42 ? 'SWK PROPERTIES HQ \u00b7 SHEIKH ZAYED ROAD' : 'ENTERING 25TH FLOOR \u00b7 SWK PROPERTIES OFFICE',
@@ -468,8 +428,6 @@ export function createHeroScene(canvas, opts) {
       );
     }
 
-    // 4. Draw Google Earth Studio telemetry HUD pill
-    drawEarthHud(ctx, W, H, p, mobile);
   }
 
   function tick(now) {
@@ -483,8 +441,7 @@ export function createHeroScene(canvas, opts) {
     onSlow: null,
     setProgress: function (p) {
       targetProgress = clamp(p, 0, 1);
-      lastScrollTime = performance.now();
-      render(lastScrollTime);
+      render(performance.now());
     },
     setPointer: function (x, y) {
       ptrX = clamp(x, -1, 1);
@@ -494,14 +451,15 @@ export function createHeroScene(canvas, opts) {
     start: function () {
       if (running) return;
       running = true;
-      tryPlay(activeVid || vidFast);
+      tryPlay(vidIdle);
       rafId = requestAnimationFrame(tick);
     },
     stop: function () {
       running = false;
+      realPlaying = false;
       if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
-      if (vidFast && !vidFast.paused) vidFast.pause();
-      if (vidHD && !vidHD.paused) vidHD.pause();
+      if (!vidIdle.paused) vidIdle.pause();
+      if (vidReal && !vidReal.paused) vidReal.pause();
     },
     dispose: function () {
       api.stop();

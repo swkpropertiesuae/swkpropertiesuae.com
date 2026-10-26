@@ -338,7 +338,7 @@ def build_assets():
 # Fonts are self-hosted (see src/css/base.css); the faces used above the fold are preloaded.
 FONT_PRELOADS = "".join(
     f'<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/{f}.woff2" crossorigin>\n'
-    for f in ("instrument-serif/instrument-serif-400", "general-sans/general-sans-400", "general-sans/general-sans-600", "clash-display/clash-display-700"))
+    for f in ("clash-display/clash-display-500", "clash-display/clash-display-600", "instrument-serif/instrument-serif-400-italic", "general-sans/general-sans-400", "general-sans/general-sans-500", "general-sans/general-sans-600"))
 
 
 NAV = [("/", "Home"), ("/properties/", "Properties"), ("/about/", "About"), ("/services/", "Services"), ("/mortgage/", "Mortgage"), ("/blog/", "Journal"), ("/contact/", "Contact")]
@@ -911,8 +911,8 @@ def build_home():
       team = f'''<div class="review-carousel" data-review-carousel aria-label="{review_heading}">{slides}<div class="review-controls"><button type="button" class="tc-arrow" data-review-prev aria-label="Previous story">{PREV}</button><span data-review-count>1 / {len(reviews) if reviews else 8}</span><button type="button" class="tc-arrow" data-review-next aria-label="Next story">{NEXT}</button><button type="button" class="review-pause" data-review-pause aria-pressed="false">Pause</button></div></div>'''
 
     body = f"""<div class="hero-cine"><section class="hero" aria-label="Introduction">
-<div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/earth-top-szr.webp">
-<img src="/assets/images/hero/earth-top-szr.webp" alt="Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai" width="1600" height="900" fetchpriority="high" decoding="async"></picture></div>
+<div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/szr-idle-frame.webp">
+<img src="/assets/images/hero/szr-idle-frame.webp" alt="Aerial view of Sheikh Zayed Road traffic and the Dubai skyline" width="1280" height="720" fetchpriority="high" decoding="async"></picture></div>
 <canvas class="hero__gl" aria-hidden="true"></canvas>
 <div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div><div class="hero__streak" aria-hidden="true"></div>
 <div class="hero__captions" aria-hidden="true"><p class="hero__caption">Sheikh Zayed Road, <em>from above.</em></p><p class="hero__caption">Al Saqr Business Tower, <em>25th Floor.</em></p><p class="hero__caption">Welcome to <em>SWK Properties.</em></p></div>
@@ -973,7 +973,7 @@ def build_home():
     write("/", page("/", "SWK Properties | UAE Property Advisory — Off-Plan and Ready Homes",
                     "SWK Properties is a RERA-registered UAE property advisory — off-plan and ready homes in freehold communities, with mortgage, payment-plan and rental-yield advice from shortlist to handover.",
                     body, ld=ld,
-                    preload=[("/assets/images/hero/earth-top-szr.webp", ' fetchpriority="high"')]))
+                    preload=[("/assets/images/hero/szr-idle-frame.webp", ' fetchpriority="high"')]))
 
 
 def build_properties():

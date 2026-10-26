@@ -263,7 +263,7 @@
             var c = document.createElement('span');
             c.className = 'tw-char';
             c.textContent = ch;
-            c.style.transitionDelay = (0.05 + state.i * 0.012).toFixed(3) + 's';
+            c.style.animationDelay = (0.05 + state.i * 0.014).toFixed(3) + 's';
             state.i++;
             word.appendChild(c);
           });
@@ -324,8 +324,8 @@
       hero.classList.add('is-spatial-mode');
       if (explicit3d) {
         var source = SWK.$('.hero__bg source', hero), poster = SWK.$('.hero__bg img', hero);
-        if (source) source.srcset = '/assets/images/hero/hero-scene-mobile-satellite.webp';
-        if (poster) { poster.src = '/assets/images/hero/earth-top-szr.webp'; poster.alt = 'Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai'; }
+        if (source) source.srcset = '/assets/images/hero/szr-idle-frame.webp';
+        if (poster) { poster.src = '/assets/images/hero/szr-idle-frame.webp'; poster.alt = 'Aerial view of Sheikh Zayed Road traffic and the Dubai skyline'; }
       }
     } else {
       hero.classList.add('is-photo-mode');
@@ -360,8 +360,8 @@
       hero.classList.remove('is-gl', 'is-gl-pending', 'is-spatial-mode');
       hero.classList.add('is-photo-mode');
       var fallbackSource = SWK.$('.hero__bg source', hero), fallbackImage = SWK.$('.hero__bg img', hero);
-      if (fallbackSource) fallbackSource.srcset = '/assets/images/hero/earth-top-szr.webp';
-      if (fallbackImage) { fallbackImage.src = '/assets/images/hero/earth-top-szr.webp'; fallbackImage.alt = 'Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai'; }
+      if (fallbackSource) fallbackSource.srcset = '/assets/images/hero/szr-idle-frame.webp';
+      if (fallbackImage) { fallbackImage.src = '/assets/images/hero/szr-idle-frame.webp'; fallbackImage.alt = 'Aerial view of Sheikh Zayed Road traffic and the Dubai skyline'; }
       // Retain the scroll stage and chapter transitions when switching away from a slow GPU.
       // Collapsing the stage during a journey would move the entire page under the visitor.
       if (SWK.reduced) wrap.classList.add('is-flat');
