@@ -349,7 +349,7 @@
     }
 
     var captions = SWK.$$('.hero__caption', hero);
-    var ranges = [[0.14, 0.44], [0.5, 0.78], [0.8, 1.2]];
+    var ranges = [[0.15, 0.43], [0.45, 0.70], [0.72, 1.25]];
     var progress = 0;
     var scene = null;
     var visible = true;
@@ -361,7 +361,7 @@
       hero.classList.add('is-photo-mode');
       var fallbackSource = SWK.$('.hero__bg source', hero), fallbackImage = SWK.$('.hero__bg img', hero);
       if (fallbackSource) fallbackSource.srcset = '/assets/images/hero/earth-top-szr.webp';
-      if (fallbackImage) { fallbackImage.src = '/assets/images/hero/earth-top-szr.webp'; fallbackImage.alt = 'Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai'; }
+      if (fallbackImage) { fallbackImage.src = '/assets/images/hero/earth-top-szr.webp'; fallbackImage.alt = 'Aerial view of Sheikh Zayed Road, Dubai'; }
       // Retain the scroll stage and chapter transitions when switching away from a slow GPU.
       // Collapsing the stage during a journey would move the entire page under the visitor.
       if (SWK.reduced) wrap.classList.add('is-flat');
@@ -373,15 +373,24 @@
       var r = wrap.getBoundingClientRect();
       progress = total > 0 ? SWK.clamp(-r.top / total, 0, 1) : 0;
       hero.style.setProperty('--p', progress.toFixed(4));
-      hero.classList.toggle('is-leaving', progress > 0.18);
+      hero.classList.toggle('is-leaving', progress > 0.15);
+      hero.classList.toggle('is-endframe', progress > 0.72);
       captions.forEach(function (el, i) {
         var rg = ranges[i] || [2, 3];
-        var fade = 0.07;
-        var o = SWK.clamp((progress - rg[0]) / fade, 0, 1) * (i === captions.length - 1 ? 1 : SWK.clamp((rg[1] - progress) / fade, 0, 1));
-        var t = SWK.clamp((progress - rg[0]) / (rg[1] - rg[0]), 0, 1);
-        el.style.setProperty('--o', o.toFixed(3));
-        el.style.setProperty('--y', ((0.5 - t) * 46).toFixed(1) + 'px');
-        el.style.setProperty('--s', (0.96 + t * 0.07).toFixed(3));
+        var fade = 0.06;
+        var isLast = i === captions.length - 1;
+        var o = SWK.clamp((progress - rg[0]) / fade, 0, 1) * (isLast ? 1 : SWK.clamp((rg[1] - progress) / fade, 0, 1));
+        if (isLast) {
+          var te = SWK.clamp((progress - rg[0]) / 0.08, 0, 1);
+          el.style.setProperty('--o', o.toFixed(3));
+          el.style.setProperty('--y', ((1 - te) * 22).toFixed(1) + 'px');
+          el.style.setProperty('--s', (0.96 + te * 0.04).toFixed(3));
+        } else {
+          var t = SWK.clamp((progress - rg[0]) / (rg[1] - rg[0]), 0, 1);
+          el.style.setProperty('--o', o.toFixed(3));
+          el.style.setProperty('--y', ((0.5 - t) * 32).toFixed(1) + 'px');
+          el.style.setProperty('--s', (0.97 + t * 0.04).toFixed(3));
+        }
       });
       if (scene) scene.setProgress(progress);
     });
