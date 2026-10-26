@@ -620,6 +620,12 @@ def head(path, title, desc, image, ld, og_type, robots, preload):
 _TONE_DARK = {"section--obsidian", "section--dark", "cta-section", "value-strip", "stat-strip"}
 
 
+def team_name(name):
+    """Name on two rows: first name, then the rest."""
+    first, _, rest = name.partition(" ")
+    return f'<span class="tn">{e(first)}</span> <span class="tn">{e(rest)}</span>' if rest else e(name)
+
+
 def tone_sections(body):
     """Alternate light and dark bands after the hero. Obsidian, CTA and value-strip bands stay dark.
     Free bands pick the tones that leave the fewest same-tone neighbours (the hero counts as dark)."""
@@ -754,7 +760,7 @@ def row_carousel(cards, label, noun):
 
 
 def dev_card(dev, i=0, reveal=True):
-    names = "".join(f"<li>{e(p['name'])}</li>" for p in dev["projects"][:3])
+    names = "".join(f"<li title=\"{e(p['name'])}\">{e(p['name'])}</li>" for p in dev["projects"][:3])
     mono = "".join(w[0] for w in dev["name"].replace("&", " ").split()[:2]).upper()
     rv = f' data-reveal data-reveal-delay="{(i % 3) * 70}"' if reveal else ""
     return f"""<a class="dev-card" href="/properties/{dev['slug']}/"{rv} style="--dc:{dev['hue']}" aria-label="{e(dev['name'])}: {len(dev['projects'])} featured projects">
@@ -1087,7 +1093,7 @@ def build_developer(d):
 def build_about():
     cards = "".join(f'''<article class="team-card" data-reveal data-reveal-delay="{i * 80}" data-tilt="6" style="--theme-color:{FEATURE_THEMES[i % len(FEATURE_THEMES)]}">
 <div class="team-card__photo">{img(t["photo"], t["name"], sizes="(min-width: 900px) 360px, 90vw")}</div>
-<div class="team-card__body"><h3>{e(t["name"])}</h3><p class="team-card__role">{e(t["role"])}</p><p class="team-card__bio">{e(t["bio"])}</p></div></article>''' for i, t in enumerate(TEAM))
+<div class="team-card__body"><h3>{team_name(t["name"])}</h3><p class="team-card__role">{e(t["role"])}</p><p class="team-card__bio">{e(t["bio"])}</p></div></article>''' for i, t in enumerate(TEAM))
     values = [("Radical Transparency", "Every fee, commission and clause disclosed upfront — no surprises at signing."),
               ("Data Over Hype", "ROI and appreciation projections built on transaction data, not developer marketing."),
               ("One Point of Contact", "The consultant who takes your first call is the one who sees your deal through to handover."),

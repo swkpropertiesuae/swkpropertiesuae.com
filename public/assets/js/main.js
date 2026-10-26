@@ -205,6 +205,8 @@
 
   SWK.reg('scroll3d', function () {
     if (SWK.reduced) return;
+    // Phones and tablets skip the scrubbed 3D entrances and parallax: they cost frames and add nothing there.
+    if (window.matchMedia('(max-width: 1023px)').matches) return;
 
     var vh = window.innerHeight;
     var scrub = SWK.$$(SCRUB).filter(function (el) {
@@ -490,6 +492,7 @@
       el.style.setProperty('--beat-o', o.toFixed(3));
       el.style.setProperty('--beat-y', y.toFixed(1) + 'px');
       el.style.setProperty('--beat-s', s.toFixed(3));
+      if (mobile) blur = 0; // no filter work while scrubbing on phones
       el.style.setProperty('--beat-blur', blur < 0.05 ? '0px' : blur.toFixed(2) + 'px');
       el.style.filter = blur < 0.05 ? 'none' : '';
     }
@@ -1853,5 +1856,25 @@
         el.style.setProperty('--my', (ev.clientY - r.top).toFixed(0) + 'px');
       });
     });
+  });
+})();
+
+// Pauses endless CSS animations (marquees, voices, page-header drift) while they are off screen,
+// so scrolling never pays for motion nobody can see.
+(function () {
+  'use strict';
+  var SWK = window.SWK;
+
+  SWK.reg('offscreen-pause', function () {
+    if (!('IntersectionObserver' in window)) return;
+    var targets = SWK.$$('.marquee__track, .voices__track, .page-hero__bg img, .btn-calc, .hero__scroll-cue .line');
+    if (!targets.length) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) en.target.removeAttribute('data-offscreen');
+        else en.target.setAttribute('data-offscreen', '');
+      });
+    }, { rootMargin: '120px 0px' });
+    targets.forEach(function (el) { io.observe(el); });
   });
 })();

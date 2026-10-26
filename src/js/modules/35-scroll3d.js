@@ -14,6 +14,8 @@
 
   SWK.reg('scroll3d', function () {
     if (SWK.reduced) return;
+    // Phones and tablets skip the scrubbed 3D entrances and parallax: they cost frames and add nothing there.
+    if (window.matchMedia('(max-width: 1023px)').matches) return;
 
     var vh = window.innerHeight;
     var scrub = SWK.$$(SCRUB).filter(function (el) {
