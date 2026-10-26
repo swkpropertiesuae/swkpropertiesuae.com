@@ -646,3 +646,75 @@ body .hero.is-scroll-ready .hero__beat { filter: none; }
 body .hero__beat { width: max-content; max-width: 96vw; margin-inline: auto; }
 body .hero__beat .hero__hook, body .hero__beat .hero__lead { text-align: center; }
 body .hero__beat .hero__hook .hl { text-align: center; }
+
+/* ======================================================================
+   Hero: copy on the true centre line, lighter shade
+   ====================================================================== */
+body .hero__content { position: absolute; inset: 0; justify-content: flex-end; padding-bottom: clamp(20px, 6.5svh, 64px); padding-top: 0; }
+body .hero__stage {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: max-content; max-width: 96vw; min-height: 0;
+  display: grid; place-items: center; z-index: 3;
+}
+body .hero[data-phase='b1'] .hero__stage { top: 44%; }
+body .hero__beat { grid-area: 1 / 1; align-items: center; justify-content: center; text-align: center; gap: clamp(0.55rem, 1.4svh, 1rem); }
+body .hero__beat .hero__kicker { justify-content: center; }
+body .hero .hero__hook:not(#_):not(#_):not(#_) { font-weight: 500 !important; color: #fffaf0 !important; -webkit-text-fill-color: #fffaf0; }
+body .hero .hero__hook em { -webkit-text-fill-color: #f3dfae !important; color: #f3dfae !important; }
+body .hero__stage::before { inset: -14% -8%; filter: blur(22px); background: radial-gradient(ellipse 60% 56% at 50% 50%, rgba(3, 8, 18, 0.5) 0%, rgba(3, 8, 18, 0.34) 48%, rgba(3, 8, 18, 0.1) 74%, rgba(3, 8, 18, 0) 100%); }
+body .hero__bg::after {
+  background:
+    radial-gradient(ellipse 74% 54% at 50% 48%, rgba(4, 9, 20, 0.36) 0%, rgba(4, 9, 20, 0.2) 55%, rgba(4, 9, 20, 0) 88%),
+    radial-gradient(ellipse 120% 100% at 50% 50%, rgba(0, 0, 0, 0) 58%, rgba(2, 6, 14, 0.34) 100%),
+    linear-gradient(180deg, rgba(8, 17, 38, 0.4) 0%, rgba(11, 24, 50, 0.1) 34%, rgba(120, 82, 58, 0.08) 72%, rgba(6, 11, 22, 0.6) 100%) !important;
+}
+body .hero .hero__hook:not(#_):not(#_):not(#_), body .hero .hero__lead:not(#_), body .hero .hero__kicker:not(#_) {
+  text-shadow: 0 1px 2px rgba(2, 6, 14, 0.85), 0 2px 14px rgba(2, 6, 14, 0.75), 0 6px 34px rgba(2, 6, 14, 0.55);
+}
+
+/* ======================================================================
+   Brand seal over the repaired corner of the film
+   ====================================================================== */
+.hero__seal {
+  position: absolute; z-index: 3; left: var(--seal-x, 90%); top: var(--seal-y, 83%); width: var(--seal-d, 120px); height: var(--seal-d, 120px);
+  transform: translate(-50%, -50%); pointer-events: none; display: grid; place-items: center;
+  filter: drop-shadow(0 6px 20px rgba(2, 6, 14, 0.5));
+}
+.hero__seal-ring { position: absolute; inset: 0; width: 100%; height: 100%; animation: seal-turn 46s linear infinite; overflow: visible; }
+.hero__seal-disc { fill: rgba(8, 15, 28, 0.94); stroke: none; }
+.hero__seal-line { fill: none; stroke: rgba(227, 207, 163, 0.85); stroke-width: 0.8; }
+.hero__seal-line--in { stroke: rgba(227, 207, 163, 0.35); stroke-width: 0.5; }
+.hero__seal-text { font: 500 7.2px/1 'Raleway', 'Montserrat', sans-serif; letter-spacing: 0.2em; fill: #ecd7a6; text-transform: uppercase; }
+.hero__seal-mark { position: relative; width: 46%; height: auto; opacity: 0.98; }
+@keyframes seal-turn { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .hero__seal-ring { animation: none; } }
+@media (max-width: 767px) { .hero__seal { display: none; } }
+
+/* ======================================================================
+   Chat: solid panel above everything, clear of the header and the scroll cue
+   ====================================================================== */
+body .swk-chat { z-index: 130; }
+body .swk-chat__panel {
+  z-index: 131; background: #0b1527 !important; -webkit-backdrop-filter: none; backdrop-filter: none;
+  max-height: min(640px, calc(100dvh - var(--ann-h, 0px) - 190px)) !important;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(205, 178, 126, 0.3) !important;
+  color: #f3eee3;
+}
+body .swk-chat__panel :is(h2, h3, strong, header) { color: #f3eee3; }
+body .swk-chat__panel :is(p, span, small, li, a, label) { color: rgba(243, 238, 227, 0.86); }
+body .swk-chat__messages { background: #0b1527 !important; }
+body .swk-chat__message { background: #14233b !important; color: #f3eee3 !important; border: 1px solid rgba(205, 178, 126, 0.22) !important; border-radius: 4px !important; }
+body .swk-chat__message :is(p, span, a) { color: #f3eee3 !important; }
+body .swk-chat__message[class*='user'], body .swk-chat__message.is-user, body .swk-chat__message--user { background: #cdb27e !important; color: #0a1322 !important; }
+body .swk-chat__message[class*='user'] :is(p, span, a), body .swk-chat__message.is-user :is(p, span, a) { color: #0a1322 !important; }
+body .swk-chat__tabs button { background: transparent !important; color: rgba(243, 238, 227, 0.85) !important; border: 1px solid rgba(205, 178, 126, 0.4) !important; }
+body .swk-chat__tabs button[aria-selected='true'], body .swk-chat__tabs button.is-active { background: #cdb27e !important; color: #0a1322 !important; }
+body .swk-chat__topics button { background: #101c31 !important; color: #f3eee3 !important; border: 1px solid rgba(205, 178, 126, 0.35) !important; }
+body .swk-chat__privacy, body .swk-chat__privacy a { color: rgba(243, 238, 227, 0.72) !important; }
+body:has(.swk-chat__panel:not([hidden])) .back-top { opacity: 0 !important; pointer-events: none !important; }
+body:has(.swk-chat__panel:not([hidden])) .cookie-banner { z-index: 60; }
+@media (max-width: 1023px) { body .swk-chat__panel { max-height: calc(100dvh - var(--ann-h, 0px) - 96px) !important; } }
+body .hero__beat .hero__hook:not(#_):not(#_):not(#_) { max-width: none !important; width: max-content; margin-inline: auto; }
+body .hero__beat .hero__lead:not(#_) { width: max-content; max-width: min(92vw, 760px); margin-inline: auto; }
+body .hero__beat { justify-self: center; }
+body .hero .hero__kicker:not(#_) { font-size: 0.72rem; text-shadow: 0 1px 2px rgba(2, 6, 14, 0.95), 0 2px 12px rgba(2, 6, 14, 0.9), 0 4px 26px rgba(2, 6, 14, 0.7); }
+body:has(.swk-chat__panel:not([hidden])) .cookie-banner { opacity: 0; pointer-events: none; }
