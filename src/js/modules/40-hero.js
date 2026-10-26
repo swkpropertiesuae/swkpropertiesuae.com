@@ -215,6 +215,7 @@
       el.style.setProperty('--beat-o', o.toFixed(3));
       el.style.setProperty('--beat-y', y.toFixed(1) + 'px');
       el.style.setProperty('--beat-s', s.toFixed(3));
+      if (mobile) blur = 0; // no filter work while scrubbing on phones
       el.style.setProperty('--beat-blur', blur < 0.05 ? '0px' : blur.toFixed(2) + 'px');
       el.style.filter = blur < 0.05 ? 'none' : '';
     }

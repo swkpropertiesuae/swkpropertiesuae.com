@@ -6392,7 +6392,7 @@ body .map-embed iframe { filter: invert(0.92) hue-rotate(185deg) saturate(0.45) 
 
 body .hero .hero__hook:not(#_):not(#_):not(#_) { font-weight: 200 !important; letter-spacing: 0.2em !important; font-size: clamp(1.9rem, 4.6vw, 4.2rem); }
 body .hero .hero__kicker::before { background: var(--tw-gold) !important; box-shadow: none !important; width: 28px !important; height: 1px !important; border-radius: 0 !important; }
-body svg [fill='#25D366'] { fill: #a68a58; }
+body svg [fill='#25D366'] { fill: #6f9d78; }
 
 body .btn-calc { background: linear-gradient(180deg, #e6d4ab, #cdb27e) !important; color: #0a1322 !important; border: 1px solid #d9c18f !important; border-radius: 2px !important; font-family: var(--tw-head); letter-spacing: 0.22em; text-transform: uppercase; font-size: 0.72rem; font-weight: 500; box-shadow: none !important; }
 body .calc-donut__seg--pi { stroke: #cdb27e !important; }
@@ -6744,3 +6744,93 @@ body .project-card__media .project-card__dev, body .dev-card__media .project-car
 }
 body .calc-donut__center, body .calc-donut__center * { opacity: 1 !important; font-family: var(--tw-body) !important; font-weight: 500 !important; }
 body .tw-dark .calc-donut__center, body .tw-dark .calc-donut__center * { color: #f3eee3 !important; }
+
+/* Team: two-row names, position as plain semi-bold text */
+body .team-card h3 .tn { display: block; }
+body .team-card h3:not(#_):not(#_) { align-items: flex-start; flex-direction: column; justify-content: flex-start; }
+body .team-card__role:not(#_), body .tw-light .team-card__role:not(#_) {
+  background: none !important; border: 0 !important; padding: 0 !important; height: auto; min-height: 2.6lh; overflow: visible;
+  font-family: var(--tw-body); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; line-height: 1.5; text-transform: uppercase;
+  color: #6c5124 !important; align-items: flex-start;
+}
+body .tw-dark .team-card__role:not(#_) { color: #e3cf9f !important; }
+
+/* ======================================================================
+   Phones and tablets: lighter paint work, honest layout
+   ====================================================================== */
+body { background-attachment: scroll; }
+@media (max-width: 1023px) {
+  /* No backdrop blurs, big filters, mix-blends or glow blobs while scrolling */
+  *, *::before, *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  .ambient-glow, .ambient-glow__blob { display: none !important; }
+  .hero__video, .hero__idle-video { filter: none !important; }
+  .hero__idle:not(.is-idle) { filter: none !important; transform: none !important; }
+  .hero__stage::before { display: none !important; }
+  .hero__beat, .hero.is-scroll-ready .hero__beat { filter: none !important; will-change: opacity, transform; }
+  body :is(.dev-card__media, .project-card__media, .property-card__media, .blog-card__media, .story__media, .place-card)::after { mix-blend-mode: normal; }
+  body main img:not([src*='/brand/']):not([src*='/developers/']) { filter: none !important; }
+  .js .scrub, .js [data-reveal] { filter: none !important; }
+  body .site-header[data-site-header].is-scrolled { background: rgba(8, 15, 28, 0.96) !important; }
+  body .site-header .mobile-menu, body .mobile-menu { background: #0a1322 !important; }
+  body :is(.btn-outline-dark, .btn-outline, .btn-white, .btn-ghost):not(#_) { background: rgba(10, 19, 34, 0.55) !important; }
+  body .search-bar, body .glass-panel { background: rgba(8, 15, 28, 0.82) !important; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35) !important; }
+  body :is(.property-card, .dev-card, .project-card, .blog-card, .svc-card, .team-card, .voice, .ui-card) { box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18) !important; }
+  body .tw-light :is(.property-card, .dev-card, .project-card, .blog-card, .svc-card, .team-card, .voice, .ui-card) { box-shadow: 0 6px 16px rgba(60, 45, 25, 0.12) !important; }
+  main > section.tw-light:not(.page-hero):not(.hero-cine):not(.section--dark):not(.cta-section):not(.section--obsidian):nth-of-type(n) { box-shadow: none; }
+  body .hero .hero__hook:not(#_):not(#_):not(#_), body .hero .hero__lead:not(#_), body .hero .hero__kicker:not(#_), body .hero__reveal-name, body .hero__reveal-tag {
+    text-shadow: 0 1px 2px rgba(2, 6, 14, 0.9), 0 2px 10px rgba(2, 6, 14, 0.7);
+  }
+  body .hero__reveal-logo, body .hero[data-phase='logo'] .hero__reveal-logo { filter: none !important; }
+}
+
+@media (max-width: 767px) {
+  /* Hero copy flows in the document again: copy, then buttons, then search. Nothing overlaps. */
+  body .hero__content { position: relative; inset: auto; justify-content: center; padding-bottom: 0; height: 100%; }
+  body .hero__stage { position: relative; left: auto; top: auto !important; transform: none; width: 100%; max-width: 100%; }
+  body .hero__beat { width: 100%; max-width: 100%; }
+  body .hero__beat .hero__hook:not(#_):not(#_):not(#_), body .hero__beat .hero__lead:not(#_) { width: auto; max-width: 100%; }
+  /* Compact consent bar: it never takes more than a quarter of the screen */
+  body .cookie-banner { left: 10px !important; right: 10px !important; bottom: 10px !important; width: auto !important; max-width: none !important; padding: 12px 14px !important; gap: 10px !important; }
+  body .cookie-banner p, body .cookie-banner__text { font-size: 0.76rem !important; line-height: 1.45 !important; margin: 0 !important; }
+  body .cookie-banner :is(h2, h3, h4, strong) { font-size: 0.74rem !important; letter-spacing: 0.14em; margin-bottom: 4px !important; }
+  body .cookie-banner__actions { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px !important; }
+  body .cookie-banner__actions .btn { padding: 0.8em 0.6em !important; font-size: 0.64rem !important; min-height: 40px; }
+  body .cookie-banner__actions .btn-primary { grid-column: 1 / -1; }
+  /* Controls stay on screen */
+  body .btn, body button { max-width: 100%; }
+  body .btn:not(#_) { white-space: normal; text-align: center; letter-spacing: 0.16em; padding-inline: 1.2em; }
+  body :is(.hero__ctas, .cta-band__actions, .office-actions, .pd-actions, .form-actions) { flex-wrap: wrap; justify-content: center; gap: 10px; }
+  body :is(.hero__ctas, .cta-band__actions) .btn { flex: 1 1 100%; max-width: 360px; }
+  body .swk-chat { right: 12px; }
+  body .swk-chat__panel { right: 0; left: auto; width: min(calc(100vw - 24px), 380px); max-height: calc(100dvh - var(--ann-h, 0px) - 150px) !important; }
+  body .row-carousel__btn, body .feature-slider__arrow, body .tc-arrow { width: 38px; height: 38px; }
+  body .row-carousel__btn--next { right: 6px; } body .row-carousel__btn--prev { left: 6px; }
+  body .back-top { right: 14px; }
+  body :is(input, select, textarea) { font-size: 16px !important; }
+}
+@media (max-width: 767px) {
+  body .hero__bg::after {
+    background:
+      linear-gradient(180deg, rgba(6, 12, 26, 0.5) 0%, rgba(6, 12, 26, 0.12) 30%, rgba(5, 10, 20, 0.34) 56%, rgba(5, 10, 20, 0.78) 100%) !important;
+  }
+}
+body .calc-donut__amount { font-size: 0.8rem !important; white-space: nowrap; letter-spacing: 0; }
+
+[data-offscreen] { animation-play-state: paused !important; }
+@media (max-width: 1023px) {
+  .page-hero__bg img, .btn-calc, .btn-calc::before, .btn-calc::after, .site-header__cta::before { animation: none !important; }
+  .hero[data-phase='logo'] .hero__logo-sheen, .hero[data-phase='logo'] .hero__logo-cinema::before { animation: none !important; }
+  .hero[data-phase='logo'] .hero__reveal-name { animation: none !important; }
+  .marquee__track { animation-duration: 48s; }
+}
+
+/* The chat button must always be reachable: above the consent bar, lifted clear of it while it is showing */
+body .swk-chat { z-index: 160; }
+body .swk-chat__panel { z-index: 161; }
+@media (max-width: 1023px) {
+  body:has(.cookie-banner.is-in:not([hidden])) .swk-chat:not(:has(.swk-chat__panel:not([hidden]))) { transform: translateY(-200px); transition: transform 0.3s; }
+  body:has([data-mobile-menu]:not([hidden])) .swk-chat, body:has([data-mobile-menu]:not([hidden])) .back-top { opacity: 0; pointer-events: none; }
+  body:has(.cookie-banner.is-in:not([hidden])) .back-top { transform: translateY(-200px); }
+}
+body aside.swk-chat section.swk-chat__panel:not(#_) { background: #0b1527 !important; }
+body .cookie-banner:not(#_):not(#_) { background: #0b1527 !important; }
