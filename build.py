@@ -913,7 +913,8 @@ def build_home():
         review_intro = "Our service commitments. Client reviews will appear here once verified and approved."
 
     body = f"""<div class="hero-cine" data-hero-cine><section class="hero" data-phase="b1" aria-label="Introduction">
-<div class="hero__bg"><video class="hero__video" muted loop playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk.mp4" type="video/mp4"></video></div>
+<div class="hero__bg"><video class="hero__video" muted loop playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster-hq.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk-hq.mp4" type="video/mp4"></video></div>
+<div class="hero__office-signature"><strong>SWK PROPERTIES</strong><span>Al Saqr Business Tower</span><small>Sheikh Zayed Road &middot; Dubai, UAE</small></div>
 <div class="hero__content container">
 <h1 class="sr-only">SWK Properties: Dubai off-plan and ready property, with direct access to the UAE's leading developers</h1>
 <div class="hero__stage" aria-hidden="true">
@@ -977,7 +978,7 @@ def build_home():
     write("/", page("/", "SWK Properties | UAE Property Advisory — Off-Plan and Ready Homes",
                     "SWK Properties is a RERA-registered UAE property advisory — off-plan and ready homes in freehold communities, with mortgage, payment-plan and rental-yield advice from shortlist to handover.",
                     body, ld=ld,
-                    preload=[("/assets/images/hero/hero-swk-poster.webp", ' fetchpriority="high"')]))
+                    preload=[("/assets/images/hero/hero-swk-poster-hq.webp", ' fetchpriority="high"')]))
 
 
 def build_properties():
