@@ -312,6 +312,37 @@
     var phase = '';
     var pendingTime = null;
     var blobLoaded = false;
+    var idleTimer = 0;
+    var idlePlaying = false;
+    var inView = true;
+
+    // Use the upscaled 4K encode on large/high-density displays; retain the lighter
+    // 1080p encode on phones and honour the data-saver early return above.
+    var uhdSrc = video.getAttribute('data-src-4k');
+    if (window.innerWidth * (window.devicePixelRatio || 1) >= 2560 && uhdSrc) {
+      video.src = uhdSrc;
+      video.load();
+    }
+    video.loop = false;
+
+    function stopIdle() {
+      clearTimeout(idleTimer);
+      idlePlaying = false;
+      video.pause();
+      hero.classList.remove('is-idle');
+    }
+
+    function queueIdle() {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(function () {
+        if (document.hidden || !inView || video.readyState < 2 || video.ended || curP >= 0.995 || video.seeking) return;
+        idlePlaying = true;
+        hero.classList.add('is-idle');
+        video.playbackRate = 0.8;
+        var play = video.play();
+        if (play && play.catch) play.catch(function () { stopIdle(); });
+      }, 700);
+    }
 
     // Non-blocking hardware decoder seek queue: never cancels an in-flight decode frame.
     function seekTo(t) {
@@ -337,18 +368,35 @@
         var next = pendingTime;
         pendingTime = null;
         seekTo(next);
-      }
+      } else if (!idlePlaying) queueIdle();
     });
+    video.addEventListener('timeupdate', function () {
+      if (idlePlaying && video.duration) applyProgress(SWK.clamp(video.currentTime / (video.duration - 0.08), 0, 1), false);
+    });
+    video.addEventListener('ended', function () {
+      idlePlaying = false;
+      applyProgress(1, false);
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stopIdle(); else queueIdle();
+    });
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+        if (!inView) stopIdle(); else queueIdle();
+      }, { threshold: 0.15 }).observe(hero);
+    }
 
     function primeVideo() {
       video.pause();
       var dur = (video.duration && !isNaN(video.duration) && isFinite(video.duration)) ? video.duration : 20.0;
       seekTo(curP * (dur - 0.08));
+      queueIdle();
       // If served by a simple HTTP server without Range support (e.g. python -m http.server),
       // upgrade to an in-memory Blob URL so random-access scroll seeking still works seamlessly.
       if (!blobLoaded && (!video.seekable || !video.seekable.length || video.seekable.end(0) < 1)) {
         blobLoaded = true;
-        fetch('/assets/video/hero-swk-hq.mp4').then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) {
+        fetch(video.currentSrc || video.src || '/assets/video/hero-swk-hq.mp4').then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) {
           if (!b) return;
           video.src = URL.createObjectURL(b);
           video.load();
@@ -377,7 +425,7 @@
       el.style.setProperty('--beat-blur', blur.toFixed(2) + 'px');
     }
 
-    function applyProgress(p) {
+    function applyProgress(p, scrub) {
       hero.classList.add('is-scroll-ready');
       hero.style.setProperty('--p', p.toFixed(4));
       hero.classList.toggle('is-leaving', p > 0.18);
@@ -413,10 +461,15 @@
       var rvRaw = SWK.clamp((p - 0.80) / 0.13, 0, 1);
       var rv = rvRaw * rvRaw * (3 - 2 * rvRaw);
       hero.style.setProperty('--rv', rv.toFixed(4));
+      var reveal = SWK.$('.hero__reveal', hero);
+      if (reveal) {
+        reveal.setAttribute('aria-hidden', String(p < 0.93));
+        SWK.$$('a', reveal).forEach(function (a) { a.tabIndex = p >= 0.93 ? 0 : -1; });
+      }
 
       // Scrub video frame to match scroll position
       var dur = (video.duration && !isNaN(video.duration) && isFinite(video.duration)) ? video.duration : 20.0;
-      seekTo(p * (dur - 0.08));
+      if (scrub !== false) seekTo(p * (dur - 0.08));
     }
 
     function step(now) {
@@ -439,7 +492,9 @@
     }
 
     function onScroll() {
+      stopIdle();
       targetP = readScrollProgress();
+      queueIdle();
       if (!rafId) {
         lastTick = performance.now();
         rafId = requestAnimationFrame(step);
