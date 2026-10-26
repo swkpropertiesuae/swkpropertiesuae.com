@@ -291,6 +291,12 @@
     video.pause();
 
     var conn = navigator.connection;
+    var mobile = window.matchMedia('(max-width: 767px)').matches;
+    if (mobile) {
+      video.poster = video.getAttribute('data-poster-mobile') || video.poster;
+      var flatPoster = SWK.$('.hero__idle', hero);
+      if (flatPoster) flatPoster.classList.add('is-mobile');
+    }
     if (SWK.reduced || (conn && conn.saveData)) {
       if (wrap) wrap.classList.add('is-flat');
       video.removeAttribute('autoplay');
@@ -326,11 +332,21 @@
 
     // Use the upscaled 4K encode on large/high-density displays; retain the lighter
     // 1080p encode on phones and honour the data-saver early return above.
+    // Phones get the dedicated portrait film (short-GOP encode, so scroll seeks stay instant);
+    // everyone else gets the 1080p film, or the 4K encode on large/high-density displays.
     var uhdSrc = video.getAttribute('data-src-4k');
-    if (window.innerWidth * (window.devicePixelRatio || 1) >= 2560 && uhdSrc) {
+    if (mobile) {
+      video.src = video.getAttribute('data-src-mobile');
+    } else if (window.innerWidth * (window.devicePixelRatio || 1) >= 2560 && uhdSrc) {
       video.src = uhdSrc;
-      video.load();
+    } else {
+      video.src = video.getAttribute('data-src-hq');
     }
+    video.load();
+    idleVids.forEach(function (v) {
+      v.src = (mobile && v.getAttribute('data-src-mobile')) || v.getAttribute('data-src');
+      v.load();
+    });
     video.loop = false;
 
     function idleTick() {
@@ -430,7 +446,7 @@
       // upgrade to an in-memory Blob URL so random-access scroll seeking still works seamlessly.
       if (!blobLoaded && (!video.seekable || !video.seekable.length || video.seekable.end(0) < 1)) {
         blobLoaded = true;
-        fetch(video.currentSrc || video.src || '/assets/video/hero-swk-hq.mp4').then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) {
+        fetch(video.currentSrc || video.src).then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) {
           if (!b) return;
           video.src = URL.createObjectURL(b);
           video.load();
