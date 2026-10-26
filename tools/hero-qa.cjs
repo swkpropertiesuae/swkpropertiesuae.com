@@ -13,8 +13,10 @@ const intersects = (a,b) => a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+
   for(const [width,height] of sizes) {
     const page=await browser.newPage({viewport:{width,height}, reducedMotion:'reduce'});
     try {
-      await page.goto(base, {waitUntil:'networkidle'});
-      await page.evaluate(()=>document.fonts.ready);
+      await page.route('**/assets/video/**', route=>route.abort());
+      await page.goto(base, {waitUntil:'domcontentloaded'});
+      await page.evaluate(async()=>{await document.fonts.ready;const poster=new Image();poster.src=document.querySelector('video').poster;await poster.decode();});
+      await page.locator('.preloader').waitFor({state:'hidden',timeout:10000});
       await page.screenshot({path:`${out}/${width}x${height}.png`});
       const metrics=await page.evaluate(()=>{
         const q=s=>document.querySelector(s);
@@ -44,14 +46,14 @@ const intersects = (a,b) => a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+
   }
   const page=await browser.newPage({viewport:{width:1440,height:900}});
   try {
-    await page.goto(base,{waitUntil:'networkidle'});
-    await page.waitForFunction(()=>!document.querySelector('.hero__video').paused,{timeout:15000});
+    await page.goto(base,{waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>!document.querySelector('.hero__video').paused,null,{timeout:15000});
     const t=await page.locator('video').evaluate(e=>e.currentTime);
     await page.waitForTimeout(400);
     assert(await page.locator('video').evaluate(e=>e.currentTime)>t,'Idle video does not advance');
     await page.evaluate(()=>scrollTo(0,400));
     await page.waitForFunction(()=>document.querySelector('video').paused,null,{timeout:600});
-    await page.waitForFunction(()=>!document.querySelector('.hero__video').paused,{timeout:5000});
+    await page.waitForFunction(()=>!document.querySelector('.hero__video').paused,null,{timeout:5000});
     await page.locator('video').evaluate(e=>{e.pause();e.currentTime=e.duration-0.2;e.playbackRate=1;e.play();});
     await page.waitForFunction(()=>document.querySelector('.hero').dataset.phase==='logo',{timeout:5000});
     await page.waitForFunction(()=>document.querySelector('video').ended,{timeout:5000});
@@ -63,7 +65,7 @@ const intersects = (a,b) => a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+
   await page.close();
   const uhd=await browser.newPage({viewport:{width:1440,height:900},deviceScaleFactor:2});
   try {
-    await uhd.goto(base,{waitUntil:'networkidle'});
+    await uhd.goto(base,{waitUntil:'domcontentloaded'});
     await uhd.waitForFunction(()=>document.querySelector('video').videoWidth===3840);
     assert.equal(await uhd.locator('video').evaluate(e=>e.videoHeight),2160);
     console.log('PASS high-density display selects 3840x2160 delivery');

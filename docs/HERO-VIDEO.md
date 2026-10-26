@@ -24,7 +24,7 @@ and data-saver visitors continue to receive the poster.
 An opaque navy/gold SWK office signature covers the clip's lower-right
 rendering patch on landscape desktop layouts. Its text repeats the office
 address already used by this site. Portrait mobile cover framing crops the
-patch outside the viewport, so the signature is hidden below 768px in portrait orientation.
+patch outside the viewport, so the signature is hidden on portrait phone and tablet layouts below 1024px.
 
 Regenerate with `bash tools/master-hero.sh /path/to/original-hero.mp4`.
 Use the original clip, not this edit, to avoid cumulative compression.
