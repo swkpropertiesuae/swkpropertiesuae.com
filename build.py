@@ -701,7 +701,12 @@ def page_hero(title, lead, trail, bg=None, local=None):
     elif local:
         media = f'<div class="page-hero__bg" aria-hidden="true">{img(local, "", lazy=False, sizes="100vw")}</div>'
     cls = " page-hero--photo" if media else ""
-    return f"""<section class="page-hero{cls}">{media}<div class="container">{crumbs(trail)}
+    ghost = {"properties": "Builders", "about": "Our story", "services": "Keys", "mortgage": "Numbers", "contact": "Talk", "blog": "Journal", "legal": "Fine print"}.get(bg)
+    if not ghost:
+        w = title.split()[0].strip(",.:") if title.split() else ""
+        ghost = w if 3 <= len(w) <= 9 else ""
+    gattr = f' data-ghost="{e(ghost)}"' if ghost else ""
+    return f"""<section class="page-hero{cls}"{gattr}>{media}<div class="container">{crumbs(trail)}
 <h1 class="page-hero__title">{e(title)}</h1><p>{e(lead)}</p></div>{credit}</section>"""
 
 
@@ -911,7 +916,7 @@ def build_home():
       team = f'''<div class="review-carousel" data-review-carousel aria-label="{review_heading}">{slides}<div class="review-controls"><button type="button" class="tc-arrow" data-review-prev aria-label="Previous story">{PREV}</button><span data-review-count>1 / {len(reviews) if reviews else 8}</span><button type="button" class="tc-arrow" data-review-next aria-label="Next story">{NEXT}</button><button type="button" class="review-pause" data-review-pause aria-pressed="false">Pause</button></div></div>'''
 
     body = f"""<div class="hero-cine"><section class="hero" aria-label="Introduction">
-<div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/dusk-poster-640.webp">
+<div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/dusk-end-640.webp">
 <img src="/assets/images/hero/dusk-end.webp" alt="Aerial view down Sheikh Zayed Road, Dubai, at blue hour" width="1600" height="900" fetchpriority="high" decoding="async"></picture></div>
 <canvas class="hero__gl" aria-hidden="true"></canvas>
 <div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div>

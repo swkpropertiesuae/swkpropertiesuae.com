@@ -93,9 +93,9 @@ function pagesFromSitemap() {
   console.log(`  ${urls.length} pages checked`);
 
   // ---------------------------------------------------------------- home deep dive
-  sect('Home: WebGL hero, scroll scrub, captions');
+  sect('Home: night-aerial hero, scroll scrub, logo reveal');
   msgs.length = 0;
-  await page.goto(L.BASE + '/?scene=3d', { waitUntil: 'load' });
+  await page.goto(L.BASE + '/?hold', { waitUntil: 'load' });
   await page.waitForFunction(() => document.querySelector('.hero.is-gl'), null, { timeout: 20000 }).catch(() => {});
   ok(await page.evaluate(() => !!document.querySelector('.hero.is-gl')), 'hero reached is-gl');
   await page.waitForTimeout(3600);
@@ -117,8 +117,9 @@ function pagesFromSitemap() {
     await page.waitForTimeout(900);
     progs.push(await page.evaluate(() => ({ p: parseFloat(document.querySelector('.hero').style.getPropertyValue('--p')), caps: [...document.querySelectorAll('.hero__caption')].map((c) => parseFloat(c.style.getPropertyValue('--o') || 0)) })));
   }
-  ok(progs[0].p === 0 && progs[3].p === 1 && progs[1].p > 0.3 && progs[1].p < 0.4, `scroll progress ${JSON.stringify(progs.map((x) => x.p))}`);
-  ok(progs[1].caps[0] > 0.9 && progs[2].caps[1] > 0.9 && progs[3].caps[2] > 0.9, `captions per chapter ${JSON.stringify(progs.map((x) => x.caps))}`);
+  ok(progs[0].p < 0.01 && progs[3].p > 0.99 && progs[1].p > 0.3 && progs[1].p < 0.4, `scroll progress ${JSON.stringify(progs.map((x) => x.p))}`);
+  const rv = await page.evaluate(() => parseFloat(document.querySelector('.hero').style.getPropertyValue('--rv')));
+  ok(rv > 0.99, `logo reveal complete at the end of the shot (--rv ${rv})`);
   await shot(page, 'home-fly');
   await page.evaluate(() => scrollTo(0, 0));
   ok(L.clean(msgs).length === 0, 'home console clean after scrub: ' + JSON.stringify(L.clean(msgs)));

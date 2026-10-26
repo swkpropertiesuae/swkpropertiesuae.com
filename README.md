@@ -24,7 +24,11 @@ PLAYWRIGHT_PATH=/opt/node22/lib/node_modules/playwright node tools/qa.js
 
 ## Night-aerial hero
 
-The home hero is a forward flight down Sheikh Zayed Road, graded to blue hour (`src/assets/video/szr-dusk-720.mp4`, `-480.mp4`, encoded keyframe-dense so scrolling can scrub it). `src/js/hero-scene.js` draws it on a canvas, plays it automatically on arrival and hands control to scroll as soon as the visitor scrolls. Giant words sit between the towers: the same frame is redrawn over them, clipped to the clock tower (`OCCLUDERS`, measured in 1920x1080 video pixels at three timestamps). The flight ends looking straight ahead; the logo and welcome are DOM (`.hero__reveal`) driven by `--rv`. With reduced motion, save-data or `?nowebgl` the still end frame and the welcome show instead. The same idea is reused down the page as `data-ghost` outlined words (`36-ghost.js`, `src/css/night.css`). Re-grade with the ffmpeg filter chain in the commit that added the video.
+One continuous forward shot down Sheikh Zayed Road, graded to blue hour and driven only by scroll (`src/js/hero-scene.js`, canvas). The video is all-intra H.264 (`szr-dusk-720.mp4`; `szr-dusk-480.mp4` is a portrait crop centred on the clock tower for phones), so every frame seeks instantly in both directions. On a first visit `40-hero.js` scrolls the page through the shot once (about 15 s; any wheel, touch, key or click takes over; `?hold` disables it). Chapter words are drawn on the canvas and wrap around the clock tower (`CLOCK` keyframes, measured in 1920x1080 source pixels). The shot ends looking straight ahead and the logo and welcome are DOM (`.hero__reveal`) driven by `--rv`. Reduced motion, save-data or `?nowebgl` show the still end frame instead.
+
+## Night theme
+
+`src/css/night.css` (loaded last) re-scopes the colour tokens to the same blue hour for every page, restyles the header and cards, and gives interior heroes a dusk photo, a giant `data-ghost` word and a rise-in. `36-ghost.js` drifts the outlined words behind sections on scroll. After changing colours, run the contrast sweep idea in the commit notes: every text node should reach roughly 3.2:1 on its surface.
 
 ## Deploy
 

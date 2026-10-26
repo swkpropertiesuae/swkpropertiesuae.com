@@ -351,6 +351,30 @@
       if (scene) scene.setProgress(progress);
     });
 
+    // Intro: on a first visit the page scrolls itself through the whole shot once. Any input takes over instantly.
+    function intro() {
+      if (SWK.reduced || /[?&]hold\b/.test(location.search) || window.scrollY > 4) return;
+      try { if (sessionStorage.getItem('swk-intro')) return; } catch (e) { /* noop */ }
+      var total = wrap.offsetHeight - hero.offsetHeight, dur = 15000, t0 = 0, last = 0, done = false;
+      var evs = ['wheel', 'touchstart', 'keydown', 'mousedown'];
+      function end() {
+        if (done) return; done = true;
+        evs.forEach(function (n) { window.removeEventListener(n, end); });
+        try { sessionStorage.setItem('swk-intro', '1'); } catch (e) { /* noop */ }
+      }
+      evs.forEach(function (n) { window.addEventListener(n, end, { passive: true }); });
+      function step(now) {
+        if (done) return;
+        if (!t0) t0 = now;
+        if (Math.abs(window.scrollY - last) > 3) { end(); return; }
+        var u = Math.min(1, (now - t0) / dur);
+        window.scrollTo({ top: Math.round(total * (0.5 - 0.5 * Math.cos(Math.PI * u))), behavior: 'instant' });
+        last = window.scrollY;
+        if (u < 1) requestAnimationFrame(step); else end();
+      }
+      requestAnimationFrame(step);
+    }
+
     hero.classList.add('is-gl-pending');
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
@@ -366,7 +390,7 @@
     Promise.all([import(src), fonts]).then(function (res) {
       var mod = res[0];
       try {
-        scene = mod.createHeroScene(canvas, { mobile: mobile, hold: /[?&]hold\b/.test(location.search) });
+        scene = mod.createHeroScene(canvas, { mobile: mobile });
       } catch (err) {
         console.warn('[swk] hero canvas unavailable, using the still hero.', err && err.message);
         clearTimeout(giveUp); still(); return;
@@ -375,6 +399,7 @@
         clearTimeout(giveUp);
         hero.classList.remove('is-gl-pending');
         hero.classList.add('is-gl');
+        setTimeout(intro, 700);
       };
       scene.onProgress = function (p, rv) {
         hero.style.setProperty('--p', p.toFixed(4));

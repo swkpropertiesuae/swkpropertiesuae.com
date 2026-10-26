@@ -1,37 +1,34 @@
-// SWK Properties — night-aerial hero.
-// One forward-flying aerial of Sheikh Zayed Road, graded to blue hour, scrubbed by scroll (and played automatically
-// on arrival). Giant headline words sit *between* the towers: the same video frame is drawn again, clipped to a few
-// tower silhouettes, on top of the text. The flight ends looking straight ahead down the road; the logo and welcome
-// are revealed in the DOM (.hero__reveal) by the --rv variable this scene reports through onProgress.
+// SWK Properties — night-aerial hero: one continuous forward shot down Sheikh Zayed Road, driven only by scroll.
+// (An intro auto-scroll in 40-hero.js plays it once on arrival; the visitor can take over at any moment.)
+// The video is all-intra so any frame seeks instantly, in both directions. Giant words sit between the towers:
+// the same frame is redrawn over them, clipped to the clock tower. The flight ends looking straight ahead and the
+// logo/welcome are revealed in the DOM (.hero__reveal) through the --rv variable reported by onProgress.
 
 function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
 function lerp(a, b, t) { return a + (b - a) * t; }
 function smooth(a, b, x) { var t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
 function easeOut(t) { return 1 - Math.pow(1 - clamp(t, 0, 1), 3); }
 
-var VW = 1920, VH = 1080;           // coordinate space the tower silhouettes are measured in
-var VP_X = 918, VP_Y = 520;         // vanishing point of the road
-var DUR_FRAC = 0.985;               // stay off the very last frame so the video never "ends"
-var FLIGHT_END = 0.84;              // video reaches its final aerial frame here; the rest is the logo reveal
-var INTRO_SECONDS = 13;             // automatic flight length when the visitor has not scrolled
+var FLIGHT_END = 0.84;   // video reaches its last aerial frame here; the rest of the scroll is the logo reveal
+var DUR_FRAC = 0.99;
 
-// Tower silhouettes that pass in front of the text: [t, x0, x1, yTop] keyframes in video pixels.
-var OCCLUDERS = [
-  { name: 'clock', keys: [[0, 1018, 1075, 150], [7, 1003, 1062, 130], [14.4, 995, 1058, 105]] }
-];
+// The clock tower the words wrap around: keyframes [t, x0, x1, yTop] in 1920x1080 source pixels.
+var CLOCK = [[0, 1021, 1071, 150], [7, 1006, 1058, 130], [14.4, 998, 1054, 105]];
+var VP_X = 918, VP_Y = 520;
 
-// Chapters: a thin line, a giant word, and a human line underneath. [from, to] are scroll/flight progress.
+// Each chapter: thin line, giant word, human line. `at` is the scroll/flight progress it lives in.
 var CHAPTERS = [
-  { at: [0.02, 0.27], pre: 'DISCOVER', big: 'DUBAI', post: 'One road. A thousand front doors.' },
-  { at: [0.29, 0.55], pre: 'BEHIND EVERY WINDOW', big: 'A PLAN', post: 'A first key. A family. A better return.' },
-  { at: [0.57, 0.82], pre: 'WHICH ONE', big: 'IS YOURS?', post: 'We’ll walk you there, honestly.' }
+  { at: [0.03, 0.27], pre: 'DISCOVER', big: ['DU', 'BAI'], post: 'One road. A thousand front doors.' },
+  { at: [0.30, 0.55], pre: 'BEHIND EVERY WINDOW', big: ['A', 'PLAN'], post: 'A first key. A family. A better return.' },
+  { at: [0.58, 0.82], pre: 'WHICH ONE', big: ['IS', 'YOURS?'], post: 'We’ll walk you there, honestly.' }
 ];
 
-function occluderRect(o, t) {
-  var k = o.keys, i = 0;
-  while (i < k.length - 2 && t > k[i + 1][0]) i++;
-  var a = k[i], b = k[i + 1];
-  var u = clamp((t - a[0]) / (b[0] - a[0]), 0, 1);
+var DISPLAY = '"Clash Display","General Sans",system-ui,sans-serif';
+var UI = '"General Sans",system-ui,sans-serif';
+
+function clockRect(t) {
+  var k = CLOCK, i = t < k[1][0] ? 0 : 1;
+  var a = k[i], b = k[i + 1], u = clamp((t - a[0]) / (b[0] - a[0]), 0, 1);
   return [lerp(a[1], b[1], u), lerp(a[2], b[2], u), lerp(a[3], b[3], u)];
 }
 
@@ -41,206 +38,153 @@ export function createHeroScene(canvas, opts) {
   var ctx = canvas.getContext('2d', { alpha: false });
   if (!ctx) throw new Error('2D canvas context unavailable');
 
-  var dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
+  // Mobile plays a portrait crop (x 742..1350 of the 1920x1080 source, tower centred) so the street fills the screen.
+  var VW = mobile ? 608 : 1920, VH = 1080, CROP_X = mobile ? 742 : 0;
+
+  var dpr = Math.min(window.devicePixelRatio || 1, mobile ? 2 : 1.75);
   var W = 0, H = 0;
-  var progress = 0, targetProgress = 0, autoP = 0, autoStart = 0, scrollP = 0, effective = 0;
-  var ptrX = 0, ptrY = 0, curX = 0, curY = 0;
-  var running = false, rafId = 0, readyFired = false, lastSeek = -1, lastT = performance.now();
-  var autoplay = !opts.hold;
+  var target = 0, progress = 0, ptrX = 0, ptrY = 0, curX = 0, curY = 0;
+  var running = false, rafId = 0, ready = false, lastT = 0, dirty = true;
 
   var poster = new Image();
+  poster.onload = function () { dirty = true; };
   poster.src = '/assets/images/hero/dusk-poster' + (mobile ? '-640' : '') + '.webp';
-  poster.onload = function () { render(performance.now()); };
 
   var video = document.createElement('video');
-  video.muted = true; video.defaultMuted = true; video.playsInline = true;
+  video.muted = true; video.defaultMuted = true; video.playsInline = true; video.preload = 'auto';
   video.setAttribute('playsinline', ''); video.setAttribute('muted', '');
-  video.preload = 'auto';
   video.src = mobile ? '/assets/video/szr-dusk-480.mp4' : '/assets/video/szr-dusk-720.mp4';
   video.addEventListener('loadeddata', function () {
-    if (!readyFired) {
-      readyFired = true;
-      autoStart = performance.now();
-      if (api.onReady) api.onReady();
-    }
-    render(performance.now());
+    if (!ready) { ready = true; if (api.onReady) api.onReady(); }
+    dirty = true;
   });
-  video.addEventListener('seeked', function () { render(performance.now()); });
+  video.addEventListener('seeked', function () { dirty = true; });
   video.load();
-
-  function source() {
-    if (video.readyState >= 2 && video.videoWidth) return video;
-    if (poster.complete && poster.naturalWidth) return poster;
-    return null;
-  }
 
   function resize() {
     var r = canvas.getBoundingClientRect();
     W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    render(performance.now());
+    dirty = true;
   }
 
-  // ---- text ---------------------------------------------------------------------------------------------------------
-  function spaced(text, x, y, tracking, align) {
+  function spaced(text, y, tracking) {
     var total = 0, i, w = [];
     for (i = 0; i < text.length; i++) { w[i] = ctx.measureText(text[i]).width; total += w[i] + tracking; }
-    total -= tracking;
-    var cx = align === 'center' ? x - total / 2 : x;
-    for (i = 0; i < text.length; i++) { ctx.fillText(text[i], cx, y); cx += w[i] + tracking; }
-    return total;
+    var x = -(total - tracking) / 2;
+    for (i = 0; i < text.length; i++) { ctx.fillText(text[i], x, y); x += w[i] + tracking; }
   }
 
-  function fitBig(text, maxW) {
-    var size = 100;
-    ctx.font = '700 ' + size + 'px "Clash Display","General Sans",system-ui,sans-serif';
-    var w = ctx.measureText(text).width;
-    return size * maxW / w;
-  }
+  var tower = { x: 0, half: 20 };       // clock-tower centre (canvas px, before the chapter's own scale) and half-width
 
-  function drawChapter(ch, p, sc, part) {
+  function chapterLayout(ch, p) {
     var a = ch.at[0], b = ch.at[1];
-    if (p < a - 0.01 || p > b + 0.04) return;
+    if (p < a || p > b + 0.001) return null;
     var t = clamp((p - a) / (b - a), 0, 1);
-    var enter = easeOut(t / 0.22);
-    var leave = 1 - smooth(0.80, 1, t);
-    var alpha = enter * leave;
-    if (alpha <= 0.003) return;
+    var alpha = easeOut(t / 0.2) * (1 - smooth(0.82, 1, t));
+    if (alpha < 0.004) return null;
+    ctx.font = '700 100px ' + DISPLAY;
+    var wl = ctx.measureText(ch.big[0]).width, wr = ctx.measureText(ch.big[1]).width;
+    var cx = W * 0.5 + curX * 12, grow = 1 + t * 0.18;
+    var tx = (tower.x - cx) / grow, m = W * 0.08 / grow;
+    var gap = tower.half / grow + 10;
+    // each half must fit between the tower and its screen edge; the pair must not exceed ~half the screen
+    var left = (W / 2 / grow + tx - gap - m), right = (W / 2 / grow - tx - gap - m);
+    var big = Math.min(100 * left / wl, 100 * right / wr, 100 * (W * (W < 700 ? 0.9 : 0.6) / grow - 2 * gap) / (wl + wr), H * 0.26 / 1);
+    return { t: t, alpha: alpha, big: big, grow: grow, tx: tx, gap: gap, rise: (1 - easeOut(t / 0.2)) * big * 0.3 };
+  }
 
-    // The camera is flying forward, so the words grow toward the viewer through their whole chapter.
-    var grow = 1 + t * 0.2 + (1 - enter) * -0.06;
-    var maxW = W * (W < 700 ? 0.72 : 0.5);
-    var big = Math.min(fitBig(ch.big, maxW), H * 0.27);
-    var cx = W * 0.5 + (curX * 14);
-    var baseY = H * (W < 700 ? 0.54 : 0.585);
-    var rise = (1 - enter) * big * 0.35;
+  function place(L) {
+    ctx.translate(W * 0.5 + curX * 12, H * (W < 700 ? 0.37 : 0.54) + L.rise);
+    ctx.scale(L.grow, L.grow);
+    ctx.globalAlpha = L.alpha;
+  }
 
-    ctx.save();
-    ctx.translate(cx, baseY - big * 0.36 + rise);
-    ctx.scale(grow, grow);
-    ctx.globalAlpha = alpha;
-    ctx.textBaseline = 'alphabetic';
-
-    if (part === 'lines') {
-    // thin line above
-    var pre = Math.max(11, Math.min(big * 0.34, W * 0.04));
-    ctx.font = '400 ' + pre + 'px "Clash Display","General Sans",system-ui,sans-serif';
-    ctx.fillStyle = 'rgba(236,243,255,0.92)';
-    ctx.shadowColor = 'rgba(5,10,24,0.55)'; ctx.shadowBlur = 18;
-    spaced(ch.pre, 0, -big * 0.9, pre * 0.34, 'center');
-
-    // human line below
-    var post = Math.max(13, Math.min(big * 0.2, W * 0.026));
-    ctx.font = 'italic 400 ' + post + 'px "Instrument Serif",Georgia,serif';
-    ctx.shadowColor = 'rgba(4,8,20,0.9)'; ctx.shadowBlur = 14;
-    ctx.fillStyle = 'rgba(244,206,140,' + (1 * smooth(0.12, 0.4, t)).toFixed(3) + ')';
-    ctx.textAlign = 'center';
-    ctx.fillText(ch.post, 0, big * 0.34);
-    } else {
-    // giant word
-    ctx.font = '700 ' + big + 'px "Clash Display","General Sans",system-ui,sans-serif';
-    ctx.textAlign = 'center';
-    var g = ctx.createLinearGradient(0, -big, 0, 0);
-    g.addColorStop(0, '#ffffff'); g.addColorStop(0.7, '#f4f7ff'); g.addColorStop(1, '#cfe0ff');
+  function drawWord(ch, L) {
+    ctx.save(); place(L);
+    ctx.font = '700 ' + L.big + 'px ' + DISPLAY; ctx.textBaseline = 'alphabetic';
+    var g = ctx.createLinearGradient(0, -L.big * 0.8, 0, 0);
+    g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#d9e6ff');
     ctx.fillStyle = g;
-    ctx.shadowColor = 'rgba(8,16,38,0.5)'; ctx.shadowBlur = big * 0.12;
-    ctx.fillText(ch.big, 0, 0);
-    ctx.shadowBlur = 0;
-
-    }
+    ctx.textAlign = 'right'; ctx.fillText(ch.big[0], L.tx - L.gap, 0);
+    ctx.textAlign = 'left'; ctx.fillText(ch.big[1], L.tx + L.gap, 0);
     ctx.restore();
   }
 
-  // ---- frame --------------------------------------------------------------------------------------------------------
-  var api = {
-    onReady: null, onSlow: null, onProgress: null,
-    setProgress: function (p) { scrollP = clamp(p, 0, 1); targetProgress = Math.max(autoP, scrollP); render(performance.now()); },
-    setPointer: function (x, y) { ptrX = clamp(x, -1, 1); ptrY = clamp(y, -1, 1); },
-    resize: resize,
-    start: function () { if (running) return; running = true; lastT = performance.now(); rafId = requestAnimationFrame(tick); },
-    stop: function () { running = false; if (rafId) cancelAnimationFrame(rafId); rafId = 0; },
-    dispose: function () { api.stop(); video.removeAttribute('src'); video.load(); }
-  };
+  function drawLines(ch, L) {
+    ctx.save(); place(L);
+    ctx.textBaseline = 'alphabetic';
+    var pre = clamp(L.big * 0.2, 12, 30);
+    ctx.font = '600 ' + pre + 'px ' + UI; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'left';
+    spaced(ch.pre, -L.big * 1.04, pre * 0.5);
+    var post = clamp(L.big * 0.2, 14, 30);
+    ctx.font = '500 ' + post + 'px ' + UI; ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,214,150,' + smooth(0.1, 0.4, L.t).toFixed(3) + ')';
+    ctx.fillText(ch.post, 0, L.big * 0.36);
+    ctx.restore();
+  }
 
   function render(now) {
-    if (!W || !H) return;
-    var dt = clamp((now - lastT) / 1000, 0.001, 0.25);
+    var dt = clamp((now - (lastT || now)) / 1000, 0.001, 0.1);
     lastT = now;
+    var d = target - progress;
+    if (Math.abs(d) > 0.00005) { progress += d * (1 - Math.exp(-dt * 9)); dirty = true; if (Math.abs(target - progress) < 0.00005) progress = target; }
+    if (Math.abs(ptrX - curX) > 0.001 || Math.abs(ptrY - curY) > 0.001) { curX += (ptrX - curX) * 0.08; curY += (ptrY - curY) * 0.08; dirty = true; }
 
-    if (autoplay && readyFired && autoP < 1) {
-      var e = (now - autoStart) / 1000 / INTRO_SECONDS;
-      autoP = clamp(e, 0, 1);
-      // Hand over to the visitor the moment they scroll; automatic flight never fights the scrollbar.
-      if (scrollP > 0.002) autoplay = false;
-    }
-    targetProgress = Math.max(autoP, scrollP);
-    var d = Math.abs(targetProgress - progress);
-    progress += (targetProgress - progress) * (d > 0.12 ? 0.9 : 1 - Math.exp(-dt * 14));
-    if (d < 0.0004) progress = targetProgress;
     var p = clamp(progress, 0, 1);
-    effective = p;
-    curX += (ptrX - curX) * 0.08; curY += (ptrY - curY) * 0.08;
-
-    var src = source();
-    var isVideo = src === video;
-    var dur = isVideo && video.duration ? video.duration : 14.64;
+    var haveVideo = video.readyState >= 2 && video.videoWidth > 0;
+    var dur = haveVideo && video.duration ? video.duration : 14.64;
     var vt = clamp(p / FLIGHT_END, 0, 1) * dur * DUR_FRAC;
-    if (isVideo && video.readyState >= 1 && !video.seeking && Math.abs(vt - lastSeek) > 0.012) {
-      lastSeek = vt;
-      try { video.currentTime = vt; } catch (err) { /* noop */ }
-    }
-    var shownT = isVideo ? (video.seeking ? lastSeek : video.currentTime) : 0;
+    if (haveVideo && !video.seeking && Math.abs(vt - video.currentTime) > 0.012) { try { video.currentTime = vt; } catch (e) { /* noop */ } }
+    if (!dirty || !W) return;
+    dirty = false;
 
-    ctx.fillStyle = '#0a1326';
-    ctx.fillRect(0, 0, W, H);
-    if (src) {
-      var sw = isVideo ? video.videoWidth : poster.naturalWidth, sh = isVideo ? video.videoHeight : poster.naturalHeight;
-      var s = Math.max(W / VW, H / VH) * 1.0;
-      var ox = (W - VW * s) * 0.5, oy = (H - VH * s) * 0.5;
-      var px = -curX * 6, py = -curY * 4;      // the plate shifts less than the text: depth between the layers
-      var pushed = 1 + 0.03 * smooth(FLIGHT_END, 1, p);
+    var src = haveVideo ? video : (poster.complete && poster.naturalWidth ? poster : null);
+    if (!src) return;
+    var sw = haveVideo ? video.videoWidth : poster.naturalWidth, sh = haveVideo ? video.videoHeight : poster.naturalHeight;
+    var shownT = haveVideo ? video.currentTime : 0;
 
-      ctx.save();
-      ctx.translate(W / 2 + px, H / 2 + py); ctx.scale(pushed, pushed); ctx.translate(-W / 2, -H / 2);
+    var s = Math.max(W / VW, H / VH);
+    var ox = (W - VW * s) / 2, oy = (H - VH * s) / 2;
+    var push = 1 + 0.05 * smooth(0.55, 1, p);          // the shot keeps travelling forward through the end hold
+    var px = -curX * 7, py = -curY * 5;
+
+    function plate() {
+      ctx.translate(W / 2 + px, H / 2 + py); ctx.scale(push, push); ctx.translate(-W / 2, -H / 2);
       ctx.drawImage(src, 0, 0, sw, sh, ox, oy, VW * s, VH * s);
-      ctx.restore();
-
-      // horizon bloom where the road meets the sky
-      var bx = ox + VP_X * s, by = oy + VP_Y * s;
-      var glow = ctx.createRadialGradient(bx, by, 0, bx, by, Math.max(W, H) * 0.38);
-      glow.addColorStop(0, 'rgba(255,170,96,0.34)'); glow.addColorStop(0.35, 'rgba(255,128,92,0.12)'); glow.addColorStop(1, 'rgba(255,128,92,0)');
-      ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H); ctx.restore();
-
-      // chapters
-      var anyText = false;
-      for (var c = 0; c < CHAPTERS.length; c++) {
-        var ch = CHAPTERS[c];
-        if (p >= ch.at[0] - 0.01 && p <= ch.at[1] + 0.04) anyText = true;
-        drawChapter(ch, p, s, 'word');
-      }
-
-      // towers redrawn over the words
-      if (anyText) {
-        ctx.save();
-        ctx.beginPath();
-        for (var i = 0; i < OCCLUDERS.length; i++) {
-          var r = occluderRect(OCCLUDERS[i], shownT);
-          var x0 = ox + r[0] * s, x1 = ox + r[1] * s, y0 = oy + r[2] * s, y1 = oy + 590 * s;
-          ctx.rect(x0, Math.max(0, y0), x1 - x0, y1 - Math.max(0, y0));
-        }
-        ctx.clip();
-        ctx.translate(W / 2 + px, H / 2 + py); ctx.scale(pushed, pushed); ctx.translate(-W / 2, -H / 2);
-        ctx.drawImage(src, 0, 0, sw, sh, ox, oy, VW * s, VH * s);
-        ctx.restore();
-      }
-      // thin lines stay legible on top of the towers; only the giant words pass behind them
-      for (var c2 = 0; c2 < CHAPTERS.length; c2++) drawChapter(CHAPTERS[c2], p, s, 'lines');
-
-      // end-of-flight veil: calm the plate so the logo reads
-      var veil = smooth(FLIGHT_END - 0.06, 1, p) * 0.5;
-      if (veil > 0.001) { ctx.fillStyle = 'rgba(6,12,28,' + veil.toFixed(3) + ')'; ctx.fillRect(0, 0, W, H); }
     }
+
+    ctx.fillStyle = '#0a1326'; ctx.fillRect(0, 0, W, H);
+    ctx.save(); plate(); ctx.restore();
+
+    var r = clockRect(shownT);
+    var pushx = function (x) { return W / 2 + px + (x - W / 2) * push; };
+    tower.x = pushx(ox + ((r[0] + r[1]) / 2 - CROP_X) * s);
+    tower.half = ((r[1] - r[0]) / 2) * s * push;
+
+    // Layout of the chapter currently on screen (at most one, or two while crossing).
+    var live = [];
+    for (var c = 0; c < CHAPTERS.length; c++) { var L = chapterLayout(CHAPTERS[c], p); if (L) live.push([CHAPTERS[c], L]); }
+
+    // soft pool of shade behind the words so white type stays readable on bright glass
+    for (var i = 0; i < live.length; i++) {
+      var L2 = live[i][1], sg = ctx.createRadialGradient(W / 2, H * 0.47, 0, W / 2, H * 0.47, Math.max(W * 0.5, 200));
+      sg.addColorStop(0, 'rgba(6,12,28,' + (0.5 * L2.alpha).toFixed(3) + ')'); sg.addColorStop(1, 'rgba(6,12,28,0)');
+      ctx.fillStyle = sg; ctx.fillRect(0, 0, W, H);
+    }
+    for (i = 0; i < live.length; i++) drawWord(live[i][0], live[i][1]);
+
+    for (i = 0; i < live.length; i++) drawLines(live[i][0], live[i][1]);
+
+    // horizon bloom, then a calming veil toward the logo reveal
+    var bx = ox + (VP_X - CROP_X) * s, by = oy + VP_Y * s;
+    var glow = ctx.createRadialGradient(bx, by, 0, bx, by, Math.max(W, H) * 0.36);
+    glow.addColorStop(0, 'rgba(255,170,96,0.3)'); glow.addColorStop(0.4, 'rgba(255,128,92,0.1)'); glow.addColorStop(1, 'rgba(255,128,92,0)');
+    ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H); ctx.restore();
+    var veil = smooth(FLIGHT_END - 0.06, 0.98, p) * 0.5;
+    if (veil > 0.001) { ctx.fillStyle = 'rgba(6,12,28,' + veil.toFixed(3) + ')'; ctx.fillRect(0, 0, W, H); }
+
     if (api.onProgress) api.onProgress(p, smooth(0.83, 0.97, p));
   }
 
@@ -249,6 +193,17 @@ export function createHeroScene(canvas, opts) {
     render(now);
     rafId = requestAnimationFrame(tick);
   }
+
+  var api = {
+    onReady: null, onSlow: null, onProgress: null,
+    setProgress: function (p) { target = clamp(p, 0, 1); },
+    jump: function (p) { target = progress = clamp(p, 0, 1); dirty = true; },
+    setPointer: function (x, y) { ptrX = clamp(x, -1, 1); ptrY = clamp(y, -1, 1); },
+    resize: resize,
+    start: function () { if (running) return; running = true; lastT = 0; dirty = true; rafId = requestAnimationFrame(tick); },
+    stop: function () { running = false; if (rafId) cancelAnimationFrame(rafId); rafId = 0; },
+    dispose: function () { api.stop(); video.removeAttribute('src'); video.load(); }
+  };
 
   resize();
   return api;
