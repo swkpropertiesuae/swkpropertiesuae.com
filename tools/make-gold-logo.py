@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dev-time: derive the corporate gold SWK logo set from the original navy artwork (needs Pillow + numpy).
+"""Dev-time: derive the white-champagne SWK logo set from the original navy artwork (needs Pillow + numpy).
 
 Reads  src/assets/images/brand/swk-logo-navy.png (the original transparent artwork, used only as an alpha mask)
 Writes swk-logo-dark.png / swk-logo-white.png (full lock-up, 2x), swk-logo.png (512 square, schema + watermark)
@@ -36,18 +36,18 @@ def gold(alpha):
     h, w = alpha.shape
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     yn, xn = yy / h, xx / w
-    # Champagne -> rich gold -> antique gold: restrained metal, not a mirror.
-    base = ramp(0.78 * yn + 0.22 * xn, [(0, hexc('#ebcf84')), (0.28, hexc('#cfa13f')), (0.52, hexc('#a67a22')),
-                                         (0.74, hexc('#c79a38')), (1, hexc('#7a5518'))])
+    # Ivory white -> pale champagne -> soft taupe-gold: a white metal with a light champagne cast, not yellow gold.
+    base = ramp(0.78 * yn + 0.22 * xn, [(0, hexc('#fffdf7')), (0.30, hexc('#f4e9d0')), (0.55, hexc('#e4d0a2')),
+                                         (0.76, hexc('#f8f0de')), (1, hexc('#cdb47e'))])
     # Soft bevel from a blurred height map, lit from the top left.
     px = h / 275
     height = np.asarray(Image.fromarray((alpha * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(px * 2.2))).astype(np.float32) / 255
     gy, gx = np.gradient(height)
     light = np.clip((-gx * 0.7 - gy * 0.7) * px * 5.0, -1, 1)
     hi, sh = np.clip(light, 0, 1)[..., None], np.clip(-light, 0, 1)[..., None]
-    rgb = base * (1 - 0.55 * sh) + (1.0 - base) * 0.55 * hi * np.array([1, 0.96, 0.8])
+    rgb = base * (1 - 0.34 * sh) + (1.0 - base) * 0.4 * hi * np.array([1, 0.97, 0.86])
     # One broad diagonal sheen.
-    band = np.exp(-(((xn * 0.9 + yn * 0.5) - 0.62) / 0.07) ** 2) * 0.30
+    band = np.exp(-(((xn * 0.9 + yn * 0.5) - 0.62) / 0.07) ** 2) * 0.38
     rgb = rgb + (np.array([1, 0.97, 0.86]) - rgb) * band[..., None]
     return np.clip(rgb, 0, 1)
 

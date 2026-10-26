@@ -311,7 +311,7 @@ ASSET_V = ""
 def build_assets():
     """Concatenate CSS and JS, fingerprint them, and copy root files."""
     global ASSET_V
-    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium", "system", "navigation"]
+    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium", "system", "navigation", "twilight"]
     css = "\n".join((SRC / "css" / f"{n}.css").read_text(encoding="utf-8") for n in css_order)
     css = css.replace("../assets/", "/assets/")
     mods = sorted((SRC / "js" / "modules").glob("*.js"))
@@ -333,7 +333,7 @@ def build_assets():
 # Fonts are self-hosted (see src/css/base.css); the faces used above the fold are preloaded.
 FONT_PRELOADS = "".join(
     f'<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/{f}.woff2" crossorigin>\n'
-    for f in ("instrument-serif/instrument-serif-400", "general-sans/general-sans-400", "general-sans/general-sans-600", "clash-display/clash-display-700"))
+    for f in ("raleway/raleway-300", "raleway/raleway-500", "montserrat/montserrat-300", "bodoni-moda/bodoni-moda-400"))
 
 
 NAV = [("/", "Home"), ("/properties/", "Properties"), ("/about/", "About"), ("/services/", "Services"), ("/mortgage/", "Mortgage"), ("/blog/", "Journal"), ("/contact/", "Contact")]
@@ -917,7 +917,7 @@ def build_home():
 <div class="hero__content container">
 <h1 class="sr-only">SWK Properties: Dubai off-plan and ready property, with direct access to the UAE's leading developers</h1>
 <div class="hero__stage" aria-hidden="true">
-<div class="hero__beat" data-beat="b1"><span class="hero__kicker">Private Real Estate Advisory &middot; Dubai</span><p class="hero__hook">Dubai never stops rising.</p><p class="hero__lead">Make sure your address rises with it.</p></div>
+<div class="hero__beat" data-beat="b1"><span class="hero__kicker">Quietly curated addresses &middot; Dubai</span><p class="hero__hook">Dubai never stops rising.</p><p class="hero__lead">Make sure your address rises with it.</p></div>
 <div class="hero__beat" data-beat="b2"><span class="hero__kicker">0% income tax &middot; Golden Visa routes</span><p class="hero__hook">Where <em>returns</em> meet residency.</p><p class="hero__lead">Off-plan and ready homes, guided by one private advisor.</p></div>
 <div class="hero__beat" data-beat="b3"><span class="hero__kicker">Off-plan &middot; Ready &middot; Freehold</span><p class="hero__hook">Don&rsquo;t watch the skyline. <em>Own it.</em></p><p class="hero__lead">Direct access to the UAE&rsquo;s leading developers.</p></div>
 </div>
@@ -927,7 +927,7 @@ def build_home():
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
 </div>
-<div class="hero__reveal" aria-hidden="true"><div class="hero__reveal-inner"><span class="hero__logo-cinema"><img class="hero__reveal-logo" src="/assets/images/brand/swk-logo-white.png" alt="" width="676" height="550" decoding="async"><i class="hero__logo-sheen" aria-hidden="true"></i></span><span class="hero__reveal-rule"></span><strong class="hero__reveal-name">SWK PROPERTIES</strong><span class="hero__reveal-tag">Private Real Estate Advisory &middot; RERA ORN 51517</span><div class="hero__reveal-actions"><a href="/properties/" class="btn btn-gold btn-lg" tabindex="-1">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-white btn-lg" tabindex="-1">Book a Consultation</a></div></div></div>
+<div class="hero__reveal" aria-hidden="true"><div class="hero__reveal-inner"><span class="hero__logo-cinema"><img class="hero__reveal-logo" src="/assets/images/brand/swk-logo-white.png" alt="" width="676" height="550" decoding="async"><i class="hero__logo-sheen" aria-hidden="true"></i></span><span class="hero__reveal-rule"></span><strong class="hero__reveal-name">SWK PROPERTIES</strong><span class="hero__reveal-tag">Quietly curated addresses &middot; RERA ORN 51517</span><div class="hero__reveal-actions"><a href="/properties/" class="btn btn-gold btn-lg" tabindex="-1">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-white btn-lg" tabindex="-1">Book a Consultation</a></div></div></div>
 <span class="hero-art-credit">AI-generated video</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
 </section></div>
 
