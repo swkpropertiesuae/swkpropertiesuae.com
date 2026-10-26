@@ -180,7 +180,7 @@
   font-family: 'Clash Display', 'General Sans', system-ui, sans-serif !important; font-weight: 600 !important;
   font-size: clamp(2.9rem, 6.9vw, 6.6rem); line-height: 1.01; letter-spacing: -.035em !important; word-spacing: .1em !important; max-width: 14ch; margin-inline: auto; text-wrap: balance;
   color: #fff;
-  background-image: linear-gradient(105deg, #ffffff 0%, #f4f8ff 24%, #ffe7ae 42%, #ffffff 52%, #dfeaff 72%, #ffffff 100%);
+  background-image: linear-gradient(105deg, #fffdf8 0%, #eef4ff 30%, #fff1dc 52%, #f3f7ff 76%, #fffdf8 100%);
   background-size: 260% 100%; background-position: 8% 50%;
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 2px 3px rgba(4, 10, 22, .55)) drop-shadow(0 14px 34px rgba(4, 10, 22, .5));
@@ -188,7 +188,7 @@
 }
 .hero__beat:hover .hero__hook:not(#_), .hero__hook:not(#_):hover {
   transform: translateY(-4px) scale(1.015); background-position: 92% 50%;
-  background-image: linear-gradient(105deg, #ffffff 0%, #fff1c9 26%, #f6d48a 44%, #ffffff 54%, #ffe7ae 74%, #ffffff 100%);
+  background-image: linear-gradient(105deg, #fffdf8 0%, #fff4e2 40%, #ffe9c8 60%, #fffdf8 100%);
   filter: drop-shadow(0 2px 3px rgba(4, 10, 22, .6)) drop-shadow(0 16px 38px rgba(4, 10, 22, .55)) drop-shadow(0 0 22px rgba(246, 212, 138, .5));
 }
 .hero .hero__lead {
@@ -275,3 +275,21 @@
 .hero__bg::after { opacity: clamp(.35, calc(1 - var(--p, 0) * 3), 1); }
 .hero__video, .hero__idle-video { image-rendering: high-quality; backface-visibility: hidden; transform: translateZ(0); }
 @media (prefers-reduced-motion: reduce) { .hero:not(.is-idle) .hero__idle { transform: none; filter: none; } }
+
+/* --- Custom SWK icon set: square-cut line work with a gold accent stroke --- */
+.ic-a { stroke: var(--ic-accent, #c99a3d); }
+.btn-primary .ic-a, .site-header__go .ic-a, .hero .ic-a, .footer .ic-a, .search-bar .btn .ic-a, .section--dark .ic-a { stroke: var(--ic-accent, #f2cf86); }
+.hero .btn-white .ic-a, .hero .btn-outline-dark .ic-a { stroke: #b07a2a; }
+
+/* --- Headline highlight: saffron-to-coral "sunrise" accent, glossy and animated --- */
+.hero .hero__hook em {
+  font-style: normal; display: inline;
+  background-image: linear-gradient(100deg, #ffd166 0%, #ff9a4d 34%, #ff6b5e 62%, #ffb36b 82%, #ffd166 100%);
+  background-size: 240% 100%; background-position: 0% 50%;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+  animation: hero-sunrise 7s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 18px rgba(255, 140, 80, .35));
+}
+.hero__beat:hover .hero__hook em, .hero__hook:hover em { animation-duration: 2.4s; filter: drop-shadow(0 0 26px rgba(255, 154, 77, .65)); }
+@keyframes hero-sunrise { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+@media (prefers-reduced-motion: reduce) { .hero .hero__hook em { animation: none; } }

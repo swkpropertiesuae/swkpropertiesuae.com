@@ -281,12 +281,12 @@ GLOW = ('<div class="ambient-glow" aria-hidden="true"><div class="ambient-glow__
 
 # ---------------------------------------------------------------- icons
 
-ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
-PIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>'
-SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'
-CHEV = '<svg class="calc-disclosure__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>'
-PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>'
-NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'
+ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M3 12h15"/><path class="ic-a" d="M13 6.5 19 12l-6 5.5"/><path d="M19 12h2.2" class="ic-a"/></svg>'
+PIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 21.5 5.5 12.2A7.2 7.2 0 0 1 12 2.5a7.2 7.2 0 0 1 6.5 9.7z"/><path class="ic-a" d="M12 7.2 15 10l-3 2.8L9 10z"/></svg>'
+SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M10.5 3.5 17 7v7l-6.5 3.5L4 14V7z"/><path class="ic-a" d="m15 15.5 5.5 5.5"/></svg>'
+CHEV = '<svg class="calc-disclosure__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path class="ic-a" d="m5 9 7 7 7-7"/></svg>'
+PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path class="ic-a" d="M15.5 4 7.5 12l8 8"/></svg>'
+NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path class="ic-a" d="m8.5 4 8 8-8 8"/></svg>'
 WHATSAPP = ('<svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.52 0-10 4.48-10 10 0 1.77.46 3.45 1.27 4.9L2 22l5.24-1.38a9.96 9.96 0 0 0 4.8 1.22h.01c5.52 0 10-4.48 10-10s-4.49-9.84-10.01-9.84Zm5.8 14.2c-.24.68-1.4 1.3-1.93 1.38-.5.08-1.12.11-1.8-.11-.42-.14-.95-.3-1.64-.6-2.88-1.24-4.76-4.15-4.9-4.34-.14-.19-1.17-1.56-1.17-2.98 0-1.41.74-2.1 1-2.39.26-.28.58-.35.77-.35.19 0 .39 0 .55.01.18.01.42-.07.65.5.24.58.82 2 .89 2.15.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.16-.29.36-.42.48-.14.14-.28.29-.12.57.16.28.72 1.19 1.55 1.93 1.06.95 1.96 1.24 2.24 1.38.28.14.44.12.6-.07.16-.19.68-.79.86-1.06.18-.28.36-.23.6-.14.24.09 1.55.73 1.82.87.27.14.45.21.51.32.07.12.07.65-.17 1.33Z"/></svg>')
 
 SERVICE_ICONS = {
@@ -378,16 +378,16 @@ PRELOADER = """<div class="preloader" role="status" aria-live="polite">
 </script>"""
 
 
-ICON_PHONE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>'
-ICON_MAIL = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
-ICON_PIN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>'
-ICON_CLOCK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
+ICON_PHONE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M6 3h3.5l1.8 4.6-2.2 1.6a10.5 10.5 0 0 0 5.7 5.7l1.6-2.2L21 14.5V18a2.5 2.5 0 0 1-2.7 2.5A16.5 16.5 0 0 1 3.5 5.7 2.5 2.5 0 0 1 6 3z"/><path class="ic-a" d="M14.5 3.5a6 6 0 0 1 6 6"/></svg>'
+ICON_MAIL = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path class="ic-a" d="m3 6 9 7.5L21 6"/></svg>'
+ICON_PIN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 21.5 5.5 12.2A7.2 7.2 0 0 1 12 2.5a7.2 7.2 0 0 1 6.5 9.7z"/><path class="ic-a" d="M12 7.2 15 10l-3 2.8L9 10z"/></svg>'
+ICON_CLOCK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 2.5 20.2 7.2v9.6L12 21.5l-8.2-4.7V7.2z"/><path class="ic-a" d="M12 7v5.2l3.4 2"/></svg>'
 
 
-ICON_SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>'
-ICON_CHART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'
-ICON_HEADSET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="14" width="4" height="6" rx="1.5"/><rect x="17.5" y="14" width="4" height="6" rx="1.5"/><path d="M20 20c0 1.5-1.5 2-4 2h-2"/></svg>'
-ICON_HEART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-8-4.6-8-10.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8 2.5C20 15.4 12 20 12 20z"/></svg>'
+ICON_SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 2.5 20 5.5v6.2c0 4.6-3.3 7.8-8 9.8-4.7-2-8-5.200-8-9.800V5.500z"/><path class="ic-a" d="m8 12 3 3 5.500-6"/></svg>'
+ICON_CHART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M3 21h18"/><path d="M5.500 21v-6M11 21V9"/><path class="ic-a" d="M16.500 21V4.500M5.500 15l5.500-6 5.500-4.500"/></svg>'
+ICON_HEADSET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M2.5 14h4v6h-4zM17.500 14h4v6h-4z"/><path class="ic-a" d="M19.500 20v1a2 2 0 0 1-2 2H13"/></svg>'
+ICON_HEART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 21 4.200 13A5 5 0 0 1 12 6.500 5 5 0 0 1 19.800 13z"/><path class="ic-a" d="M8 11.500h2.500l1.500-2.500 1.500 4 1-1.500H16"/></svg>'
 VALUE_ITEMS = [(ICON_SHIELD, "RERA-registered, fully disclosed", "Fees, commission and payment-plan clauses explained before you sign."),
                (ICON_CHART, "Yields, not slogans", "Return projections built on registered UAE transaction data."),
                (ICON_HEADSET, "One accountable consultant", "The adviser who takes your first call stays with you to handover."),
@@ -458,7 +458,7 @@ def footer():
 ANN = SITE.get("announcement") or {}
 POPUP = SITE.get("popup") or {}
 ANALYTICS = SITE.get("analytics") or {}
-ICON_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'
+ICON_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 21V4"/><path class="ic-a" d="M5.500 10.500 12 4l6.500 6.500"/></svg>'
 
 
 def announce_bar():
@@ -917,9 +917,9 @@ def build_home():
 <div class="hero__content container">
 <h1 class="sr-only">SWK Properties: Dubai off-plan and ready property, with direct access to the UAE's leading developers</h1>
 <div class="hero__stage" aria-hidden="true">
-<div class="hero__beat" data-beat="b1"><span class="hero__kicker">Sheikh Zayed Road &middot; Dubai</span><p class="hero__hook">Dubai never stops rising.</p><p class="hero__lead">Make sure your address rises with it.</p></div>
-<div class="hero__beat" data-beat="b2"><span class="hero__kicker">0% income tax &middot; Golden Visa routes</span><p class="hero__hook">Where returns meet residency.</p><p class="hero__lead">Off-plan and ready homes, guided by one private advisor.</p></div>
-<div class="hero__beat" data-beat="b3"><span class="hero__kicker">Off-plan &middot; Ready &middot; Freehold</span><p class="hero__hook">Don&rsquo;t watch the skyline. Own it.</p><p class="hero__lead">Direct access to the UAE&rsquo;s leading developers.</p></div>
+<div class="hero__beat" data-beat="b1"><span class="hero__kicker">Sheikh Zayed Road &middot; Dubai</span><p class="hero__hook">Dubai never stops <em>rising.</em></p><p class="hero__lead">Make sure your address rises with it.</p></div>
+<div class="hero__beat" data-beat="b2"><span class="hero__kicker">0% income tax &middot; Golden Visa routes</span><p class="hero__hook">Where <em>returns</em> meet residency.</p><p class="hero__lead">Off-plan and ready homes, guided by one private advisor.</p></div>
+<div class="hero__beat" data-beat="b3"><span class="hero__kicker">Off-plan &middot; Ready &middot; Freehold</span><p class="hero__hook">Don&rsquo;t watch the skyline. <em>Own it.</em></p><p class="hero__lead">Direct access to the UAE&rsquo;s leading developers.</p></div>
 </div>
 <div class="hero__dock">
 <div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Book a Consultation</a></div>
