@@ -448,3 +448,11 @@
   .blog-grid[data-blog-grid] { display: grid; grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: 1fr; overflow: visible; padding: 0; margin-inline: 0; }
   .blog-card__body h3 { font-size: 1.1rem; line-height: 1.25; }
 }
+
+/* Phones, lobby and window chapters: the film's own sign sits mid-frame, so the copy drops to the clear marble area below it. */
+@media (max-width: 767px) {
+  .hero__beat[data-beat='b2'], .hero__beat[data-beat='b3'] { translate: 0 38svh; }
+  .hero .hero__beat[data-beat='b2'] .hero__hook:not(#_), .hero .hero__beat[data-beat='b3'] .hero__hook:not(#_) { font-size: clamp(1.7rem, 7.6vw, 2.3rem); max-width: 14ch; }
+  .hero .hero__beat[data-beat='b2'] .hero__lead, .hero .hero__beat[data-beat='b3'] .hero__lead { font-size: clamp(.92rem, 3.8vw, 1.05rem); max-width: 28ch; }
+  .hero__beat[data-beat='b2'] .hero__lead::after, .hero__beat[data-beat='b3'] .hero__lead::after { display: none; }
+}

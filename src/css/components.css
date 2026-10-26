@@ -1205,7 +1205,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.75) 50%, transparent 60%);
+  background: linear-gradient(115deg, transparent 44%, rgba(255, 255, 255, 0.26) 50%, transparent 56%);
   background-size: 250% 100%;
   background-position: -100% 0;
   animation: btn-calc-shine 3.4s ease-in-out infinite;

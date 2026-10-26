@@ -365,21 +365,7 @@ ul, ol { list-style: none; }
   padding-block: var(--space-9);
 }
 
-/* Faint SWK logo watermark behind every content section (the homepage
-   hero and interior page-hero banners use their own separate classes, so
-   they're excluded automatically rather than by an override here). */
-.section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: url('/assets/images/brand/swk-logo.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: min(380px, 55%);
-  opacity: 0.035;
-}
+/* (The faint logo watermark behind sections was removed: it ghosted through headings and body copy.) */
 
 .section > * {
   position: relative;
@@ -1681,7 +1667,7 @@ img.is-broken {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.75) 50%, transparent 60%);
+  background: linear-gradient(115deg, transparent 44%, rgba(255, 255, 255, 0.26) 50%, transparent 56%);
   background-size: 250% 100%;
   background-position: -100% 0;
   animation: btn-calc-shine 3.4s ease-in-out infinite;
@@ -5971,4 +5957,12 @@ main .project-feature__copy h3:not(#_) { font-size: var(--t-h3-lg); }
   .blog-grid { grid-auto-columns: min(82vw, 330px); gap: 16px; padding: 4px var(--space-5) 18px; margin-inline: calc(var(--space-5) * -1); scroll-padding-inline: var(--space-5); }
   .blog-grid[data-blog-grid] { display: grid; grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: 1fr; overflow: visible; padding: 0; margin-inline: 0; }
   .blog-card__body h3 { font-size: 1.1rem; line-height: 1.25; }
+}
+
+/* Phones, lobby and window chapters: the film's own sign sits mid-frame, so the copy drops to the clear marble area below it. */
+@media (max-width: 767px) {
+  .hero__beat[data-beat='b2'], .hero__beat[data-beat='b3'] { translate: 0 38svh; }
+  .hero .hero__beat[data-beat='b2'] .hero__hook:not(#_), .hero .hero__beat[data-beat='b3'] .hero__hook:not(#_) { font-size: clamp(1.7rem, 7.6vw, 2.3rem); max-width: 14ch; }
+  .hero .hero__beat[data-beat='b2'] .hero__lead, .hero .hero__beat[data-beat='b3'] .hero__lead { font-size: clamp(.92rem, 3.8vw, 1.05rem); max-width: 28ch; }
+  .hero__beat[data-beat='b2'] .hero__lead::after, .hero__beat[data-beat='b3'] .hero__lead::after { display: none; }
 }

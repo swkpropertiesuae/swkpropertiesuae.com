@@ -194,21 +194,7 @@ ul, ol { list-style: none; }
   padding-block: var(--space-9);
 }
 
-/* Faint SWK logo watermark behind every content section (the homepage
-   hero and interior page-hero banners use their own separate classes, so
-   they're excluded automatically rather than by an override here). */
-.section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: url('../assets/images/brand/swk-logo.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: min(380px, 55%);
-  opacity: 0.035;
-}
+/* (The faint logo watermark behind sections was removed: it ghosted through headings and body copy.) */
 
 .section > * {
   position: relative;
