@@ -279,17 +279,27 @@
 /* --- Custom SWK icon set: square-cut line work with a gold accent stroke --- */
 .ic-a { stroke: var(--ic-accent, #c99a3d); }
 .btn-primary .ic-a, .site-header__go .ic-a, .hero .ic-a, .footer .ic-a, .search-bar .btn .ic-a, .section--dark .ic-a { stroke: var(--ic-accent, #f2cf86); }
-.hero .btn-white .ic-a, .hero .btn-outline-dark .ic-a { stroke: #b07a2a; }
+.hero .btn-white .ic-a, .hero .btn-outline-dark .ic-a { stroke: #0f766e; }
 
-/* --- Headline highlight: saffron-to-coral "sunrise" accent, glossy and animated --- */
+/* --- Headline highlight: jade-to-aqua accent, glossy and animated --- */
 .hero .hero__hook em {
   font-style: normal; display: inline;
-  background-image: linear-gradient(100deg, #ffd166 0%, #ff9a4d 34%, #ff6b5e 62%, #ffb36b 82%, #ffd166 100%);
+  background-image: linear-gradient(100deg, #9ff3d6 0%, #3fd3b6 32%, #6ec9ff 62%, #b4f6e0 82%, #9ff3d6 100%);
   background-size: 240% 100%; background-position: 0% 50%;
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
   animation: hero-sunrise 7s ease-in-out infinite alternate;
-  filter: drop-shadow(0 0 18px rgba(255, 140, 80, .35));
+  filter: drop-shadow(0 0 18px rgba(63, 211, 182, .4));
 }
-.hero__beat:hover .hero__hook em, .hero__hook:hover em { animation-duration: 2.4s; filter: drop-shadow(0 0 26px rgba(255, 154, 77, .65)); }
+.hero__beat:hover .hero__hook em, .hero__hook:hover em { animation-duration: 2.4s; filter: drop-shadow(0 0 26px rgba(63, 211, 182, .7)); }
 @keyframes hero-sunrise { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
 @media (prefers-reduced-motion: reduce) { .hero .hero__hook em { animation: none; } }
+
+/* Hero supporting text: soft pearl-champagne instead of flat white */
+.hero .hero__lead { color: #f3e9d2; }
+.hero .hero__kicker { color: #f6ead0; }
+/* WhatsApp: real brand-colour mark, no tinted wrapper */
+.site-header .site-header__wa, .site-header__wa { background: transparent !important; box-shadow: none !important; border: 0 !important; color: inherit; }
+.site-header .site-header__wa:hover, .site-header__wa:hover { background: transparent !important; transform: translateY(-2px) scale(1.08); }
+.site-header .site-header__wa svg, .site-header__wa svg { width: 34px; height: 34px; }
+.whatsapp-float { background: transparent !important; box-shadow: 0 8px 22px rgba(37, 211, 102, .45); border-radius: 50%; }
+.whatsapp-float svg { width: 100%; height: 100%; }

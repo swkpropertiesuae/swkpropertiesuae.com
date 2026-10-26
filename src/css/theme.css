@@ -342,8 +342,8 @@ body { background: var(--grad-page), var(--color-bg); background-repeat: no-repe
 .service-card--themed .service-card__decor { color: hsl(var(--theme-color)); }
 .service-card--themed .service-card__link { color: hsl(var(--theme-color)); }
 .stat-strip { background: linear-gradient(120deg, #fff4df 0%, #ffe9d6 40%, #e8f3f1 100%); }
-.stat-strip .stat-num { background: linear-gradient(120deg, #1a3a6e, #b3541f 70%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.stat-strip .stat-num { background: linear-gradient(120deg, #1a3a6e, #14766e 70%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .section--alt { background: linear-gradient(to bottom, var(--color-bg) 0, #fbf1e1 90px, #f6ead6 calc(100% - 90px), var(--color-bg) 100%); }
 .value-strip { background: linear-gradient(100deg, #fff7e8, #fdeede 50%, #eaf4f2); }
-.eyebrow::before { background: linear-gradient(90deg, #c8892a, #c0562a); }
+.eyebrow::before { background: linear-gradient(90deg, #c99a3d, #14766e); }
 .property-card__badge, .badge { box-shadow: 0 4px 12px rgba(179, 84, 31, 0.18); }
