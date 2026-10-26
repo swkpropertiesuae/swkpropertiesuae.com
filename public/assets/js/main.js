@@ -459,6 +459,20 @@
     video.addEventListener('loadeddata', primeVideo);
     if (video.readyState >= 1) primeVideo();
 
+    // The clip's lower-right corner carries a small repaired patch; a brand seal sits over it.
+    // Its position follows the object-fit: cover framing of the 1920x1080 frame.
+    var seal = SWK.$('.hero__seal', hero);
+    function placeSeal() {
+      if (!seal) return;
+      var W = hero.clientWidth, H = hero.clientHeight;
+      var s = Math.max(W / 1920, H / 1080);
+      hero.style.setProperty('--seal-x', (W / 2 + (1740 - 960) * s).toFixed(1) + 'px');
+      hero.style.setProperty('--seal-y', (H / 2 + (900 - 540) * s).toFixed(1) + 'px');
+      hero.style.setProperty('--seal-d', (112 * s).toFixed(1) + 'px');
+    }
+    placeSeal();
+    window.addEventListener('resize', placeSeal);
+
     function getExtent() {
       return wrap ? Math.max(0, wrap.offsetHeight - hero.offsetHeight) : 0;
     }
