@@ -311,7 +311,7 @@ ASSET_V = ""
 def build_assets():
     """Concatenate CSS and JS, fingerprint them, and copy root files."""
     global ASSET_V
-    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium"]
+    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium", "system"]
     css = "\n".join((SRC / "css" / f"{n}.css").read_text(encoding="utf-8") for n in css_order)
     css = css.replace("../assets/", "/assets/")
     mods = sorted((SRC / "js" / "modules").glob("*.js"))
@@ -823,33 +823,48 @@ def flag_emoji(code):
     return "".join(chr(0x1F1E6 + ord(ch) - 65) for ch in c) if len(c) == 2 and c.isalpha() else ""
 
 
-def testimonials_markup(reviews):
-    """Snap-scrolling testimonial cards. Only entries with approved=true in data/testimonials.json are shown."""
-    hues = ["215 70% 38%", "180 62% 30%", "16 72% 46%", "38 86% 40%", "276 40% 42%", "150 48% 31%"]
-    cards = ""
-    for i, r in enumerate(reviews):
-        rating = max(1, min(5, int(r.get("rating", 5))))
-        initials = "".join(w[0] for w in r["name"].split()[:2]).upper()
-        country = r.get("country", "")
-        cards += (f'<figure class="testi-card" style="--tc:{hues[i % 6]};--i:{i}"><div class="testi-card__top">'
-                  f'<span class="testi-card__country"><span aria-hidden="true">{flag_emoji(r.get("flag", ""))}</span> {e(country)}</span>'
-                  f'<span class="testi-card__stars" role="img" aria-label="{rating} out of 5">{"★" * rating}{"☆" * (5 - rating)}</span></div>'
-                  f'<blockquote>{e(r["quote"])}</blockquote>'
-                  f'<figcaption><span class="testi-card__avatar" aria-hidden="true">{e(initials)}</span>'
-                  f'<span><strong>{e(r["name"])}</strong><small>{e(r.get("context", ""))}</small></span></figcaption></figure>')
-    seen, tags = set(), ""
-    for r in reviews:
-        k = r.get("country", "")
-        if k and k not in seen:
-            seen.add(k)
-            tags += f'<span>{flag_emoji(r.get("flag", ""))} {e(k)}</span>'
-    return (f'<div class="testi" data-testi><div class="testi__track" data-testi-track tabindex="0" role="region" aria-label="Client testimonials">{cards}</div>'
-            f'<div class="testi__nav"><button type="button" class="tc-arrow" data-testi-prev aria-label="Previous testimonials">{PREV}</button>'
-            f'<button type="button" class="tc-arrow" data-testi-next aria-label="Next testimonials">{NEXT}</button>'
-            f'<span class="testi__dots" data-testi-dots aria-hidden="true"></span>'
-            f'<button type="button" class="review-pause" data-testi-pause aria-pressed="false">Pause</button></div>'
-            f'<div class="testi__countries" aria-label="Where our clients are from">{tags}</div></div>')
+def service_cards(link=True):
+    """Hairline bento of the six services. link=True makes each cell a link to /services/ (home teaser)."""
+    out = ""
+    for i, sv in enumerate(SERVICES):
+        tag, attrs = ("a", ' href="/services/"') if link else ("div", "")
+        more = f'<span class="svc-card__more">Learn more {ARROW}</span>' if link else ""
+        out += (f'<{tag} class="svc-card"{attrs} data-spotlight><span class="svc-card__num" aria-hidden="true">{i + 1:02d}</span>'
+                f'<span class="svc-card__icon" aria-hidden="true">{service_icon(sv["id"])}</span>'
+                f'<h3>{e(sv["title"])}</h3><p>{e(sv["description"])}</p>{more}</{tag}>')
+    return out
 
+
+def testimonials_markup(items, commitments=False):
+    """Two opposing marquee rows of quote cards. items: dicts with quote, name and optional context/country/flag/rating.
+    The server renders one copy of each row (scrollable without JS); 87-testimonials.js clones it to loop."""
+    def card(i, r):
+        rating = max(1, min(5, int(r.get("rating", 5)))) if not commitments else 0
+        name = r["name"]
+        initials = "".join(w[0] for w in name.replace("&", " ").split()[:2]).upper()
+        country = r.get("country", "")
+        stars = f'<span class="voice__stars" role="img" aria-label="{rating} out of 5">{"★" * rating}</span>' if rating else ""
+        chip = f'<span class="voice__country"><span aria-hidden="true">{flag_emoji(r.get("flag", ""))}</span> {e(country)}</span>' if country else ""
+        return (f'<figure class="voice"><div class="voice__top">{stars}{chip}</div>'
+                f'<blockquote>{e(r["quote"])}</blockquote>'
+                f'<figcaption><span class="voice__avatar" aria-hidden="true">{e(initials)}</span>'
+                f'<span><strong>{e(name)}</strong><small>{e(r.get("context", ""))}</small></span></figcaption></figure>')
+    half = (len(items) + 1) // 2
+    rows = [items[:half], items[half:]]
+    html = ""
+    for n, row in enumerate(rows):
+        cards = "".join(card(i, r) for i, r in enumerate(row))
+        html += (f'<div class="voices__row" data-voices-row data-dir="{"left" if n == 0 else "right"}" tabindex="0" role="region" '
+                 f'aria-label="{"Client testimonials" if not commitments else "Service commitments"}, row {n + 1}"><div class="voices__track">{cards}</div></div>')
+    summary = ""
+    if not commitments:
+        countries = {r.get("country") for r in items if r.get("country")}
+        avg = sum(max(1, min(5, int(r.get("rating", 5)))) for r in items) / len(items)
+        summary = (f'<ul class="voices__stats"><li><strong>{avg:.1f}</strong><span>Average rating</span></li>'
+                   f'<li><strong>{len(items)}</strong><span>Client stories</span></li>'
+                   f'<li><strong>{len(countries)}</strong><span>Countries</span></li></ul>')
+    return (f'<div class="voices" data-voices>{summary}{html}'
+            f'<button type="button" class="voices__pause" data-voices-pause aria-pressed="false">Pause</button></div>')
 
 
 def build_home():
@@ -872,19 +887,15 @@ def build_home():
     for i, c in enumerate(COMMUNITIES):
         n = sum(1 for q in ALL_PROJECTS if q["community"] == c["name"])
         label = f"{n} featured project{'s' if n != 1 else ''}" if n else "Ask about launches"
-        comm_cards += f"""<a class="community-card" data-reveal data-reveal-delay="{(i % 4) * 70}" href="/properties/?community={quote(c['name'])}" aria-label="View projects in {e(c['name'])}">
-{img(c['image'], f"{c['name']}, Dubai", lazy=False, sizes="(min-width: 1100px) 480px, (min-width: 640px) 50vw, 100vw")}<div class="community-card__overlay"><h3>{e(c['name'])}</h3><span class="community-card__count">{label}</span></div></a>"""
+        comm_cards += f"""<a class="place-card" data-reveal data-reveal-delay="{(i % 4) * 70}" href="/properties/?community={quote(c['name'])}" aria-label="View projects in {e(c['name'])}">
+{img(c['image'], f"{c['name']}, Dubai", lazy=i > 3, sizes="(min-width: 1100px) 300px, (min-width: 640px) 33vw, 62vw")}<span class="place-card__num" aria-hidden="true">{i + 1:02d}</span><span class="place-card__go" aria-hidden="true">{ARROW}</span>
+<div class="place-card__body"><h3>{e(c['name'])}</h3><span class="place-card__count">{label}</span></div></a>"""
 
-    svc_cards = ""
-    for i, s in enumerate(SERVICES):
-        svc_cards += f"""<div class="service-card service-card--themed" data-tilt="5" style="--theme-color:{SERVICE_THEMES[i % 6]}">
-<div class="service-card__body"><h3>{e(s['title'])}</h3><a href="/services/" class="service-card__link" aria-label="Learn more about {e(s['title'])}">Learn more
-<svg class="service-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a></div>
-<div class="service-card__decor" aria-hidden="true">{service_icon(s['id'])}</div></div>"""
+    svc_cards = service_cards(link=True)
 
     reviews = [r for r in load("testimonials") if r.get("approved") is True]
     if reviews:
-        slides = testimonials_markup(reviews)
+        team = testimonials_markup(reviews)
         review_heading = "What our clients say"
         review_intro = "In their own words, shared with permission."
     else:
@@ -897,24 +908,26 @@ def build_home():
             ("Rental assumptions you can inspect", "Separate the advertised rent from service charges, vacancy and maintenance when considering an investment."),
             ("One clear next step", "Whether you are still exploring or ready to make an offer, leave the conversation knowing what happens next."),
             ("Support after the shortlist", "Keep your consultant in the conversation as you move from viewings to documents and handover.")]
-        slides = "".join(f'<figure class="review-slide" data-review-slide {"hidden" if i else ""}><blockquote>{e(text)}</blockquote><figcaption>{e(title)}</figcaption></figure>' for i, (title, text) in enumerate(commitments))
+        team = testimonials_markup([{"name": t, "quote": q} for t, q in commitments], commitments=True)
         review_heading = "What you can expect from SWK"
         review_intro = "Our service commitments. Client reviews will appear here once verified and approved."
-    if reviews:
-        team = slides
-    else:
-      team = f'''<div class="review-carousel" data-review-carousel aria-label="{review_heading}">{slides}<div class="review-controls"><button type="button" class="tc-arrow" data-review-prev aria-label="Previous story">{PREV}</button><span data-review-count>1 / {len(reviews) if reviews else 8}</span><button type="button" class="tc-arrow" data-review-next aria-label="Next story">{NEXT}</button><button type="button" class="review-pause" data-review-pause aria-pressed="false">Pause</button></div></div>'''
 
-    body = f"""<div class="hero-cine"><section class="hero" aria-label="Introduction">
-<div class="hero__bg"><video class="hero__video" autoplay muted loop playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster.webp" width="720" height="1280" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk.mp4" type="video/mp4"></video></div>
+    body = f"""<div class="hero-cine"><section class="hero" data-phase="b1" aria-label="Introduction">
+<div class="hero__bg"><video class="hero__video" autoplay muted loop playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk.mp4" type="video/mp4"></video></div>
 <div class="hero__content container">
-<span class="hero__eyebrow">RERA ORN 51517 &middot; Sheikh Zayed Road</span>
-<h1 class="hero__title">Discover Dubai</h1>
-<p class="hero__subtitle">Off-plan and ready residences from the UAE&rsquo;s leading developers.</p>
+<h1 class="sr-only">SWK Properties: Dubai off-plan and ready property, with direct access to the UAE's leading developers</h1>
+<div class="hero__stage" aria-hidden="true">
+<div class="hero__beat" data-beat="b1"><span class="hero__kicker">Sheikh Zayed Road &middot; Dubai</span><p class="hero__hook">Dubai never stops rising.</p><p class="hero__lead">Make sure your address rises with it.</p></div>
+<div class="hero__beat" data-beat="b2"><span class="hero__kicker">0% income tax &middot; Golden Visa routes</span><p class="hero__hook">Where returns meet residency.</p><p class="hero__lead">Off-plan and ready homes, guided by one private advisor.</p></div>
+<div class="hero__beat" data-beat="b3"><span class="hero__kicker">Off-plan &middot; Ready &middot; Freehold</span><p class="hero__hook">Don&rsquo;t watch the skyline. Own it.</p><p class="hero__lead">Direct access to the UAE&rsquo;s leading developers.</p></div>
+</div>
+<div class="hero__dock">
 <div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Book a Consultation</a></div>
 <div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
+</div>
+<div class="hero__reveal" aria-hidden="true"><div class="hero__reveal-inner"><img class="hero__reveal-logo" src="/assets/images/brand/swk-logo-white.png" alt="" width="676" height="550" decoding="async"><span class="hero__reveal-rule"></span><strong class="hero__reveal-name">SWK PROPERTIES</strong><span class="hero__reveal-tag">Private Real Estate Advisory &middot; RERA ORN 51517</span></div></div>
 <span class="hero-art-credit">AI-generated video</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
 </section></div>
 
@@ -939,20 +952,20 @@ def build_home():
 <p>We work directly with the master developers behind the city's skyline, so pricing and payment plans come straight from source.</p></div>
 <div class="marquee" data-developer-marquee><div class="marquee__track">{one}{two}</div></div></div></section>
 
-<section class="section container ambient-glow-host">{GLOW}<div class="section-header center"><span class="eyebrow">Where to Live</span>{h2_cascade("Explore Dubai's communities")}
+<section class="section section--obsidian ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Where to Live</span>{h2_cascade("Explore Dubai's communities")}
 <p>Every neighbourhood has a different rhythm — from Marina's waterfront energy to the quiet greenery of Arabian Ranches.</p></div>
-<div class="communities-grid" data-communities-grid>{comm_cards}</div></section>
+<div class="place-grid" data-communities-grid>{comm_cards}</div></div></section>
 
 <section class="section section--alt ambient-glow-host">{GLOW}<div class="container">
 <div class="section-header center"><span class="eyebrow">How We Help</span>{h2_cascade("Full-service, start to handover")}
 <p>From your first shortlist to renewing Ejari five years later — one team, one point of contact.</p></div>
-<div class="services-grid" data-services-teaser data-reveal>{svc_cards}</div></div></section>
+<div class="svc-grid" data-services-teaser data-reveal>{svc_cards}</div></div></section>
 
 <section class="section ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Plan Your Purchase</span>{h2_cascade("Estimate your monthly mortgage")}
 <p>Adjust the figures below for an instant estimate, or get a personalised rate comparison on our mortgage page.</p></div>
 {calculator("/mortgage/", "Analyze")}</div></section>
 
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">The SWK Experience</span><h2>{review_heading}</h2><p>{review_intro}</p></div>{team}</div></section>
+<section class="section section--obsidian ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">The SWK Experience</span><h2>{review_heading}</h2><p>{review_intro}</p></div></div>{team}</section>
 
 <section class="section ambient-glow-host">{GLOW}<div class="container">
 <div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Insights</span>{h2_cascade("From the SWK journal")}</div>
@@ -1065,8 +1078,7 @@ def build_about():
 
 
 def build_services():
-    cards = "".join(f"""<div class="service-card service-card--themed service-card--detailed" data-tilt="5" style="--theme-color:{SERVICE_THEMES[i % 6]}">
-<div class="service-card__body"><h3>{e(s['title'])}</h3><p>{e(s['description'])}</p></div><div class="service-card__decor" aria-hidden="true">{service_icon(s['id'])}</div></div>""" for i, s in enumerate(SERVICES))
+    cards = service_cards(link=False)
     process = [("Discovery Call", "We learn your budget, must-haves, and whether you're buying to live or to invest."),
                ("Curated Shortlist", "A shortlist matched to your brief within 24 hours, including off-market options."),
                ("Viewings & Offer", "In-person or virtual viewings, followed by negotiation on your behalf."),
@@ -1074,7 +1086,7 @@ def build_services():
     steps = "".join(f'<div class="step-item" data-reveal data-reveal-delay="{i * 80}"><div class="num">{i + 1:02d}</div><div><h3>{e(t)}</h3><p>{e(d)}</p></div></div>' for i, (t, d) in enumerate(process))
     trail = [("Home", "/"), ("Services", None)]
     body = f"""{page_hero("Full-service support, start to handover", "Buying, selling, financing or managing a Dubai property — one team handles every step, with a single consultant as your point of contact throughout.", trail, bg="services")}
-<section class="section container ambient-glow-host">{GLOW}<h2 class="sr-only">Our services</h2><div class="services-grid" data-reveal>{cards}</div></section>
+<section class="section container ambient-glow-host">{GLOW}<h2 class="sr-only">Our services</h2><div class="svc-grid" data-reveal>{cards}</div></section>
 <section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">How It Works</span><h2>Our process</h2></div><div class="step-list">{steps}</div></div></section>
 {cta_section("Not sure which service you need?", "Start with a free consultation — we'll recommend the right path for your goals.")}"""
     write("/services/", page("/services/", "Our Services | SWK Properties",

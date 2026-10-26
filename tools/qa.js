@@ -104,6 +104,17 @@ function pagesFromSitemap() {
   ok(hv.muted && hv.loop && hv.inline && hv.poster && hv.overlays === 0, 'hero video is muted, looping, inline, has a poster and no overlays');
   ok(L.clean(msgs).length === 0, 'home console clean: ' + JSON.stringify(L.clean(msgs)));
 
+  sect('Home: hero timeline, communities, services, testimonials');
+  const tl = await page.evaluate(async () => { const hero = document.querySelector('.hero'); return { beats: hero.querySelectorAll('[data-beat]').length, reveal: !!hero.querySelector('.hero__reveal-name'), name: hero.querySelector('.hero__reveal-name').textContent.trim(), phase: hero.dataset.phase }; });
+  ok(tl.beats === 3 && tl.reveal && tl.name === 'SWK PROPERTIES', `hero has 3 hook beats and a logo reveal with the company name ${JSON.stringify(tl)}`);
+  const rows = await page.evaluate(() => { const c = [...document.querySelectorAll('.place-card')]; return { n: c.length, tops: [...new Set(c.map((e) => Math.round(e.getBoundingClientRect().top + scrollY)))].length, sizes: new Set(c.map((e) => Math.round(e.getBoundingClientRect().width))).size }; });
+  ok(rows.n === 8 && rows.tops === 2 && rows.sizes === 1, `communities: 8 equal tiles in exactly 2 rows ${JSON.stringify(rows)}`);
+  const svc = await page.evaluate(() => ({ n: document.querySelectorAll('.svc-grid .svc-card').length, cols: getComputedStyle(document.querySelector('.svc-grid')).gridTemplateColumns.split(' ').length }));
+  ok(svc.n === 6 && svc.cols === 3, `services bento: 6 cells in 3 columns ${JSON.stringify(svc)}`);
+  await page.waitForTimeout(500);
+  const vo = await page.evaluate(() => ({ rows: document.querySelectorAll('[data-voices-row]').length, marquee: document.querySelector('[data-voices]').classList.contains('is-marquee'), cloneHidden: [...document.querySelectorAll('.voices__track .voice[aria-hidden="true"]')].length > 0 }));
+  ok(vo.rows === 2 && vo.marquee && vo.cloneHidden, `testimonials: two marquee rows, clones hidden from assistive tech ${JSON.stringify(vo)}`);
+
   sect('Home: nav bar, tilt, slider');
   await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(500);
   // Desktop uses the top navigation bar; tablet/phone use the header menu (no floating bottom buttons).
@@ -119,7 +130,7 @@ function pagesFromSitemap() {
   await page.setViewportSize({ width: 1440, height: 900 }); await page.waitForTimeout(400);
 
   // featured slider
-  await page.evaluate(() => document.querySelector('[data-feature-slider]').scrollIntoView({ block: 'center' }));
+  await page.evaluate(() => (document.querySelector('[data-feature-slider]') || document.body).scrollIntoView({ block: 'center' }));
   await page.waitForTimeout(1200);
   await shot(page, 'home-featured');
   const sl = await page.evaluate(() => ({ dots: document.querySelectorAll('.feature-slider__dot').length, prev: document.querySelector('[data-fs-prev]').disabled, next: document.querySelector('[data-fs-next]').disabled, slides: document.querySelectorAll('.property-card--feature').length }));

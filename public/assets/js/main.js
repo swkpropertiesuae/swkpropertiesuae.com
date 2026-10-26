@@ -244,11 +244,19 @@
   });
 })();
 
-// Hero: one muted, looping background video.
-// It holds on the poster frame for reduced-motion and data-saver visitors, and pauses while the hero is off screen.
+// Hero: one muted, looping background video with a timed hook sequence and a closing logo reveal.
+// The overlay follows video.currentTime (seconds), so the copy stays in step with the footage on every loop.
+// Reduced-motion and data-saver visitors keep the poster frame with the first hook line; the video pauses off screen.
 (function () {
   'use strict';
   var SWK = window.SWK;
+
+  // [start, end, phase] in seconds. Gaps between beats are intentional: each line fades out before the next fades in.
+  var TIMELINE = [[0.5, 5.4, 'b1'], [6.2, 11.2, 'b2'], [12.0, 16.6, 'b3'], [17.2, 99, 'logo']];
+  function phaseAt(t) {
+    for (var i = 0; i < TIMELINE.length; i++) if (t >= TIMELINE[i][0] && t < TIMELINE[i][1]) return TIMELINE[i][2];
+    return 'gap';
+  }
 
   SWK.reg('hero', function () {
     var hero = SWK.$('.hero');
@@ -259,13 +267,20 @@
     var conn = navigator.connection;
     if (SWK.reduced || (conn && conn.saveData)) { video.removeAttribute('autoplay'); video.pause(); return; }
 
-    var visible = true;
+    var visible = true, phase = '', raf = 0;
+    function tick() {
+      var next = phaseAt(video.currentTime);
+      if (next !== phase) { phase = next; hero.setAttribute('data-phase', next); }
+      raf = video.paused ? 0 : requestAnimationFrame(tick);
+    }
     function sync() {
       if (visible && !document.hidden) {
         var p = video.play();
         if (p && p.catch) p.catch(function () { /* autoplay blocked: the poster stays */ });
       } else video.pause();
     }
+    video.addEventListener('playing', function () { if (!raf) raf = requestAnimationFrame(tick); });
+    video.addEventListener('seeked', tick);
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; sync(); }, { threshold: 0 }).observe(hero);
     }
@@ -1442,20 +1457,7 @@
     S.$('[data-chat-form]').addEventListener('submit',function(e){e.preventDefault();var text=input.value.trim();if(!text)return;reply(text.slice(0,1000));input.value='';});
     S.$$('[data-chat-topic]').forEach(function(b){b.addEventListener('click',function(){reply(b.textContent);});});
   });
-  S.reg('review-stories',function(){
-    var root=S.$('[data-review-carousel]');if(!root)return;
-    var slides=S.$$('[data-review-slide]',root),i=0,paused=S.reduced,timer,pause=S.$('[data-review-pause]',root);
-    function show(n){i=(n+slides.length)%slides.length;slides.forEach(function(s,k){s.hidden=k!==i;});S.$('[data-review-count]',root).textContent=(i+1)+' / '+slides.length;}
-    function stop(){clearInterval(timer);}
-    function start(){stop();if(!paused&&!document.hidden)timer=setInterval(function(){show(i+1);},8000);}
-    S.$('[data-review-prev]',root).addEventListener('click',function(){show(i-1);start();});
-    S.$('[data-review-next]',root).addEventListener('click',function(){show(i+1);start();});
-    function label(){pause.textContent=paused?'Play':'Pause';pause.setAttribute('aria-pressed',String(paused));}
-    pause.addEventListener('click',function(){paused=!paused;label();start();});
-    root.addEventListener('mouseenter',stop);root.addEventListener('mouseleave',start);
-    root.addEventListener('focusin',stop);root.addEventListener('focusout',function(e){if(!root.contains(e.relatedTarget))start();});
-    document.addEventListener('visibilitychange',start);label();start();
-  });
+
   S.reg('premium-pointer',function(){
     if(S.reduced||!S.fine)return;
     S.$$('.service-card').forEach(function(card){
@@ -1513,66 +1515,53 @@
   });
 })();
 
-// Testimonials: staggered reveal, gentle auto-advance (pausable), arrow/keyboard paging and progress dots.
+// Testimonials: two opposing marquee rows. The server renders one copy of each row (scrollable without JS);
+// here each row is cloned until it can loop seamlessly. Hover, focus, the Pause button and reduced motion all stop it.
 (function () {
   'use strict';
   var S = window.SWK;
   S.reg('testimonials', function () {
-    var root = S.$('[data-testi]');
+    var root = S.$('[data-voices]');
     if (!root) return;
-    var track = S.$('[data-testi-track]', root), cards = S.$$('.testi-card', root);
-    var dotsWrap = S.$('[data-testi-dots]', root), pauseBtn = S.$('[data-testi-pause]', root);
-    var timer = null, userPaused = false, hovering = false, inView = false;
+    var rows = S.$$('[data-voices-row]', root), pauseBtn = S.$('[data-voices-pause]', root);
+    if (!rows.length) return;
 
-    cards.forEach(function () { var d = document.createElement('i'); dotsWrap.appendChild(d); });
-    var dots = S.$$('i', dotsWrap);
-
-    function step() { var c = cards[0]; return c ? c.getBoundingClientRect().width + 20 : 320; }
-    function index() { return Math.round(track.scrollLeft / step()); }
-    function maxLeft() { return track.scrollWidth - track.clientWidth - 4; }
-    function go(dir) {
-      var behavior = S.reduced ? 'auto' : 'smooth';
-      if (dir > 0 && track.scrollLeft >= maxLeft()) track.scrollTo({ left: 0, behavior: behavior });
-      else if (dir < 0 && track.scrollLeft <= 4) track.scrollTo({ left: track.scrollWidth, behavior: behavior });
-      else track.scrollBy({ left: dir * step(), behavior: behavior });
-    }
-    function paint() {
-      var i = Math.min(dots.length - 1, index());
-      dots.forEach(function (d, n) { d.className = n === i ? 'is-on' : ''; });
-    }
-    function stop() { clearInterval(timer); timer = null; }
-    function sync() {
-      stop();
-      if (S.reduced || userPaused || hovering || !inView || document.hidden) return;
-      timer = setInterval(function () { go(1); }, 4800);
-    }
-
-    S.$('[data-testi-prev]', root).addEventListener('click', function () { go(-1); });
-    S.$('[data-testi-next]', root).addEventListener('click', function () { go(1); });
-    track.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+    rows.forEach(function (row) {
+      var track = S.$('.voices__track', row), originals = Array.prototype.slice.call(track.children);
+      var w = track.scrollWidth, need = Math.max(2, Math.ceil((row.clientWidth * 2) / Math.max(w, 1)) + 1);
+      // Whole-set copies, an even number in total, so translating by -50% lands exactly on the start.
+      if (need % 2) need++;
+      for (var c = 1; c < need; c++) originals.forEach(function (card) {
+        var copy = card.cloneNode(true); copy.setAttribute('aria-hidden', 'true'); track.appendChild(copy);
+      });
+      track.style.setProperty('--voices-dur', Math.max(40, Math.round((w * need) / 2 / 34)) + 's');
     });
-    track.addEventListener('scroll', S.raf(paint), { passive: true });
-    ['mouseenter', 'focusin', 'touchstart'].forEach(function (ev) { root.addEventListener(ev, function () { hovering = true; sync(); }, { passive: true }); });
-    ['mouseleave', 'focusout'].forEach(function (ev) { root.addEventListener(ev, function () { hovering = false; sync(); }); });
-    root.addEventListener('touchend', function () { setTimeout(function () { hovering = false; sync(); }, 6000); }, { passive: true });
-    pauseBtn.addEventListener('click', function () {
+
+    var userPaused = false;
+    function apply() { root.classList.toggle('is-paused', userPaused); }
+    if (pauseBtn) pauseBtn.addEventListener('click', function () {
       userPaused = !userPaused;
       pauseBtn.setAttribute('aria-pressed', String(userPaused));
       pauseBtn.textContent = userPaused ? 'Play' : 'Pause';
-      sync();
+      apply();
     });
-    document.addEventListener('visibilitychange', sync);
+    if (!S.reduced) root.classList.add('is-marquee');
+    else if (pauseBtn) pauseBtn.hidden = true;
+  });
+})();
 
-    root.classList.add('is-ready');
-    if ('IntersectionObserver' in window && !S.reduced) {
-      new IntersectionObserver(function (en) {
-        inView = en[0].isIntersecting;
-        if (inView) root.classList.add('is-in');
-        sync();
-      }, { threshold: 0.35 }).observe(root);
-    } else { root.classList.add('is-in'); inView = !S.reduced; sync(); }
-    paint();
+// Spotlight hover: tracks the pointer over [data-spotlight] cards and exposes it as --mx / --my for a CSS radial glow.
+(function () {
+  'use strict';
+  var S = window.SWK;
+  S.reg('spotlight', function () {
+    if (!S.fine) return;
+    S.$$('[data-spotlight]').forEach(function (el) {
+      el.addEventListener('pointermove', function (ev) {
+        var r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', (ev.clientX - r.left).toFixed(0) + 'px');
+        el.style.setProperty('--my', (ev.clientY - r.top).toFixed(0) + 'px');
+      });
+    });
   });
 })();

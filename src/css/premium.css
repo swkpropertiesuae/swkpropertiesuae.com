@@ -9,24 +9,11 @@
 .section--alt { background:linear-gradient(125deg,#fbfaf7 0%,#f4f1ed 65%,#f0eaf0 100%); }
 .fan-pagination { margin-top:0; transform:translateY(-12px); }
 .fan-card img { transform:scale(1.07) translate(var(--image-x,0px),var(--image-y,0px)); transition:transform .5s cubic-bezier(.2,.7,.2,1); }
-.service-card { position:relative; isolation:isolate; transition:box-shadow .5s, border-color .5s; }
-.service-card::after { content:''; position:absolute; inset:0; border-radius:inherit; background:radial-gradient(320px circle at var(--spot-x,50%) var(--spot-y,50%),#ba997026,transparent 75%); opacity:0; pointer-events:none; transition:opacity .4s; }
-.service-card:hover::after,.service-card:focus-within::after { opacity:1; }
-.service-card:hover { box-shadow:0 24px 60px #30233b1c; border-color:#ba9970; }
-.service-card__decor { transition:transform .8s cubic-bezier(.2,.7,.2,1); }
-.service-card:hover .service-card__decor { transform:translateY(-10px) rotate(-8deg) scale(1.08); }
 .team-card__bio { display:block; overflow:visible; }
 .team-card__body h3 { font-size:1.2rem; }
 .team-card__role { color:#564456; }
 @media(min-width:1100px) { .team-grid { grid-template-columns:repeat(5,minmax(0,1fr)); gap:16px; } .team-card__body { padding:18px; } .team-card__bio { font-size:.83rem; line-height:1.7; } }
 @media(min-width:700px) and (max-width:1099px) { .team-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-.review-carousel { max-width:880px; margin:auto; text-align:center; }
-.review-slide { margin:0; min-height:230px; padding:24px; animation:swk-review-in .7s both; }
-.review-slide blockquote { font-family:'Instrument Serif',serif; font-size:clamp(1.8rem,3.3vw,3rem); line-height:1.3; margin:0 0 24px; color:#263146; }
-.review-slide figcaption { color:#564456; font-size:.9rem; letter-spacing:.04em; }
-.review-controls { display:flex; gap:20px; justify-content:center; align-items:center; }
-.review-pause { border:0; background:transparent; text-decoration:underline; padding:12px; cursor:pointer; }
-@keyframes swk-review-in { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
 @keyframes swk-hero-drift { from { transform:scale(1.02) translateY(0); } to { transform:scale(1.09) translateY(-1%); } }
 .page-hero__bg img { animation:swk-hero-drift 22s ease-in-out infinite alternate; }
 .page-hero .container { position:relative; z-index:1; }
@@ -52,7 +39,7 @@
 .swk-chat__handoff { display:block; margin:0 16px 12px; padding:12px; text-align:center; background:#564456; color:white; border-radius:12px; font-size:.83rem; }
 .swk-chat__privacy { display:block; padding:0 16px 16px; font-size:.65rem; line-height:1.5; color:#575969; }
 @media(max-width:899px) { .swk-chat { bottom:calc(102px + env(safe-area-inset-bottom)); right:16px; } .swk-chat__launcher { height:58px; min-width:58px; } .swk-chat__launcher img { width:42px; padding:0 8px; } .swk-chat__launcher span { display:none; } .swk-chat__panel { max-height:calc(100dvh - 240px); bottom:64px; } }
-@media(prefers-reduced-motion:reduce) { .page-hero__bg img,.review-slide { animation:none; } .fan-card img,.service-card__decor { transition:none; transform:none; } }
+@media(prefers-reduced-motion:reduce) { .page-hero__bg img { animation:none; } .fan-card img { transition:none; transform:none; } }
 /* One floating contact entry; WhatsApp remains available inside Concierge. */
 body:has(.swk-chat) .whatsapp-float { display:none; }
 .back-top { bottom:100px; }
@@ -188,38 +175,6 @@ main > section .section-header h2, main > section .section-head-row h2 { backgro
 /* Interior page headers share the home headline scale and type so every page reads as one system. */
 .page-hero__title { font-family:'Clash Display','General Sans',sans-serif; font-weight:600; font-size:clamp(1.9rem, 1.1rem + 2.1vw, 3.3rem); line-height:1.1; letter-spacing:-.035em; max-width:24ch; text-wrap:balance; }
 @media(max-width:767px) { .page-hero__title { font-size:clamp(1.8rem, 7.4vw, 2.2rem); } }
-
-/* ---- Testimonials: snap-scrolling cards, one hue per card, country chips ---- */
-.testi { position:relative; }
-.testi__track { display:flex; gap:20px; overflow-x:auto; scroll-snap-type:x mandatory; padding:8px 4px 28px; scrollbar-width:none; outline-offset:4px; }
-.testi__track::-webkit-scrollbar { display:none; }
-.testi-card { --tc:215 70% 38%; flex:0 0 min(380px, 86%); scroll-snap-align:start; margin:0; padding:26px 26px 22px; display:flex; flex-direction:column; gap:18px; border-radius:22px; background:#fff; border:1px solid hsl(var(--tc) / .18); border-top:4px solid hsl(var(--tc)); box-shadow:0 14px 34px hsl(var(--tc) / .12); position:relative; overflow:hidden; text-align:left; }
-.testi-card::after { content:'\201C'; position:absolute; right:18px; top:-6px; font-family:'Instrument Serif',serif; font-size:7.5rem; line-height:1; color:hsl(var(--tc) / .1); pointer-events:none; }
-.testi-card__top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
-.testi-card__country { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px; font-size:.78rem; font-weight:600; color:hsl(var(--tc)); background:hsl(var(--tc) / .1); }
-.testi-card__stars { color:#d9962f; letter-spacing:.12em; font-size:.95rem; }
-.testi-card blockquote { margin:0; font-family:'Instrument Serif',serif; font-size:1.42rem; line-height:1.38; color:#1d2a44; flex:1; }
-.testi-card figcaption { display:flex; align-items:center; gap:12px; padding-top:16px; border-top:1px solid hsl(var(--tc) / .15); }
-.testi-card__avatar { display:grid; place-items:center; width:44px; height:44px; border-radius:50%; font-weight:700; font-size:.9rem; color:#fff; background:linear-gradient(135deg, hsl(var(--tc)), hsl(var(--tc) / .7)); flex:none; }
-.testi-card figcaption strong { display:block; font-size:.95rem; color:#14213a; }
-.testi-card figcaption small { display:block; color:#59647a; font-size:.8rem; line-height:1.4; }
-.testi__nav { display:flex; justify-content:center; gap:12px; margin-top:4px; }
-.testi__countries { display:flex; flex-wrap:wrap; justify-content:center; gap:10px 22px; margin-top:26px; font-size:.82rem; font-weight:600; letter-spacing:.04em; color:#59647a; }
-@media(prefers-reduced-motion:reduce) { .testi__track { scroll-behavior:auto; } }
-
-/* Testimonials motion: cards rise in on a stagger, stars light up in sequence, quote mark drifts, cards lift on hover. */
-.testi.is-ready:not(.is-in) .testi-card { opacity:0; transform:translateY(28px) scale(.97); }
-.testi.is-ready .testi-card { transition:opacity .7s cubic-bezier(.2,.7,.2,1) calc(var(--i, 0) * 90ms), transform .7s cubic-bezier(.2,.7,.2,1) calc(var(--i, 0) * 90ms), box-shadow .3s ease, border-color .3s ease; }
-.testi.is-ready.is-in .testi-card:hover { transform:translateY(-6px); box-shadow:0 22px 44px hsl(var(--tc) / .22); transition-delay:0s; }
-.testi.is-in .testi-card::after { animation:testi-quote 7s ease-in-out infinite alternate; }
-.testi.is-in .testi-card__stars { background:linear-gradient(100deg, #d9962f 40%, #fff3c4 50%, #d9962f 60%) 0% 0 / 260% 100% no-repeat; -webkit-background-clip:text; background-clip:text; color:transparent; animation:testi-stars 5.5s ease-in-out calc(var(--i, 0) * 260ms + 800ms) infinite; }
-@keyframes testi-quote { from { transform:translate(0, 0) rotate(0); } to { transform:translate(-8px, 10px) rotate(-4deg); } }
-@keyframes testi-stars { 0%, 55% { background-position:0% 0; } 100% { background-position:100% 0; } }
-.testi__dots { display:flex; align-items:center; gap:6px; padding:0 8px; }
-.testi__dots i { width:7px; height:7px; border-radius:99px; background:#cdbfa8; transition:width .35s ease, background .35s ease; }
-.testi__dots i.is-on { width:26px; background:linear-gradient(90deg, #14305c, #0f766e); }
-.testi__nav { align-items:center; }
-@media(prefers-reduced-motion:reduce) { .testi.is-ready:not(.is-in) .testi-card { opacity:1; transform:none; } .testi-card::after, .testi-card__stars { animation:none !important; } .testi.is-in .testi-card__stars { color:#d9962f; background:none; } }
 
 /* ---- Developers & projects ---- */
 .dev-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:20px; }
@@ -418,32 +373,6 @@ html {
 }
 
 /* ==========================================================================
-   Hero video: one full-bleed clip with no overlay or tint. Short centred copy, white with a soft text shadow.
-   ========================================================================== */
-.hero__content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.hero .hero__eyebrow {
-  padding: 0; background: none; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
-  color: #fff; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
-  margin-bottom: 0.75rem; text-shadow: 0 1px 3px rgba(8, 18, 36, 0.6), 0 1px 16px rgba(8, 18, 36, 0.7);
-}
-.hero .hero__title {
-  font-family: 'General Sans', 'Clash Display', sans-serif; font-weight: 700; font-size: clamp(2.4rem, 5vw, 4.25rem);
-  line-height: 1.04; letter-spacing: -0.02em; word-spacing: 0; max-width: none; width: 100%; margin: 0 auto 0.6rem;
-  color: #fff; -webkit-text-fill-color: #fff; -webkit-text-stroke: 0; background: none; filter: none;
-  text-shadow: 0 1px 3px rgba(8, 18, 36, 0.55), 0 2px 26px rgba(8, 18, 36, 0.7) !important;
-}
-.hero .hero__subtitle {
-  color: #fff; font-size: clamp(0.95rem, 1.1vw, 1.05rem); font-weight: 500; line-height: 1.5; max-width: 46ch; margin-inline: auto;
-  text-shadow: 0 1px 3px rgba(8, 18, 36, 0.6), 0 1px 18px rgba(8, 18, 36, 0.75);
-}
-.hero__ctas { justify-content: center; }
-.hero__search-wrap { width: min(100%, 960px); margin-inline: auto; }
-.hero .hero__scroll-cue { color: #fff; text-shadow: 0 1px 10px rgba(8, 18, 36, 0.6); }
-.hero .hero__scroll-cue .line { background: linear-gradient(to bottom, #fff, transparent); }
-.hero-art-credit { position: absolute; left: 28px; bottom: 24px; z-index: 6; font-size: 0.62rem; letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.85); text-shadow: 0 1px 8px rgba(8, 18, 36, 0.7); pointer-events: none; }
-@media (max-width: 767px) { .hero-art-credit { left: 16px; bottom: 16px; } }
-
-/* ==========================================================================
    PINTEREST-INSPIRED WORLD-CLASS UAE LUXURY REAL ESTATE DESIGN SYSTEM
    (Omniyat / Sobha / Ellington / Architectural Digest Editorial Aesthetic)
    ========================================================================== */
@@ -466,34 +395,6 @@ main > section:not(.page-hero):not(.hero-cine):not(.section--dark):not(.cta-sect
 main > section:not(.page-hero):not(.hero-cine):not(.section--dark):not(.cta-section):nth-of-type(6n) {
   --sec: 38 72% 42%;
   background: #ffffff;
-}
-
-/* Dark Obsidian Architectural Showcase for Communities Section */
-main > section:not(.page-hero):not(.hero-cine):has(.communities-grid) {
-  background: linear-gradient(165deg, #07101f 0%, #0d1c36 52%, #081224 100%) !important;
-  color: #ffffff !important;
-  padding-block: clamp(4.5rem, 8vw, 7.5rem) !important;
-}
-
-main > section:has(.communities-grid) .eyebrow {
-  color: #f6d48a !important;
-}
-
-main > section:has(.communities-grid) .eyebrow::before {
-  background: #f6d48a !important;
-}
-
-main > section:has(.communities-grid) h2,
-main > section:has(.communities-grid) .cascade-text,
-main > section:has(.communities-grid) .cascade-text__char {
-  --cascade-color: #ffffff !important;
-  --cascade-hover-color: #f6d48a !important;
-  color: #ffffff !important;
-  -webkit-text-stroke: 0 !important;
-}
-
-main > section:has(.communities-grid) .section-header p {
-  color: rgba(226, 235, 248, 0.84) !important;
 }
 
 /* Refined Section Headings (Remove heavy artificial stroke, add editorial poise) */
@@ -693,89 +594,6 @@ h1, h2, h3, .section-header h2, .section-head-row h2 {
   transform: translateX(4px);
 }
 
-/* 4. Pinterest Asymmetric Bento Gallery for Dubai Communities */
-.communities-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px !important;
-}
-
-@media (min-width: 960px) {
-  .communities-grid {
-    grid-template-columns: repeat(4, 1fr) !important;
-    grid-auto-rows: 270px !important;
-    gap: 20px !important;
-  }
-  /* Featured Bento Hero Tiles: Downtown Dubai (1st) spans 2x2, Business Bay & Creek Harbour span 2 cols */
-  .communities-grid .community-card:nth-child(1) {
-    grid-column: span 2;
-    grid-row: span 2;
-  }
-  .communities-grid .community-card:nth-child(4) {
-    grid-column: span 2;
-  }
-  .communities-grid .community-card:nth-child(5) {
-    grid-column: span 2;
-  }
-}
-
-.community-card {
-  position: relative;
-  border-radius: 26px !important;
-  overflow: hidden;
-  border: 1px solid rgba(217, 177, 90, 0.32) !important;
-  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.35) !important;
-  aspect-ratio: auto !important;
-  min-height: 240px;
-  background: #0b1528 !important;
-  animation: none !important;
-}
-
-.community-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: contrast(1.08) saturate(1.12);
-  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-.community-card:hover img {
-  transform: scale(1.08) !important;
-}
-
-.community-card__overlay {
-  background: linear-gradient(180deg, rgba(6, 12, 24, 0.04) 0%, rgba(6, 12, 24, 0.26) 48%, rgba(6, 12, 24, 0.88) 100%) !important;
-  padding: 24px 26px !important;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-.community-card__overlay h3 {
-  font-family: 'Clash Display', var(--font-display), sans-serif !important;
-  font-size: clamp(1.35rem, 2vw, 1.85rem) !important;
-  font-weight: 600 !important;
-  color: #ffffff !important;
-  letter-spacing: -0.02em;
-  margin-bottom: 6px;
-}
-
-.community-card__count {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  padding: 5px 12px;
-  border-radius: 999px;
-  background: rgba(8, 16, 30, 0.72);
-  border: 1px solid rgba(217, 177, 90, 0.55);
-  backdrop-filter: blur(8px);
-  color: #f6d48a !important;
-  font-size: 0.72rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 /* 5. Editorial Story Block & Architectural Stat Tiles */
 .story__media {
   position: relative;
@@ -833,18 +651,6 @@ h1, h2, h3, .section-header h2, .section-head-row h2 {
 }
 
 /* 7. Services Advisory Cards & Journal Cards */
-.service-card {
-  border-radius: 24px !important;
-  background: #ffffff !important;
-  border: 1px solid rgba(12, 23, 41, 0.08) !important;
-  box-shadow: 0 16px 42px rgba(10, 20, 38, 0.06) !important;
-}
-
-.service-card:hover {
-  border-color: rgba(200, 152, 56, 0.55) !important;
-  box-shadow: 0 26px 58px rgba(10, 20, 38, 0.13) !important;
-}
-
 .blog-card {
   border-radius: 26px !important;
   overflow: hidden;
@@ -857,25 +663,6 @@ h1, h2, h3, .section-header h2, .section-head-row h2 {
   transform: translateY(-7px) !important;
   border-color: rgba(200, 152, 56, 0.52) !important;
   box-shadow: 0 28px 62px rgba(10, 20, 38, 0.14) !important;
-}
-
-/* 8. Private Client Review / Commitment Showcase */
-.review-carousel {
-  padding: clamp(2rem, 4vw, 3.4rem);
-  border-radius: 28px;
-  background: linear-gradient(155deg, #081224 0%, #102240 100%);
-  border: 1px solid rgba(217, 177, 90, 0.45);
-  box-shadow: 0 28px 72px rgba(7, 14, 28, 0.22);
-}
-
-.review-slide blockquote {
-  color: #ffffff !important;
-}
-
-.review-slide figcaption,
-.review-controls span,
-.review-pause {
-  color: #f6d48a !important;
 }
 
 /* 9. CTA Band: Architectural Gold & Obsidian Finish */

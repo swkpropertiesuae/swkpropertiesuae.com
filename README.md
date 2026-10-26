@@ -1,6 +1,6 @@
 # SWK Properties UAE — static site
 
-Warm light theme (cream canvas, deep navy ink, tan/gold accents), serif display type, full-bleed video hero, scroll-driven 3D depth, header navigation, glow listing cards.
+Warm light theme (cream canvas, deep navy ink, tan/gold accents), serif display type, full-bleed video hero with a timed hook sequence and logo reveal, header navigation, glow listing cards.
 No runtime dependencies. Output is plain static files in `public/`.
 
 ## Build
@@ -22,18 +22,43 @@ PLAYWRIGHT_PATH=/opt/node22/lib/node_modules/playwright node tools/qa.js
 
 `tools/qa.js` checks every page (console errors, SEO tags, links, alt text, overflow, axe), the hero scroll scrub, slider, lightbox, filters, calculator maths, forms, a 320–1920px layout sweep, reduced motion, `?nowebgl` and no-JS. Optional: `AXE_PATH` (axe-core file), `SHOTS` (screenshot dir).
 
-## Hero video
+## Hero video and logo reveal
 
-The home hero is one muted, looping `<video>` (`src/assets/video/hero-swk.mp4`, H.264 High, no audio track, `faststart`) that fills the hero with `object-fit: cover`. There are no overlays or tints on top of it; the copy is white with a soft text shadow. `hero-swk-poster.webp` is the first frame: it is the `poster`, the LCP preload, and what reduced-motion and data-saver visitors see (`40-hero.js` skips playback for them). The clip also pauses while the hero is off screen or the tab is hidden.
+The home hero is one muted, looping 1920x1080 `<video>` (`src/assets/video/hero-swk.mp4`, H.264 High, about 3.2 Mbps, no audio, `faststart`) filling the hero with `object-fit: cover`. It carries no tint or overlay, except a neutral dark dip while the closing logo reveal plays.
 
-To replace the clip, re-encode the source with no audio and a web-friendly layout, and regenerate the poster from its first frame:
+`40-hero.js` maps `video.currentTime` to a phase on `.hero[data-phase]` and the CSS (`system.css`) fades the matching layer in:
+
+| Time (s) | Phase | Content |
+| --- | --- | --- |
+| 0.5 - 5.4 | `b1` | "Dubai never stops rising." |
+| 6.2 - 11.2 | `b2` | "Where returns meet residency." |
+| 12.0 - 16.6 | `b3` | "Don't watch the skyline. Own it." |
+| 17.2 - end | `logo` | Logo mark, rule, "SWK PROPERTIES", tagline; the CTA/search dock fades out |
+
+The times are the `TIMELINE` constant in `40-hero.js`; change them if the clip changes. The CTAs and search bar (`.hero__dock`) stay on screen except during the reveal. Reduced-motion and data-saver visitors get the poster frame and the first hook line (the markup default is `data-phase="b1"`). The clip pauses off screen and while the tab is hidden. The headline for search engines and screen readers is the `sr-only` `<h1>`; the visible hook lines are `aria-hidden`.
+
+The Gemini watermark (a sparkle at about x 1740, y 900 in the 1080p frame) is removed in the encode with ffmpeg's `delogo`. To re-encode a new source:
 
 ```bash
-ffmpeg -i source.mp4 -an -c:v libx264 -preset veryslow -profile:v high -pix_fmt yuv420p -crf 19 -movflags +faststart src/assets/video/hero-swk.mp4
-ffmpeg -i source.mp4 -frames:v 1 -c:v libwebp -quality 92 src/assets/images/hero/hero-swk-poster.webp
+F="delogo=x=1698:y=858:w=84:h=84"   # adjust or drop for a clip without a watermark
+ffmpeg -y -i source.mp4 -an -vf "$F" -c:v libx264 -preset slow -profile:v high -pix_fmt yuv420p -b:v 3200k -maxrate 4200k -bufsize 8400k -r 30 -pass 1 -f null /dev/null
+ffmpeg -y -i source.mp4 -an -vf "$F" -c:v libx264 -preset slow -profile:v high -pix_fmt yuv420p -b:v 3200k -maxrate 4200k -bufsize 8400k -r 30 -pass 2 -movflags +faststart src/assets/video/hero-swk.mp4
+ffmpeg -y -i source.mp4 -frames:v 1 -vf "$F" -c:v libwebp -quality 90 src/assets/images/hero/hero-swk-poster.webp
 ```
 
-The current source is 720x1280 portrait, so on a wide desktop `cover` crops it to a horizontal band and enlarges it. For the sharpest result on large screens, supply a 16:9 clip at 1920x1080 or higher.
+The clip is labelled "AI-generated video" in the hero corner (`hero-art-credit` in `build.py`).
+
+## Design system layer
+
+`src/css/system.css` loads last and is the single source of truth for the look that must stay consistent:
+
+- Tokens (`--sys-*`, `--t-*`): radius 26px, hairline borders, shadows, gold and ink, the type scale.
+- Type: Clash Display for h1/h3, Instrument Serif for h2. `:not(#_)` on those rules deliberately out-ranks older per-component sizes.
+- One accent family (ink and champagne gold). The old multicolour `--hue-*`, `--qc`, `--dc` and `--theme-color` values are remapped there.
+- Page headers (`.page-hero`) use the same dark photo treatment as the home hero.
+- Home components: `.place-grid` (communities: 8 equal tiles, two rows; below 900px the same two rows scroll sideways), `.svc-grid` (services as a hairline bento with a pointer spotlight, also used on `/services/`), `.voices` (testimonials: two opposing marquee rows).
+
+Testimonials render only entries with `approved: true` in `data/testimonials.json`. `87-testimonials.js` clones each row so it loops seamlessly (clones are `aria-hidden`); hover, focus, the Pause button and reduced motion stop it. With JS off, each row is a plain scrollable strip.
 
 ## Deploy
 
