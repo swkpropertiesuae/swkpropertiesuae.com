@@ -899,11 +899,10 @@ def testimonials_markup(items, commitments=False):
                  f'aria-label="{"Client testimonials" if not commitments else "Service commitments"}, row {n + 1}"><div class="voices__track">{cards}</div></div>')
     summary = ""
     if not commitments:
-        countries = {r.get("country") for r in items if r.get("country")}
         avg = sum(max(1, min(5, int(r.get("rating", 5)))) for r in items) / len(items)
         summary = (f'<ul class="voices__stats"><li><strong>{avg:.1f}</strong><span>Average rating</span></li>'
-                   f'<li><strong>{len(items)}</strong><span>Client stories</span></li>'
-                   f'<li><strong>{len(countries)}</strong><span>Countries</span></li></ul>')
+                   '<li><strong class="voices__word">Their words</strong><span>Shared with permission</span></li>'
+                   '<li><strong class="voices__word">Real buyers</strong><span>Every story from a SWK client</span></li></ul>')
     return (f'<div class="voices" data-voices>{summary}{html}'
             f'<button type="button" class="voices__pause" data-voices-pause aria-pressed="false">Pause</button></div>')
 

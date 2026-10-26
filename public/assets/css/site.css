@@ -6834,3 +6834,8 @@ body .swk-chat__panel { z-index: 161; }
 }
 body aside.swk-chat section.swk-chat__panel:not(#_) { background: #0b1527 !important; }
 body .cookie-banner:not(#_):not(#_) { background: #0b1527 !important; }
+
+body .voices__stats strong.voices__word {
+  font-family: var(--tw-head) !important; font-weight: 400 !important; font-size: clamp(0.9rem, 1.5vw, 1.1rem) !important; letter-spacing: 0.2em !important;
+  text-transform: uppercase !important; line-height: 1.6; padding-block: 0.55rem;
+}
