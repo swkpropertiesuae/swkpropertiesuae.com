@@ -912,12 +912,8 @@ def build_home():
         review_heading = "What you can expect from SWK"
         review_intro = "Our service commitments. Client reviews will appear here once verified and approved."
 
-    body = f"""<div class="hero-cine" data-hero-cine><section class="hero" data-phase="b1" aria-label="Introduction">
-<div class="hero__bg"><video class="hero__video" data-src-4k="/assets/video/hero-swk-4k.mp4" muted playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster-hq.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk-hq.mp4" type="video/mp4"></video><div class="hero__road-layer" aria-hidden="true"><video class="hero__road-video" muted playsinline preload="none" tabindex="-1"></video></div></div>
-<a class="hero__office-signature" href="/contact/" aria-label="Meet SWK at Al Saqr Business Tower, Sheikh Zayed Road, Dubai">
-<span class="hero__office-orbit" aria-hidden="true"><svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36"/><path d="M19 59h42M26 58V24l20-5v39M46 32h10v26M31 30h9M31 36h9M31 42h9M31 48h9M31 54h9"/><path d="M13 42h7M60 38h7M40 6v7M40 67v7"/></svg></span>
-<span class="hero__office-copy"><small>YOUR DUBAI CONNECTION</small><strong>Meet SWK in Dubai<span aria-hidden="true">{ARROW}</span></strong><span>Al Saqr Business Tower</span><em>Sheikh Zayed Road &middot; Private viewings</em></span>
-</a>
+    body = f"""<div class="hero-cine" data-hero-cine><section class="hero is-idle" data-phase="b1" aria-label="Introduction">
+<div class="hero__bg"><video class="hero__video" data-src-4k="/assets/video/hero-swk-4k.mp4" muted playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster-hq.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk-hq.mp4" type="video/mp4"></video><div class="hero__idle" aria-hidden="true"><video class="hero__idle-video" src="/assets/video/hero-idle.mp4" muted playsinline preload="auto" poster="/assets/images/hero/hero-idle-poster.webp" tabindex="-1"></video><video class="hero__idle-video" src="/assets/video/hero-idle.mp4" muted playsinline preload="auto" tabindex="-1"></video></div></div>
 <div class="hero__content container">
 <h1 class="sr-only">SWK Properties: Dubai off-plan and ready property, with direct access to the UAE's leading developers</h1>
 <div class="hero__stage" aria-hidden="true">
@@ -931,7 +927,7 @@ def build_home():
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
 </div>
-<div class="hero__reveal" aria-hidden="true"><div class="hero__reveal-inner"><span class="hero__logo-cinema"><img class="hero__reveal-logo" src="/assets/images/brand/swk-logo-white.png" alt="" width="676" height="550" decoding="async"><i class="hero__logo-sheen" aria-hidden="true"></i></span><span class="hero__reveal-rule"></span><strong class="hero__reveal-name">SWK PROPERTIES</strong><span class="hero__reveal-tag">Private Real Estate Advisory &middot; RERA ORN 51517</span><div class="hero__reveal-actions"><a href="/properties/" class="btn btn-gold btn-lg" tabindex="-1">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline btn-lg" tabindex="-1">Book a Consultation</a></div></div></div>
+<div class="hero__reveal" aria-hidden="true"><div class="hero__reveal-inner"><span class="hero__logo-cinema"><img class="hero__reveal-logo" src="/assets/images/brand/swk-logo-white.png" alt="" width="676" height="550" decoding="async"><i class="hero__logo-sheen" aria-hidden="true"></i></span><span class="hero__reveal-rule"></span><strong class="hero__reveal-name">SWK PROPERTIES</strong><span class="hero__reveal-tag">Private Real Estate Advisory &middot; RERA ORN 51517</span><div class="hero__reveal-actions"><a href="/properties/" class="btn btn-gold btn-lg" tabindex="-1">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-white btn-lg" tabindex="-1">Book a Consultation</a></div></div></div>
 <span class="hero-art-credit">AI-generated video</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
 </section></div>
 
@@ -981,7 +977,7 @@ def build_home():
     write("/", page("/", "SWK Properties | UAE Property Advisory — Off-Plan and Ready Homes",
                     "SWK Properties is a RERA-registered UAE property advisory — off-plan and ready homes in freehold communities, with mortgage, payment-plan and rental-yield advice from shortlist to handover.",
                     body, ld=ld,
-                    preload=[("/assets/images/hero/hero-swk-poster-hq.webp", ' fetchpriority="high"')]))
+                    preload=[("/assets/images/hero/hero-idle-poster.webp", ' fetchpriority="high"')]))
 
 
 def build_properties():

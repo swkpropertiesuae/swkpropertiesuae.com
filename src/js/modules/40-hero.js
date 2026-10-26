@@ -37,13 +37,17 @@
     var phase = '';
     var pendingTime = null;
     var blobLoaded = false;
-    var road = SWK.$('.hero__road-video', hero);
-    var roadLayer = SWK.$('.hero__road-layer', hero);
-    var roadReset = 0;
-    var resettingRoad = false;
+    var idleVids = SWK.$$('.hero__idle-video', hero);
+    var idleFront = 0;
+    var idleRaf = 0;
+    var idleHide = 0;
     var idleTimer = 0;
     var idlePlaying = false;
     var inView = true;
+    // The scroll film opens at 0.8s, the moment the idle clip hands over to it.
+    var FILM_START = 0.8;
+    var IDLE_XFADE = 0.9;
+    var IDLE_MAX_P = 0.012;
 
     // Use the upscaled 4K encode on large/high-density displays; retain the lighter
     // 1080p encode on phones and honour the data-saver early return above.
@@ -54,56 +58,57 @@
     }
     video.loop = false;
 
+    function idleTick() {
+      idleRaf = 0;
+      if (!idlePlaying) return;
+      var cur = idleVids[idleFront];
+      var dur = cur.duration;
+      if (dur && isFinite(dur) && cur.currentTime >= dur - IDLE_XFADE) {
+        // Hand over to the other element, restarted from the top, and cross-fade so the loop never jumps.
+        var nextIdx = 1 - idleFront;
+        var next = idleVids[nextIdx];
+        try { next.currentTime = 0; } catch (e) { /* not seekable yet */ }
+        var pl = next.play();
+        if (pl && pl.catch) pl.catch(function () {});
+        next.classList.add('is-front');
+        cur.classList.remove('is-front');
+        idleFront = nextIdx;
+        setTimeout(function () { if (idleVids[1 - idleFront] && !idleVids[1 - idleFront].classList.contains('is-front')) idleVids[1 - idleFront].pause(); }, IDLE_XFADE * 1000 + 100);
+      }
+      idleRaf = requestAnimationFrame(idleTick);
+    }
+
+    function startIdle() {
+      clearTimeout(idleHide);
+      if (idlePlaying || !idleVids.length || document.hidden || !inView || curP > IDLE_MAX_P) return;
+      idlePlaying = true;
+      hero.classList.add('is-idle');
+      var v = idleVids[idleFront];
+      v.classList.add('is-front');
+      v.muted = true;
+      var play = v.play();
+      if (play && play.catch) play.catch(function () { idlePlaying = false; });
+      if (!idleRaf) idleRaf = requestAnimationFrame(idleTick);
+    }
+
     function stopIdle() {
       clearTimeout(idleTimer);
-      clearTimeout(roadReset);
+      if (!idlePlaying && !hero.classList.contains('is-idle')) return;
       idlePlaying = false;
-      resettingRoad = false;
-      if (road) road.pause();
-      if (roadLayer) roadLayer.classList.remove('is-resetting');
-      video.pause();
+      if (idleRaf) { cancelAnimationFrame(idleRaf); idleRaf = 0; }
       hero.classList.remove('is-idle');
+      // Let the cross-fade to the scroll film finish before parking the idle clips.
+      clearTimeout(idleHide);
+      idleHide = setTimeout(function () { idleVids.forEach(function (v) { v.pause(); }); }, 700);
     }
 
     function queueIdle() {
       clearTimeout(idleTimer);
-      idleTimer = setTimeout(function () {
-        // The scroll film never autoplays. Hold the cinematic finale at its end.
-        if (!road || document.hidden || !inView || curP >= 0.81) return;
-        if (!road.getAttribute('src')) road.src = video.currentSrc || video.src || '/assets/video/hero-swk-hq.mp4';
-        idlePlaying = true;
-        hero.classList.add('is-idle');
-        applyProgress(0, false);
-        video.pause();
-        if (road.currentTime >= 1.05) road.currentTime = 0;
-        road.muted = true;
-        road.playbackRate = 0.65;
-        var play = road.play();
-        if (play && play.catch) play.catch(function () { stopIdle(); applyProgress(curP, false); });
-      }, 700);
+      idleTimer = setTimeout(startIdle, 350);
     }
 
-    if (road) {
-      road.addEventListener('timeupdate', function () {
-        // Stay before the camera turns toward the tower. Blend the reset into
-        // the matching opening poster, so no interior or aerial chapter leaks in.
-        if (!idlePlaying || resettingRoad || road.currentTime < 1.05) return;
-        resettingRoad = true;
-        road.pause();
-        roadLayer.classList.add('is-resetting');
-        roadReset = setTimeout(function () {
-          if (!idlePlaying) return;
-          road.currentTime = 0;
-        }, 180);
-      });
-      road.addEventListener('seeked', function () {
-        if (!idlePlaying || !resettingRoad) return;
-        resettingRoad = false;
-        roadLayer.classList.remove('is-resetting');
-        var play = road.play();
-        if (play && play.catch) play.catch(stopIdle);
-      });
-    }
+    // Warm the idle clips immediately so the very first paint is moving footage, not a still.
+    startIdle();
 
     // Non-blocking hardware decoder seek queue: never cancels an in-flight decode frame.
     function seekTo(t) {
@@ -144,7 +149,7 @@
     function primeVideo() {
       video.pause();
       var dur = (video.duration && !isNaN(video.duration) && isFinite(video.duration)) ? video.duration : 20.0;
-      seekTo(curP * (dur - 0.08));
+      seekTo(FILM_START + curP * (dur - FILM_START - 0.08));
       queueIdle();
       // If served by a simple HTTP server without Range support (e.g. python -m http.server),
       // upgrade to an in-memory Blob URL so random-access scroll seeking still works seamlessly.
@@ -176,7 +181,8 @@
       el.style.setProperty('--beat-o', o.toFixed(3));
       el.style.setProperty('--beat-y', y.toFixed(1) + 'px');
       el.style.setProperty('--beat-s', s.toFixed(3));
-      el.style.setProperty('--beat-blur', blur.toFixed(2) + 'px');
+      el.style.setProperty('--beat-blur', blur < 0.05 ? '0px' : blur.toFixed(2) + 'px');
+      el.style.filter = blur < 0.05 ? 'none' : '';
     }
 
     function applyProgress(p, scrub) {
@@ -223,7 +229,7 @@
 
       // Scrub video frame to match scroll position
       var dur = (video.duration && !isNaN(video.duration) && isFinite(video.duration)) ? video.duration : 20.0;
-      if (scrub !== false) seekTo(p * (dur - 0.08));
+      if (scrub !== false) seekTo(FILM_START + p * (dur - FILM_START - 0.08));
     }
 
     function step(now) {
@@ -246,8 +252,8 @@
     }
 
     function onScroll() {
-      stopIdle();
       targetP = readScrollProgress();
+      if (targetP > IDLE_MAX_P) stopIdle();
       queueIdle();
       if (!rafId) {
         lastTick = performance.now();
@@ -261,6 +267,7 @@
     targetP = readScrollProgress();
     curP = targetP;
     applyProgress(curP);
+    if (curP > IDLE_MAX_P) stopIdle();
 
     var bar = SWK.$('.search-bar', hero);
     if (bar && SWK.fine) {
