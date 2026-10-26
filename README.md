@@ -22,13 +22,13 @@ PLAYWRIGHT_PATH=/opt/node22/lib/node_modules/playwright node tools/qa.js
 
 `tools/qa.js` checks every page (console errors, SEO tags, links, alt text, overflow, axe), the hero scroll scrub, slider, lightbox, filters, calculator maths, forms, a 320–1920px layout sweep, reduced motion, `?nowebgl` and no-JS. Optional: `AXE_PATH` (axe-core file), `SHOTS` (screenshot dir).
 
-## Night-aerial hero
+## Home hero
 
-One continuous forward shot down Sheikh Zayed Road, graded to blue hour and driven only by scroll (`src/js/hero-scene.js`, canvas). The video is all-intra H.264 (`szr-dusk-720.mp4`; `szr-dusk-480.mp4` is a portrait crop centred on the clock tower for phones), so every frame seeks instantly in both directions. On a first visit `40-hero.js` scrolls the page through the shot once (about 15 s; any wheel, touch, key or click takes over; `?hold` disables it). Chapter words are drawn on the canvas and wrap around the clock tower (`CLOCK` keyframes, measured in 1920x1080 source pixels). The shot ends looking straight ahead and the logo and welcome are DOM (`.hero__reveal`) driven by `--rv`. Reduced motion, save-data or `?nowebgl` show the still end frame instead.
+One aerial shot of Sheikh Zayed Road plays once (`szr-dusk-720.mp4`, 1080p; `szr-dusk-480.mp4` is a 720x1280 portrait crop for phones), a single caption fades in and out, and at 10.5 s the logo, "Welcome to SWK Properties UAE", buttons and search arrive over the last frame (`src/js/modules/40-hero.js`, `.hero__reveal` in `src/css/night.css`). Reduced motion, save-data, `?nowebgl` or a blocked autoplay show the end frame with the welcome already in place. Re-grade with ffmpeg: `eq=contrast=1.06:saturation=0.88:gamma=0.92,colorbalance=bs=0.08:bm=0.06:rh=0.04:bh=0.03`.
 
-## Night theme
+## Dusk theme
 
-`src/css/night.css` (loaded last) re-scopes the colour tokens to the same blue hour for every page, restyles the header and cards, and gives interior heroes a dusk photo, a giant `data-ghost` word and a rise-in. `36-ghost.js` drifts the outlined words behind sections on scroll. After changing colours, run the contrast sweep idea in the commit notes: every text node should reach roughly 3.2:1 on its surface.
+`src/css/night.css` (loaded last) re-scopes the colour tokens to flat navy for every page: solid header, hairline-bordered cards, a dusk photograph behind interior page titles. Component colours that earlier layers hard-coded are corrected at the end of that file; after adding components, check that text stays at roughly 3:1 or better on its surface.
 
 ## Deploy
 

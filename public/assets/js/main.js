@@ -244,34 +244,6 @@
   });
 })();
 
-// Oversized outlined words behind section cards: the hero's "words between the towers" idea, reused down the page.
-// --gp (-1..1) drifts the word sideways/up as the section scrolls past, --gv fades it in, --gz grows it.
-(function () {
-  'use strict';
-  var SWK = window.SWK;
-
-  SWK.reg('ghost', function () {
-    var hosts = SWK.$$('[data-ghost]');
-    if (!hosts.length || SWK.reduced) return;
-    var vh = window.innerHeight;
-
-    var update = SWK.raf(function () {
-      for (var i = 0; i < hosts.length; i++) {
-        var r = hosts[i].getBoundingClientRect();
-        if (r.bottom < -200 || r.top > vh + 200) continue;
-        var mid = (r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2); // -1 (below) .. 1 (above)
-        var enter = SWK.clamp((vh - r.top) / (vh * 0.5), 0, 1);
-        hosts[i].style.setProperty('--gp', SWK.clamp(-mid, -1, 1).toFixed(3));
-        hosts[i].style.setProperty('--gv', enter.toFixed(3));
-        hosts[i].style.setProperty('--gz', enter.toFixed(3));
-      }
-    });
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', function () { vh = window.innerHeight; update(); });
-    update();
-  });
-})();
-
 // Hero: headline reveal and the scroll-scrubbed WebGL fly-through.
 (function () {
   'use strict';
@@ -314,125 +286,42 @@
     });
   }
 
-  // ---- Canvas gate ------------------------------------------------------------------------------------------------
-  function canRun() {
-    if (SWK.reduced) return false;
-    if (/[?&]nowebgl\b/.test(location.search)) return false;
-    var nav = navigator;
-    if (nav.connection && nav.connection.saveData) return false;
-    if (nav.deviceMemory && nav.deviceMemory < 2) return false;
-    return !!document.createElement('canvas').getContext;
-  }
+  // ---- Hero: one aerial shot plays once, then the logo and welcome arrive ------------------------------------------
+  var REVEAL_AT = 10.5;   // seconds into the shot
 
   SWK.reg('hero', function () {
     var hero = SWK.$('.hero');
-    var wrap = SWK.$('.hero-cine');
     if (!hero) return;
+    var video = SWK.$('.hero__video', hero);
 
-    initTypewriter();
+    function still() { hero.classList.add('is-still', 'is-revealed'); if (video) video.remove(); }
 
-    function still() {
-      hero.classList.remove('is-gl', 'is-gl-pending');
-      hero.classList.add('is-photo-mode');
-      hero.style.setProperty('--rv', '1');
-      if (wrap) wrap.classList.add('is-flat');
-    }
-
-    var canvas = SWK.$('.hero__gl', hero);
-    if (!wrap || !canvas || !canRun()) { still(); return; }
-
-    var progress = 0, scene = null, visible = true;
-    var mobile = window.matchMedia('(max-width: 767px)').matches;
-
-    // Scroll position -> flight progress. The scene also flies by itself on arrival and never fights the scrollbar.
-    var update = SWK.raf(function () {
-      var total = wrap.offsetHeight - hero.offsetHeight;
-      progress = total > 0 ? SWK.clamp(-wrap.getBoundingClientRect().top / total, 0, 1) : 0;
-      if (scene) scene.setProgress(progress);
-    });
-
-    // Intro: on a first visit the page scrolls itself through the whole shot once. Any input takes over instantly.
-    function intro() {
-      if (SWK.reduced || /[?&]hold\b/.test(location.search) || window.scrollY > 4) return;
-      try { if (sessionStorage.getItem('swk-intro')) return; } catch (e) { /* noop */ }
-      var total = wrap.offsetHeight - hero.offsetHeight, dur = 15000, t0 = 0, last = 0, done = false;
-      var evs = ['wheel', 'touchstart', 'keydown', 'mousedown'];
-      function end() {
-        if (done) return; done = true;
-        evs.forEach(function (n) { window.removeEventListener(n, end); });
-        try { sessionStorage.setItem('swk-intro', '1'); } catch (e) { /* noop */ }
-      }
-      evs.forEach(function (n) { window.addEventListener(n, end, { passive: true }); });
-      function step(now) {
-        if (done) return;
-        if (!t0) t0 = now;
-        if (Math.abs(window.scrollY - last) > 3) { end(); return; }
-        var u = Math.min(1, (now - t0) / dur);
-        window.scrollTo({ top: Math.round(total * (0.5 - 0.5 * Math.cos(Math.PI * u))), behavior: 'instant' });
-        last = window.scrollY;
-        if (u < 1) requestAnimationFrame(step); else end();
-      }
-      requestAnimationFrame(step);
-    }
-
-    hero.classList.add('is-gl-pending');
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-
-    var giveUp = setTimeout(function () { if (scene) { try { scene.dispose(); } catch (e) { /* noop */ } scene = null; } still(); }, 15000);
-
-    // The words are drawn on the canvas, so the display faces must be loaded first.
-    var fonts = document.fonts && document.fonts.load ? Promise.all([
-      document.fonts.load('700 100px "Clash Display"'), document.fonts.load('400 40px "Clash Display"'), document.fonts.load('italic 400 40px "Instrument Serif"')
-    ]).catch(function () {}) : Promise.resolve();
-
-    var src = (window.SWK_ASSETS || '/assets/js/') + 'hero-scene.js' + (window.SWK_V ? '?v=' + window.SWK_V : '');
-    Promise.all([import(src), fonts]).then(function (res) {
-      var mod = res[0];
-      try {
-        scene = mod.createHeroScene(canvas, { mobile: mobile });
-      } catch (err) {
-        console.warn('[swk] hero canvas unavailable, using the still hero.', err && err.message);
-        clearTimeout(giveUp); still(); return;
-      }
-      scene.onReady = function () {
-        clearTimeout(giveUp);
-        hero.classList.remove('is-gl-pending');
-        hero.classList.add('is-gl');
-        setTimeout(intro, 700);
-      };
-      scene.onProgress = function (p, rv) {
-        hero.style.setProperty('--p', p.toFixed(4));
-        hero.style.setProperty('--rv', rv.toFixed(4));
-        hero.classList.toggle('is-revealed', rv > 0.02);
-      };
-      scene.setProgress(progress);
-
-      if (window.ResizeObserver) new ResizeObserver(function () { if (scene) scene.resize(); }).observe(canvas);
-      else window.addEventListener('resize', function () { if (scene) scene.resize(); });
-
-      function sync() {
-        if (!scene) return;
-        if (visible && !document.hidden) scene.start(); else scene.stop();
-      }
+    var nav = navigator;
+    var plain = SWK.reduced || /[?&]nowebgl\b/.test(location.search) || (nav.connection && nav.connection.saveData) || (nav.deviceMemory && nav.deviceMemory < 2);
+    if (!video || plain) { still(); }
+    else {
+      var tall = window.matchMedia('(max-width: 767px)').matches;
+      var fallback = setTimeout(still, 8000);
+      video.addEventListener('playing', function () { clearTimeout(fallback); hero.classList.add('is-playing'); }, { once: true });
+      video.addEventListener('error', function () { clearTimeout(fallback); still(); });
+      video.addEventListener('timeupdate', function () {
+        var t = video.currentTime;
+        hero.classList.toggle('is-captioned', t > 0.9 && t < REVEAL_AT - 0.6);
+        if (t >= REVEAL_AT) hero.classList.add('is-revealed');
+      });
+      video.addEventListener('ended', function () { hero.classList.remove('is-captioned'); hero.classList.add('is-revealed'); });
+      video.muted = true;
+      video.src = tall ? video.getAttribute('data-src-tall') : video.getAttribute('data-src-wide');
+      var started = video.play();
+      if (started && started.catch) started.catch(function () { clearTimeout(fallback); still(); });
+      // Pause while the hero is off screen; resume where it left off.
       if ('IntersectionObserver' in window) {
-        new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; sync(); }, { threshold: 0 }).observe(hero);
+        new IntersectionObserver(function (e) {
+          if (!video.parentNode || video.ended) return;
+          if (e[0].isIntersecting) { var r = video.play(); if (r && r.catch) r.catch(function () {}); } else video.pause();
+        }, { threshold: 0.15 }).observe(hero);
       }
-      document.addEventListener('visibilitychange', sync);
-      sync();
-
-      if (SWK.fine) {
-        hero.addEventListener('pointermove', function (ev) {
-          if (!scene || ev.pointerType === 'touch') return;
-          var r = hero.getBoundingClientRect();
-          scene.setPointer(((ev.clientX - r.left) / r.width) * 2 - 1, -(((ev.clientY - r.top) / r.height) * 2 - 1));
-        });
-        hero.addEventListener('pointerleave', function () { if (scene) scene.setPointer(0, 0); });
-      }
-    }).catch(function (err) {
-      console.warn('[swk] could not load the hero scene, using the still hero.', err && err.message);
-      clearTimeout(giveUp); still();
-    });
+    }
 
     // Tilt the glass search panel toward the pointer.
     var bar = SWK.$('.search-bar', hero);
