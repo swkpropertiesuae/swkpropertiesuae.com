@@ -324,7 +324,7 @@
 }
 @keyframes hero-gloss { 0% { background-position: 160% 0, 0 0; } 55%, 100% { background-position: -60% 0, 0 0; } }
 .hero__beat:hover .hero__hook:not(#_), .hero__hook:not(#_):hover {
-  transform: translateY(-4px) scale(1.015);
+  transform: none;
   filter: drop-shadow(0 2px 3px rgba(4, 10, 22, .6)) drop-shadow(0 16px 38px rgba(4, 10, 22, .55)) drop-shadow(0 0 22px rgba(255, 244, 214, .5));
 }
 .hero .hero__hook em { background: none; -webkit-text-fill-color: inherit; color: inherit; animation: none; filter: none; font-style: normal; }
@@ -332,3 +332,8 @@
 .hero__dubai { display: inline-block; white-space: nowrap; }
 .hero__dubai img { display: inline-block; height: 1.0em; width: auto; vertical-align: -.02em; margin-right: .08em; }
 @media (prefers-reduced-motion: reduce) { .hero .hero__hook:not(#_) { animation: none; background-position: -60% 0, 0 0; } }
+
+/* Text and dock stay put while the film plays; only the shine animates. */
+.hero.is-leaving .hero__dock { pointer-events: auto; }
+.hero[data-phase='logo'] .hero__dock { pointer-events: none; }
+.hero__beat:hover .hero__kicker, .hero__beat:hover .hero__lead { transform: none; }

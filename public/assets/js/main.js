@@ -473,26 +473,21 @@
         hero.setAttribute('data-phase', nextPhase);
       }
 
-      // Opening dock (CTAs + glass search bar) glides down and dissolves as camera enters the tower window.
-      var dockT = ease(SWK.clamp((p - 0.04) / 0.14, 0, 1));
+      // Dock (CTAs + search) holds its place until the closing logo takes over.
+      var dockT = ease(SWK.clamp((p - 0.78) / 0.05, 0, 1));
       hero.style.setProperty('--dock-o', (1 - dockT).toFixed(3));
-      hero.style.setProperty('--dock-y', (dockT * 30).toFixed(1) + 'px');
-      hero.style.setProperty('--dock-s', (1 - dockT * 0.05).toFixed(3));
+      hero.style.setProperty('--dock-y', '0px');
+      hero.style.setProperty('--dock-s', '1');
 
-      // Beat 1: Sheikh Zayed Road approach (0.00 -> 0.25)
-      var o1 = ease(SWK.clamp((0.24 - p) / 0.10, 0, 1));
-      var t1 = ease(SWK.clamp(p / 0.24, 0, 1));
-      setBeatStyle(beats[0], o1, -t1 * 26, 1 + t1 * 0.06, (1 - o1) * 7);
-
-      // Beat 2: SWK Properties reception lobby (0.25 -> 0.56)
-      var o2 = ease(SWK.clamp((p - 0.25) / 0.08, 0, 1)) * ease(SWK.clamp((0.55 - p) / 0.08, 0, 1));
-      var t2 = SWK.clamp((p - 0.25) / 0.30, 0, 1);
-      setBeatStyle(beats[1], o2, (0.5 - t2) * 36, 0.95 + t2 * 0.08, (1 - o2) * 6);
-
-      // Beat 3: Executive lounge to panoramic window (0.56 -> 0.81)
-      var o3 = ease(SWK.clamp((p - 0.56) / 0.08, 0, 1)) * ease(SWK.clamp((0.80 - p) / 0.08, 0, 1));
-      var t3 = SWK.clamp((p - 0.56) / 0.24, 0, 1);
-      setBeatStyle(beats[2], o3, (0.5 - t3) * 36, 0.95 + t3 * 0.08, (1 - o3) * 6);
+      // Headline beats stay fixed in place and cross-fade through each other: no travel, scale or blur,
+      // and no moment where the frame is left without a headline.
+      var X = 0.012;
+      var o1 = 1 - ease(SWK.clamp((p - (0.25 - X)) / (2 * X), 0, 1));
+      var o2 = ease(SWK.clamp((p - (0.25 - X)) / (2 * X), 0, 1)) * (1 - ease(SWK.clamp((p - (0.56 - X)) / (2 * X), 0, 1)));
+      var o3 = ease(SWK.clamp((p - (0.56 - X)) / (2 * X), 0, 1)) * (1 - ease(SWK.clamp((p - 0.79) / 0.05, 0, 1)));
+      setBeatStyle(beats[0], o1, 0, 1, 0);
+      setBeatStyle(beats[1], o2, 0, 1, 0);
+      setBeatStyle(beats[2], o3, 0, 1, 0);
 
       // Closing logo reveal over Burj Khalifa skyline (0.80 -> 1.00)
       var rvRaw = SWK.clamp((p - 0.80) / 0.13, 0, 1);
