@@ -917,7 +917,7 @@ def build_home():
 <div class="hero__content container">
 <h1 class="sr-only">SWK Properties: Dubai off-plan and ready property, with direct access to the UAE's leading developers</h1>
 <div class="hero__stage" aria-hidden="true">
-<div class="hero__beat" data-beat="b1"><span class="hero__kicker">Sheikh Zayed Road &middot; Dubai</span><p class="hero__hook"><span class="hero__dubai" role="img" aria-label="Dubai"><img src="/assets/images/brand/dubai-logo.png" alt="" width="1371" height="528" decoding="async"></span> never stops rising.</p><p class="hero__lead">Make sure your address rises with it.</p></div>
+<div class="hero__beat" data-beat="b1"><span class="hero__kicker">Sheikh Zayed Road &middot; Dubai</span><p class="hero__hook"><span class="hero__dubai" role="img" aria-label="Dubai"><img src="/assets/images/brand/dubai-logo-gold.png" alt="" width="1473" height="567" decoding="async"></span> never stops rising.</p><p class="hero__lead">Make sure your address rises with it.</p></div>
 <div class="hero__beat" data-beat="b2"><span class="hero__kicker">0% income tax &middot; Golden Visa routes</span><p class="hero__hook">Where <em>returns</em> meet residency.</p><p class="hero__lead">Off-plan and ready homes, guided by one private advisor.</p></div>
 <div class="hero__beat" data-beat="b3"><span class="hero__kicker">Off-plan &middot; Ready &middot; Freehold</span><p class="hero__hook">Don&rsquo;t watch the skyline. <em>Own it.</em></p><p class="hero__lead">Direct access to the UAE&rsquo;s leading developers.</p></div>
 </div>

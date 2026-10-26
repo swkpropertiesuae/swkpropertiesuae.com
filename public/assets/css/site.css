@@ -5827,9 +5827,35 @@ main .project-feature__copy h3:not(#_) { font-size: var(--t-h3-lg); }
 .whatsapp-float { background: transparent !important; box-shadow: 0 8px 22px rgba(37, 211, 102, .45); border-radius: 50%; }
 .whatsapp-float svg { width: 100%; height: 100%; }
 
-/* Hero headline: official Dubai wordmark replaces the word, the rest stays pure white */
+/* Hero headline: Dubai wordmark replaces the word */
 .hero__dubai { display: inline-block; white-space: nowrap; }
-.hero__dubai img { display: inline-block; height: 1.02em; width: auto; vertical-align: -.02em; margin-right: .06em; filter: drop-shadow(0 2px 12px rgba(4, 10, 22, .35)); }
-.hero__beat[data-beat='b1'] .hero__hook:not(#_), .hero__beat[data-beat='b1'] .hero__hook:not(#_):hover {
-  background: none; -webkit-text-fill-color: #fff; color: #fff; filter: drop-shadow(0 2px 3px rgba(4, 10, 22, .55)) drop-shadow(0 14px 34px rgba(4, 10, 22, .5));
+.hero__dubai img { display: inline-block; height: 1.02em; width: auto; vertical-align: -.02em; margin-right: .06em; }
+
+/* ==========================================================================
+   Hero headline: heavy rounded-square display type in glossy black-and-gold
+   ========================================================================== */
+@font-face { font-family: 'SWK Display'; src: url('/assets/fonts/rubik/rubik-var.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
+
+.hero .hero__hook:not(#_) {
+  font-family: 'SWK Display', 'Rubik', system-ui, sans-serif !important; font-weight: 800 !important;
+  font-size: clamp(2.7rem, 6.2vw, 6rem); line-height: 1.04; letter-spacing: -.015em !important; word-spacing: .06em !important; max-width: 13ch;
+  /* top: moving specular band; below: polished gold with a dark horizon line */
+  background-image:
+    linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, .85) 50%, transparent 62%),
+    linear-gradient(180deg, #fff3c4 0%, #f6d067 24%, #c8922d 46%, #7a4d10 52%, #d6a03c 62%, #ffe48c 82%, #b07a22 100%);
+  background-size: 260% 100%, 100% 100%; background-repeat: no-repeat; background-position: 160% 0, 0 0;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+  -webkit-text-stroke: 1.6px #08080b; paint-order: stroke fill;
+  filter: drop-shadow(0 3px 0 rgba(8, 8, 11, .85)) drop-shadow(0 16px 30px rgba(4, 6, 12, .6));
+  animation: hero-gloss 5.5s ease-in-out 1.2s infinite;
 }
+@keyframes hero-gloss { 0% { background-position: 160% 0, 0 0; } 55%, 100% { background-position: -60% 0, 0 0; } }
+.hero__beat:hover .hero__hook:not(#_), .hero__hook:not(#_):hover {
+  background-image:
+    linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, .95) 50%, transparent 62%),
+    linear-gradient(180deg, #fff8dc 0%, #ffdf80 24%, #dca737 46%, #8a5a14 52%, #e6b248 62%, #fff0a8 82%, #c28a2a 100%);
+  filter: drop-shadow(0 3px 0 rgba(8, 8, 11, .9)) drop-shadow(0 18px 34px rgba(4, 6, 12, .65)) drop-shadow(0 0 20px rgba(246, 208, 103, .45));
+}
+.hero .hero__hook em { background-image: none; -webkit-text-fill-color: inherit; color: inherit; animation: none; filter: none; font-style: normal; -webkit-text-stroke: inherit; }
+.hero__dubai img { height: 1.0em; filter: drop-shadow(0 0 1px #000) drop-shadow(0 0 1px #000) drop-shadow(0 3px 0 rgba(8, 8, 11, .85)); margin-right: .12em; }
+@media (prefers-reduced-motion: reduce) { .hero .hero__hook:not(#_) { animation: none; background-position: -60% 0, 0 0; } }
