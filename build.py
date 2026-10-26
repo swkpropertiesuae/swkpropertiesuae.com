@@ -311,7 +311,7 @@ ASSET_V = ""
 def build_assets():
     """Concatenate CSS and JS, fingerprint them, and copy vendor files."""
     global ASSET_V
-    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium"]
+    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium", "night"]
     css = "\n".join((SRC / "css" / f"{n}.css").read_text(encoding="utf-8") for n in css_order)
     css = css.replace("../assets/", "/assets/")
     mods = sorted((SRC / "js" / "modules").glob("*.js"))
@@ -402,7 +402,7 @@ VALUES = ('<section class="value-strip" aria-labelledby="values-title"><h2 id="v
 
 
 STATS = [("10", "+", "Years in the UAE"), ("100", "+", "Homes Sold"), ("40", "+", "Consultants"), ("100", "%", "Client Satisfaction")]
-STORY = ('<section class="section container story ambient-glow-host">' + GLOW + '<div class="story__grid">'
+STORY = ('<section class="section container story ambient-glow-host" data-ghost="Why SWK">' + GLOW + '<div class="story__grid">'
          '<div class="story__media" data-reveal>' + img("assets/images/about/swk-office.webp", "SWK Properties office in Al Saqr Business Tower, Sheikh Zayed Road, Dubai", sizes="(min-width: 900px) 600px, 100vw") + '</div>'
          '<div class="story__copy" data-reveal><span class="eyebrow">Why SWK</span><h2>Built by agents, run for clients</h2>'
          '<p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in the UAE could feel for outsiders. '
@@ -903,7 +903,7 @@ def build_home():
             ("One clear next step", "Whether you are still exploring or ready to make an offer, leave the conversation knowing what happens next."),
             ("Support after the shortlist", "Keep your consultant in the conversation as you move from viewings to documents and handover.")]
         slides = "".join(f'<figure class="review-slide" data-review-slide {"hidden" if i else ""}><blockquote>{e(text)}</blockquote><figcaption>{e(title)}</figcaption></figure>' for i, (title, text) in enumerate(commitments))
-        review_heading = "What you can expect from SWK"
+        review_heading = "What we promise before you even ask"
         review_intro = "Our service commitments. Client reviews will appear here once verified and approved."
     if reviews:
         team = slides
@@ -911,31 +911,33 @@ def build_home():
       team = f'''<div class="review-carousel" data-review-carousel aria-label="{review_heading}">{slides}<div class="review-controls"><button type="button" class="tc-arrow" data-review-prev aria-label="Previous story">{PREV}</button><span data-review-count>1 / {len(reviews) if reviews else 8}</span><button type="button" class="tc-arrow" data-review-next aria-label="Next story">{NEXT}</button><button type="button" class="review-pause" data-review-pause aria-pressed="false">Pause</button></div></div>'''
 
     body = f"""<div class="hero-cine"><section class="hero" aria-label="Introduction">
-<div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/earth-top-szr.webp">
-<img src="/assets/images/hero/earth-top-szr.webp" alt="Aerial isometric view of Sheikh Zayed Road and Al Saqr Business Tower, Dubai" width="1600" height="900" fetchpriority="high" decoding="async"></picture></div>
+<div class="hero__bg"><picture><source media="(max-width: 767px)" srcset="/assets/images/hero/dusk-poster-640.webp">
+<img src="/assets/images/hero/dusk-end.webp" alt="Aerial view down Sheikh Zayed Road, Dubai, at blue hour" width="1600" height="900" fetchpriority="high" decoding="async"></picture></div>
 <canvas class="hero__gl" aria-hidden="true"></canvas>
-<div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div><div class="hero__streak" aria-hidden="true"></div>
-<div class="hero__captions" aria-hidden="true"><p class="hero__caption">Sheikh Zayed Road, <em>from above.</em></p><p class="hero__caption">Al Saqr Business Tower, <em>25th Floor.</em></p><p class="hero__caption">Welcome to <em>SWK Properties.</em></p></div>
-<div class="hero__content container">
-<span class="hero__eyebrow">UAE Property Advisory · RERA-registered</span>
-<h1 class="hero__title"><span class="sr-only">Invest where the UAE is heading. Live where it already shines.</span><span data-typewriter aria-hidden="true">Invest where the UAE is heading.<br><em>Live where it already shines.</em></span></h1>
+<div class="hero__scrim"></div><div class="hero__glow" aria-hidden="true"></div><div class="hero__vignette"></div>
+<p class="hero__still-words" aria-hidden="true"><span>Discover</span><strong>Dubai</strong></p>
+<div class="hero__reveal container">
+<img class="hero__logo" src="/assets/images/brand/swk-logo-dark.png" alt="" width="338" height="275" decoding="async">
+<span class="hero__kicker">Welcome to</span>
+<h1 class="hero__title"><span class="hero__title-main">SWK Properties <em>UAE</em></span></h1>
+<p class="hero__tagline">Invest where the UAE is heading. Live where it already shines.</p>
 <p class="hero__subtitle">Off-plan and ready homes across the UAE's freehold communities, with mortgage, payment-plan and rental-yield advisory from first shortlist to handover.</p>
 <div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Talk to an advisor</a></div>
 <div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
-<span class="hero-art-credit">AI-created architectural visualisation</span><div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
+<div class="hero__scroll-cue" aria-hidden="true"><span>Scroll</span><span class="line"></span></div>
 </section></div>
 
 {VALUES}
 
-<section class="section section--alt featured-section ambient-glow-host">{GLOW}<div class="container">
-<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Developers</span>{h2_cascade("Leading developers. One advisory desk.")}</div>
+<section class="section section--alt featured-section ambient-glow-host" data-ghost="Builders">{GLOW}<div class="container">
+<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">The builders</span>{h2_cascade("Meet the people building your skyline.")}</div>
 <a href="/properties/" class="btn btn-outline-dark">All developers &amp; projects</a></div>
 {row_carousel(dev_cards, "UAE developers", "developers")}</div></section>
 
-<section class="section ambient-glow-host">{GLOW}<div class="container">
-<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Spotlight</span>{h2_cascade("Projects worth a closer look")}</div>
+<section class="section ambient-glow-host" data-ghost="Closer">{GLOW}<div class="container">
+<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Spotlight</span>{h2_cascade("Six launches we keep going back to.")}</div>
 <a href="/properties/" class="btn btn-outline-dark">Browse all projects</a></div>
 {row_carousel(feat_cards, "Spotlight projects", "projects")}
 <p class="listing-note">Project details come from each developer's public information and change often. Ask SWK for current availability, payment terms and brochures; none are published on this site.</p>
@@ -943,28 +945,28 @@ def build_home():
 
 {STORY}
 
-<section class="section ambient-glow-host" data-developers>{GLOW}<div class="container">
-<div class="section-header center"><span class="eyebrow">Trusted Partners</span>{h2_cascade("Backed by the UAE's leading developers")}
+<section class="section ambient-glow-host" data-developers data-ghost="Trust">{GLOW}<div class="container">
+<div class="section-header center"><span class="eyebrow">Trusted partners</span>{h2_cascade("Straight from the source.")}
 <p>We work directly with the master developers behind the city's skyline, so pricing and payment plans come straight from source.</p></div>
 <div class="marquee" data-developer-marquee><div class="marquee__track">{one}{two}</div></div></div></section>
 
-<section class="section container ambient-glow-host">{GLOW}<div class="section-header center"><span class="eyebrow">Where to Live</span>{h2_cascade("Explore Dubai's communities")}
+<section class="section container ambient-glow-host" data-ghost="Streets">{GLOW}<div class="section-header center"><span class="eyebrow">Where to live</span>{h2_cascade("Where would your mornings begin?")}
 <p>Every neighbourhood has a different rhythm — from Marina's waterfront energy to the quiet greenery of Arabian Ranches.</p></div>
 <div class="communities-grid" data-communities-grid>{comm_cards}</div></section>
 
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container">
-<div class="section-header center"><span class="eyebrow">How We Help</span>{h2_cascade("Full-service, start to handover")}
+<section class="section section--alt ambient-glow-host" data-ghost="Keys">{GLOW}<div class="container">
+<div class="section-header center"><span class="eyebrow">How we help</span>{h2_cascade("From 'maybe' to keys in hand.")}
 <p>From your first shortlist to renewing Ejari five years later — one team, one point of contact.</p></div>
 <div class="services-grid" data-services-teaser data-reveal>{svc_cards}</div></div></section>
 
-<section class="section ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Plan Your Purchase</span>{h2_cascade("Estimate your monthly mortgage")}
+<section class="section ambient-glow-host" data-ghost="Numbers">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Plan your purchase</span>{h2_cascade("What would home cost each month?")}
 <p>Adjust the figures below for an instant estimate, or get a personalised rate comparison on our mortgage page.</p></div>
 {calculator("/mortgage/", "Analyze")}</div></section>
 
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">The SWK Experience</span><h2>{review_heading}</h2><p>{review_intro}</p></div>{team}</div></section>
+<section class="section section--alt ambient-glow-host" data-ghost="Promises">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">The SWK experience</span><h2>{review_heading}</h2><p>{review_intro}</p></div>{team}</div></section>
 
-<section class="section ambient-glow-host">{GLOW}<div class="container">
-<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Insights</span>{h2_cascade("From the SWK journal")}</div>
+<section class="section ambient-glow-host" data-ghost="Journal">{GLOW}<div class="container">
+<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Insights</span>{h2_cascade("Questions you'll be glad you asked early.")}</div>
 <a href="/blog/" class="btn btn-outline-dark">Read all articles</a></div>
 <div class="blog-grid" data-blog-preview-grid>{"".join(blog_card(p, i) for i, p in enumerate(POSTS[:3]))}</div></div></section>
 
@@ -973,7 +975,7 @@ def build_home():
     write("/", page("/", "SWK Properties | UAE Property Advisory — Off-Plan and Ready Homes",
                     "SWK Properties is a RERA-registered UAE property advisory — off-plan and ready homes in freehold communities, with mortgage, payment-plan and rental-yield advice from shortlist to handover.",
                     body, ld=ld,
-                    preload=[("/assets/images/hero/earth-top-szr.webp", ' fetchpriority="high"')]))
+                    preload=[("/assets/images/hero/dusk-poster.webp", ' media="(min-width: 768px)" fetchpriority="high"')]))
 
 
 def build_properties():

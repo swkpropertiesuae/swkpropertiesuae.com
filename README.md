@@ -22,13 +22,9 @@ PLAYWRIGHT_PATH=/opt/node22/lib/node_modules/playwright node tools/qa.js
 
 `tools/qa.js` checks every page (console errors, SEO tags, links, alt text, overflow, axe), the hero scroll scrub, slider, lightbox, filters, calculator maths, forms, a 320–1920px layout sweep, reduced motion, `?nowebgl` and no-JS. Optional: `AXE_PATH` (axe-core file), `SHOTS` (screenshot dir).
 
-## 3D hero
+## Night-aerial hero
 
-Three.js r160 is vendored (`src/vendor/three.module.min.js`) and loaded only when WebGL works and the visitor has no reduced-motion, save-data or low-memory flag. Otherwise the hero falls back to the cinematic photo. Add `?nowebgl` to force the fallback, or `?scene=photo` to choose the photo with its scroll scrub.
-
-The default hero is a procedural Dubai scene (`src/js/hero-scene.js`) that follows scroll as a satellite-to-street journey: it opens as a top-down satellite view (street grid, parks and lots, long building shadows, desert and coastline), descends over the boulevard, tilts toward the horizon and lands at street level to drive down the avenue between the towers. Chapter captions follow scroll progress. Altitude, fog and sky colour are driven from the scroll position in `placeCamera`.
-
-`/?scene=3d` (and `?hold`) force the scene and swap in the render posters `hero-scene-satellite.webp` / `hero-scene-mobile-satellite.webp`, which are clean renders of the first (satellite) frame. Run `tools/render-posters.cjs` against the local server after changing the scene; it hides UI overlays before capture. Convert the desktop and portrait PNGs to those two files. Use new filenames when replacing cached imagery.
+The home hero is a forward flight down Sheikh Zayed Road, graded to blue hour (`src/assets/video/szr-dusk-720.mp4`, `-480.mp4`, encoded keyframe-dense so scrolling can scrub it). `src/js/hero-scene.js` draws it on a canvas, plays it automatically on arrival and hands control to scroll as soon as the visitor scrolls. Giant words sit between the towers: the same frame is redrawn over them, clipped to the clock tower (`OCCLUDERS`, measured in 1920x1080 video pixels at three timestamps). The flight ends looking straight ahead; the logo and welcome are DOM (`.hero__reveal`) driven by `--rv`. With reduced motion, save-data or `?nowebgl` the still end frame and the welcome show instead. The same idea is reused down the page as `data-ghost` outlined words (`36-ghost.js`, `src/css/night.css`). Re-grade with the ffmpeg filter chain in the commit that added the video.
 
 ## Deploy
 

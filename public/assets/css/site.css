@@ -4802,3 +4802,150 @@ main > section .section-header h2, main > section .section-head-row h2 { backgro
 @media (max-width: 767px) { .row-carousel__btn { display: none; } }
 @media (min-width: 1360px) { .row-carousel__btn--prev { left: -24px; } .row-carousel__btn--next { right: -24px; } }
 @media (prefers-reduced-motion: reduce) { .row-carousel__track { scroll-behavior: auto; } }
+
+/* ==========================================================================
+   SWK Properties — Night aerial hero + the shared "words between the layers" motif.
+   Loaded last. The hero is a graded blue-hour flight down Sheikh Zayed Road; giant words sit between the towers.
+   The same idea is reused down the page: oversized outlined words (data-ghost) drift behind each section's cards.
+   ========================================================================== */
+
+:root {
+  --night-950: #060c1c;
+  --night-900: #0a1326;
+  --night-800: #101d38;
+  --glow-amber: 255, 176, 102;
+}
+
+/* ---- Hero stage ---- */
+
+.js .hero-cine { height: 320vh; height: 320svh; }
+@media (max-width: 767px) { .js .hero-cine { height: 300vh; height: 300svh; } }
+
+.hero { background: var(--night-900); color: #fff; }
+.hero__bg img { object-position: 50% 50%; }
+.hero__gl { z-index: 1; }
+.hero.is-gl .hero__bg { opacity: 0; }
+
+/* Still frame ("Discover Dubai" over the end frame) shown only when the film can't play. */
+.hero__still-words { display: none; }
+.hero.is-photo-mode .hero__still-words {
+  display: block; position: absolute; inset: 0; z-index: 3; margin: 0; pointer-events: none;
+  text-align: center; padding-top: 18svh; color: #fff; text-shadow: 0 6px 40px rgba(5, 10, 24, 0.5);
+}
+.hero__still-words span { display: block; font: 400 clamp(1rem, 2.4vw, 1.8rem)/1 var(--font-display-alt, 'Clash Display', sans-serif); letter-spacing: 0.34em; text-transform: uppercase; opacity: 0.9; }
+.hero__still-words strong { display: block; font: 700 clamp(4rem, 17vw, 14rem)/0.95 'Clash Display', 'General Sans', sans-serif; letter-spacing: -0.04em; text-transform: uppercase; }
+.hero.is-photo-mode .hero__reveal { margin-top: 24svh; }
+
+.hero__scrim {
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 50%, rgba(6, 12, 28, 0.62), rgba(6, 12, 28, 0.2) 70%, transparent 100%),
+    linear-gradient(to top, rgba(6, 12, 28, 0.85), rgba(6, 12, 28, 0) 46%);
+  opacity: calc(var(--rv, 0) * 0.95);
+}
+.hero.is-photo-mode .hero__scrim { opacity: 0.9; }
+.hero__glow { opacity: 0.55; mix-blend-mode: screen; background: radial-gradient(ellipse 28% 18% at 50% 52%, rgba(var(--glow-amber), 0.3), transparent 75%); }
+.hero__vignette { background: radial-gradient(ellipse at 50% 46%, transparent 52%, rgba(4, 8, 20, 0.62) 100%); }
+.hero::after { background: linear-gradient(to bottom, transparent, var(--color-bg)); opacity: clamp(0, calc((var(--p, 0) - 0.94) * 14), 0.9); height: 22%; }
+.hero.is-photo-mode::after { opacity: 0; }
+
+/* ---- Reveal: logo, welcome, and the first actions ---- */
+
+.hero__reveal {
+  position: relative; z-index: 4; display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 0; padding-top: 70px; padding-bottom: 34px;
+  opacity: calc(var(--rv, 0) * 1.4); pointer-events: none;
+}
+.hero.is-revealed .hero__reveal, .hero.is-photo-mode .hero__reveal { pointer-events: auto; }
+.hero.is-photo-mode .hero__reveal { opacity: 1; }
+
+.hero__logo {
+  width: clamp(104px, 15vh, 160px); height: auto; margin-bottom: 14px;
+  /* cinematic wipe: reveals from the roof line down, scales gently out of a soft bloom */
+  clip-path: inset(0 0 calc((1 - min(1, var(--rv, 0) * 1.6)) * 100%) 0);
+  transform: scale(calc(1.14 - var(--rv, 0) * 0.14));
+  filter: drop-shadow(0 0 calc((1 - var(--rv, 0)) * 36px + 6px) rgba(var(--glow-amber), 0.7));
+}
+.hero__kicker {
+  font: 500 clamp(0.72rem, 0.9vw, 0.9rem)/1 'General Sans', sans-serif; letter-spacing: calc(0.55em - var(--rv, 0) * 0.2em); text-transform: uppercase;
+  color: rgba(236, 196, 128, 0.95); opacity: clamp(0, calc((var(--rv, 0) - 0.25) * 3), 1); margin-bottom: 10px;
+}
+.hero__title {
+  margin: 0; max-width: none; color: #fff; font: 700 clamp(2.5rem, 1rem + 5.6vw, 6.2rem)/0.98 'Clash Display', 'General Sans', sans-serif; letter-spacing: -0.035em;
+  text-shadow: 0 8px 50px rgba(4, 8, 20, 0.6);
+  clip-path: inset(0 calc((1 - min(1, max(0, var(--rv, 0) - 0.2) * 1.5)) * 100%) 0 0);
+}
+.hero__title em { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; color: #ecc480; letter-spacing: -0.02em; font-size: 1.05em; }
+.hero__tagline {
+  margin: 14px 0 0; font: italic 400 clamp(1.1rem, 1vw + 0.9rem, 1.7rem)/1.25 'Instrument Serif', Georgia, serif; color: rgba(255, 255, 255, 0.92);
+  opacity: clamp(0, calc((var(--rv, 0) - 0.5) * 3), 1); transform: translateY(calc((1 - var(--rv, 0)) * 14px));
+}
+.hero__subtitle {
+  max-width: 54ch; margin: 12px auto 0; color: rgba(226, 234, 250, 0.82); font-size: var(--fs-md, 1rem);
+  opacity: clamp(0, calc((var(--rv, 0) - 0.62) * 3), 1);
+}
+.hero__ctas { justify-content: center; margin-top: 20px; opacity: clamp(0, calc((var(--rv, 0) - 0.7) * 3.4), 1); }
+.hero__search-wrap { width: min(100%, 880px); margin-top: 20px; opacity: clamp(0, calc((var(--rv, 0) - 0.8) * 4), 1); }
+.hero .btn-outline-dark { color: #fff; border-color: rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(6px); }
+.hero .btn-outline-dark:hover { background: rgba(255, 255, 255, 0.16); }
+.hero .search-bar { background: rgba(8, 16, 36, 0.58); border: 1px solid rgba(255, 255, 255, 0.18); backdrop-filter: blur(16px); }
+.hero .search-bar label { color: rgba(226, 234, 250, 0.8); }
+.hero .search-bar select { color: #fff; background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); }
+.hero .search-bar select option { color: #0f2244; }
+.hero__scroll-cue { color: rgba(255, 255, 255, 0.8); z-index: 5; opacity: calc(1 - var(--rv, 0) * 2); }
+.hero.is-photo-mode .hero__scroll-cue { opacity: 1; }
+
+@media (max-width: 767px) {
+  .hero { height: 100svh; min-height: 600px; }
+  .hero__reveal { padding-top: 78px; padding-bottom: 20px; }
+  .hero__logo { width: 84px; margin-bottom: 8px; }
+  .hero__title { font-size: clamp(2.1rem, 11vw, 3rem); }
+  .hero__tagline { font-size: 1.05rem; margin-top: 8px; }
+  .hero__subtitle { display: none; }
+  .hero__ctas { margin-top: 14px; gap: 8px; }
+  .hero__ctas .btn { padding-inline: 16px; }
+  .hero__search-wrap { margin-top: 12px; }
+  .hero .search-bar { padding: 10px; gap: 6px; }
+  .hero .search-bar label { font-size: 0.64rem; }
+}
+@media (max-height: 760px) and (min-width: 768px) {
+  .hero__reveal { padding-top: 64px; }
+  .hero__logo { width: 92px; margin-bottom: 8px; }
+  .hero__subtitle { display: none; }
+  .hero__ctas { margin-top: 14px; }
+  .hero__search-wrap { margin-top: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__reveal { opacity: 1; }
+  .hero__logo, .hero__title { clip-path: none; transform: none; filter: none; }
+  .hero__kicker, .hero__tagline, .hero__subtitle, .hero__ctas, .hero__search-wrap { opacity: 1; transform: none; }
+}
+
+/* ---- Words between the layers: the hero's idea, reused down the page ---- */
+
+[data-ghost] { position: relative; overflow: clip; isolation: isolate; }
+[data-ghost]::before {
+  content: attr(data-ghost);
+  position: absolute; left: 50%; top: 2%; z-index: -1; white-space: nowrap; pointer-events: none;
+  font: 700 clamp(4rem, 15vw, 15rem)/1 'Clash Display', 'General Sans', sans-serif; letter-spacing: -0.04em; text-transform: uppercase;
+  color: transparent; -webkit-text-stroke: 1.5px rgba(15, 34, 68, 0.14);
+  transform: translate3d(calc(-50% + var(--gp, 0) * -7vw), calc(var(--gp, 0) * -60px), 0) scale(calc(1 + var(--gz, 0) * 0.12));
+  opacity: calc(0.35 + var(--gv, 0) * 0.65);
+  will-change: transform;
+}
+[data-ghost].section--alt::before, [data-ghost].on-dark::before { -webkit-text-stroke-color: rgba(201, 154, 99, 0.2); }
+@media (max-width: 767px) { [data-ghost]::before { top: 0; -webkit-text-stroke-width: 1px; } }
+@media (prefers-reduced-motion: reduce) { [data-ghost]::before { transform: translateX(-50%); opacity: 0.5; } }
+
+/* Cards ride in front of the word, the way the towers do in the hero. */
+[data-ghost] > .container, [data-ghost] > .section-header { position: relative; z-index: 1; }
+
+/* Dusk-to-day: the page picks up the hero's palette at the top of each interior hero too. */
+.page-hero--photo::after, .page-hero::after { pointer-events: none; }
+
+/* the title's accent word: plain gold italic (earlier hero rules gave it a gradient fill and outline) */
+.hero .hero__title em, .hero .hero__title em .tw-char {
+  background: none !important; -webkit-text-stroke: 0 !important; -webkit-text-fill-color: #ecc480 !important; color: #ecc480 !important;
+  filter: none !important; font-size: 1.05em !important; display: inline !important; letter-spacing: -0.01em !important; line-height: 1 !important;
+}
+.hero .hero__title, .hero .hero__title-main { background: none !important; -webkit-text-fill-color: #fff; -webkit-text-stroke: 0; filter: none; letter-spacing: -0.025em; }
