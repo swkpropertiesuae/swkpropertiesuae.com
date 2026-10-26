@@ -5011,17 +5011,16 @@ h1, h2, h3, .section-header h2, .section-head-row h2 {
 .hero__bg {
   background: #0b1528;
 }
-/* Tack-sharp Ultra-HD first frame layer at the top of the scroll journey (zero video compression softness). */
+/* Lossless poster from the exact corrected opening frame. */
 .hero__bg::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: url('/assets/images/hero/hero-swk-poster.webp') center / cover no-repeat;
+  background: url('/assets/images/hero/hero-swk-poster-hq.webp') center / cover no-repeat;
   opacity: clamp(0, calc(1 - var(--p, 0) * 28), 1);
   pointer-events: none;
-  will-change: opacity, transform;
-  transition: transform 0.25s ease-out;
+  will-change: opacity;
 }
 /* Optical framing veil: gives center typography crisp cinema contrast while keeping the skyline vivid. */
 .hero__bg::after {
@@ -5035,14 +5034,34 @@ h1, h2, h3, .section-header h2, .section-head-row h2 {
   pointer-events: none;
 }
 
-.hero__video {
-  will-change: transform;
-  transition: transform 0.25s ease-out;
+/* Keep the decoded frame on its native plane: pointer zoom resampled fine detail. */
+.hero__video { transform: none; }
+
+/* Opaque office signature covers the source clip's lower-right rendering patch. */
+.hero__office-signature {
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  bottom: 0;
+  width: clamp(210px, 24vw, 420px);
+  min-height: clamp(110px, 20vh, 220px);
+  padding: clamp(14px, 2vw, 24px) clamp(18px, 2vw, 32px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  background: #101e30;
+  border-top: 1px solid #c99a3d;
+  border-left: 1px solid rgba(201, 154, 61, 0.45);
+  color: #fff;
+  pointer-events: none;
 }
-.hero.is-pointer .hero__video,
-.hero.is-pointer .hero__bg::before {
-  transform: scale(1.032) translate3d(var(--cam-x, 0px), var(--cam-y, 0px), 0);
-  transition: none;
+.hero__office-signature strong { font-size: 12px; letter-spacing: 0.2em; color: #f6d48a; }
+.hero__office-signature span { font-size: 15px; font-weight: 600; }
+.hero__office-signature small { font-size: 11px; color: #cad1db; letter-spacing: 0.04em; }
+@media (max-width: 767px) and (orientation: portrait) {
+  /* Portrait cover crops the source patch outside the viewport. */
+  .hero__office-signature { display: none; }
 }
 
 .hero__content { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-5); text-align: center; }
