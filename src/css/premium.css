@@ -355,9 +355,8 @@ main > section .section-header h2, main > section .section-head-row h2 { backgro
 @media (min-width: 1360px) { .row-carousel__btn--prev { left: -24px; } .row-carousel__btn--next { right: -24px; } }
 @media (prefers-reduced-motion: reduce) { .row-carousel__track { scroll-behavior: auto; } }
 
-
 /* ==========================================================================
-   UHD Optical Clarity & Single-Shot Aerial Video Corporate Hook Showcase
+   UHD Optical Clarity, Extended 3-Act Aerial Video & Pinterest Luxury Redesign
    ========================================================================== */
 html {
   -webkit-font-smoothing: antialiased;
@@ -365,41 +364,227 @@ html {
   text-rendering: geometricPrecision;
 }
 
+/* Never hide lazy images behind an opacity-0 skeleton when scrolling fast */
+.js img[loading='lazy'] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Extended 350vh scroll runway so the 35.5-second 3-act aerial video travels smoothly */
+.js .hero-cine {
+  height: 350vh;
+  height: 350svh;
+}
+@media (max-width: 767px) {
+  .js .hero-cine {
+    height: 310vh;
+    height: 310svh;
+  }
+}
+
 .hero__gl,
 .hero__bg img {
-  filter: contrast(1.12) saturate(1.16) brightness(0.99);
+  filter: contrast(1.11) saturate(1.15) brightness(0.99);
 }
 
-.hero::after {
-  height: 8%;
-  opacity: clamp(0, calc((var(--p, 0) - 0.96) * 10), 0.35);
+/* ---- Sleek Floating Architectural Glass Header (No rainbow stripe or rainbow pills) ---- */
+.site-header {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(15, 26, 46, 0.08);
+  box-shadow: 0 10px 36px rgba(8, 16, 30, 0.06) !important;
 }
 
-.property-card__media img,
-.community-card img,
-.dev-card__media img,
-.blog-card__media img,
-.story__media img,
-.project-card__media img,
-.project-feature__media img {
-  filter: contrast(1.05) saturate(1.06);
+.site-header::after {
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent 0%, rgba(201, 162, 74, 0.65) 50%, transparent 100%) !important;
+  opacity: 1 !important;
 }
 
-/* Remove milky beige wash over the aerial video; keep only a clean editorial halo for opening copy */
+.site-nav a {
+  --c: 215 65% 18% !important;
+  color: #0f1d36 !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  padding: 0.5rem 0.95rem !important;
+}
+
+.site-nav a:hover {
+  background: rgba(15, 29, 54, 0.06) !important;
+  color: #0b1528 !important;
+  transform: translateY(-1px);
+}
+
+.site-nav a[aria-current='page'] {
+  background: #0b1528 !important;
+  color: #f6d48a !important;
+  box-shadow: 0 4px 14px rgba(11, 21, 40, 0.18) !important;
+}
+
+.site-nav a[aria-current='page']::before {
+  background: #f6d48a !important;
+}
+
+.site-header__cta {
+  background: linear-gradient(135deg, #0d1b33 0%, #071020 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(217, 177, 90, 0.55) !important;
+  box-shadow: 0 10px 26px rgba(8, 16, 30, 0.22) !important;
+}
+
+.site-header__cta:hover {
+  background: linear-gradient(135deg, #162b4d 0%, #0b162c 100%) !important;
+  border-color: #f6d48a !important;
+}
+
+/* ---- Opening Hero Stage: Dark-Cinema Editorial Glass & Pure Ivory/Gold Typography ---- */
 .hero__scrim {
   background:
-    radial-gradient(ellipse 52% 62% at 24% 48%, rgba(252, 248, 240, 0.78) 0%, rgba(252, 248, 240, 0.42) 48%, rgba(252, 248, 240, 0) 76%),
-    linear-gradient(to top, rgba(250, 247, 242, 0.55) 0%, rgba(250, 247, 242, 0) 28%);
+    radial-gradient(ellipse 64% 74% at 28% 52%, rgba(6, 13, 26, 0.68) 0%, rgba(6, 13, 26, 0.36) 52%, rgba(6, 13, 26, 0.08) 82%),
+    linear-gradient(180deg, rgba(6, 13, 26, 0.38) 0%, rgba(6, 13, 26, 0.10) 40%, rgba(6, 13, 26, 0.58) 100%) !important;
   opacity: clamp(0, calc(1.05 - var(--p, 0) * 5.2), 1);
 }
 
 .hero__glow,
-.hero__streak {
-  display: none;
+.hero__streak,
+.hero-art-credit {
+  display: none !important;
 }
 
 .hero__vignette {
-  background: radial-gradient(ellipse at 50% 50%, transparent 64%, rgba(8, 16, 30, 0.32) 100%);
+  background: radial-gradient(ellipse at 50% 50%, transparent 62%, rgba(5, 11, 22, 0.38) 100%);
+}
+
+.hero::after {
+  height: 6%;
+  opacity: clamp(0, calc((var(--p, 0) - 0.97) * 12), 0.25);
+}
+
+/* Remove old-fashioned heavy dark text-stroke on the opening hero headline */
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(9, 18, 34, 0.68);
+  border: 1px solid rgba(217, 177, 90, 0.52);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #f6d48a !important;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-shadow: none !important;
+}
+
+.hero__eyebrow::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 10px #4ade80;
+}
+
+.hero__title,
+.hero__title [data-typewriter]:not(:has(.tw-char)),
+.hero__title .tw-char {
+  background: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+  color: #ffffff !important;
+  -webkit-text-stroke: 0 !important;
+  filter: none !important;
+  text-shadow: 0 8px 34px rgba(4, 9, 20, 0.65) !important;
+  font-size: clamp(2.55rem, 4.2vw, 4.45rem) !important;
+  line-height: 1.04 !important;
+  letter-spacing: -0.03em !important;
+  max-width: 19ch !important;
+}
+
+.hero__title em,
+.hero__title em:not(:has(.tw-char)),
+.hero__title em .tw-char {
+  background: none !important;
+  -webkit-text-fill-color: #f6d48a !important;
+  color: #f6d48a !important;
+  -webkit-text-stroke: 0 !important;
+  font-family: 'Instrument Serif', Georgia, serif !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  font-size: 1.08em !important;
+  text-shadow: 0 8px 32px rgba(4, 9, 20, 0.65) !important;
+}
+
+.hero__subtitle {
+  color: rgba(240, 245, 255, 0.92) !important;
+  text-shadow: 0 2px 18px rgba(4, 9, 20, 0.65) !important;
+  font-size: clamp(1rem, 1.2vw, 1.16rem) !important;
+  line-height: 1.6 !important;
+  max-width: 50ch !important;
+}
+
+.hero__ctas .btn-primary {
+  background: linear-gradient(135deg, #f3d285 0%, #c89838 100%) !important;
+  color: #081224 !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(255, 242, 204, 0.65) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.36) !important;
+}
+
+.hero__ctas .btn-primary:hover {
+  background: linear-gradient(135deg, #ffe096 0%, #d8a744 100%) !important;
+  transform: translateY(-2px);
+}
+
+.hero__ctas .btn-outline-dark {
+  background: rgba(9, 18, 34, 0.68) !important;
+  color: #ffffff !important;
+  border: 1.5px solid rgba(246, 212, 138, 0.58) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28) !important;
+}
+
+.hero__ctas .btn-outline-dark:hover {
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: #091324 !important;
+}
+
+/* Luxury Obsidian & Champagne Glass Search Bar */
+.hero__search-wrap .search-bar {
+  background: rgba(8, 17, 32, 0.84) !important;
+  border: 1.5px solid rgba(217, 177, 90, 0.52) !important;
+  box-shadow: 0 28px 68px rgba(3, 8, 18, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(18px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
+}
+
+.hero__search-wrap .search-field {
+  border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.hero__search-wrap .search-field label {
+  color: #f6d48a !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+}
+
+.hero__search-wrap .search-field select {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+.hero__search-wrap .search-field select option {
+  color: #0b1528 !important;
+  background: #ffffff !important;
+}
+
+.hero__search-wrap .search-bar .btn {
+  background: linear-gradient(135deg, #f3d285 0%, #c89838 100%) !important;
+  color: #081224 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 8px 24px rgba(200, 152, 56, 0.38) !important;
 }
 
 /* Scroll Hook Statements (Chapters 1 & 2) */
@@ -413,13 +598,13 @@ html {
   justify-self: center;
   max-width: 54rem;
   width: min(100%, 54rem);
-  padding: clamp(1.6rem, 3vw, 2.5rem) clamp(1.6rem, 3.8vw, 3.2rem);
-  border-radius: 26px;
-  background: linear-gradient(150deg, rgba(9, 18, 34, 0.84) 0%, rgba(16, 32, 58, 0.78) 100%);
-  border: 1.5px solid rgba(217, 177, 90, 0.52);
-  box-shadow: 0 28px 72px rgba(5, 10, 22, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: clamp(1.7rem, 3vw, 2.6rem) clamp(1.7rem, 3.8vw, 3.4rem);
+  border-radius: 28px;
+  background: linear-gradient(150deg, rgba(7, 15, 28, 0.86) 0%, rgba(14, 28, 52, 0.80) 100%);
+  border: 1.5px solid rgba(217, 177, 90, 0.56);
+  box-shadow: 0 32px 80px rgba(4, 9, 20, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   text-shadow: none;
 }
 
@@ -433,7 +618,7 @@ html {
   font-family: var(--font-body);
   font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   margin-bottom: 0.95rem;
 }
@@ -442,8 +627,8 @@ html {
   display: block;
   font-family: 'Clash Display', var(--font-display), sans-serif;
   font-weight: 600;
-  font-size: clamp(1.75rem, 3.1vw, 2.85rem);
-  line-height: 1.12;
+  font-size: clamp(1.8rem, 3.2vw, 2.95rem);
+  line-height: 1.11;
   letter-spacing: -0.02em;
   color: #ffffff;
   text-shadow: 0 4px 22px rgba(0, 0, 0, 0.45);
@@ -461,14 +646,14 @@ html {
 .hero__hook-sub {
   display: block;
   font-family: var(--font-body);
-  font-size: clamp(0.92rem, 1.15vw, 1.08rem);
-  line-height: 1.55;
+  font-size: clamp(0.94rem, 1.15vw, 1.08rem);
+  line-height: 1.58;
   color: rgba(232, 240, 252, 0.92);
   max-width: 56ch;
   margin-inline: auto;
 }
 
-/* Flagship Corporate End-Frame Showcase (Chapter 3: p = 0.74 -> 1.00) */
+/* Flagship Corporate End-Frame Showcase (Chapter 3: p = 0.72 -> 1.00) */
 .hero__caption:nth-child(3).hero__caption--endframe {
   align-self: center;
   justify-self: center;
@@ -492,11 +677,11 @@ html {
 .hero__endcard {
   padding: clamp(1.5rem, 2.8vw, 2.4rem) clamp(1.5rem, 3.6vw, 3.2rem);
   border-radius: 28px;
-  background: linear-gradient(155deg, rgba(8, 17, 32, 0.88) 0%, rgba(15, 31, 58, 0.82) 55%, rgba(9, 19, 36, 0.90) 100%);
-  border: 1.5px solid rgba(217, 177, 90, 0.64);
-  box-shadow: 0 32px 84px rgba(4, 9, 20, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: linear-gradient(155deg, rgba(7, 15, 28, 0.88) 0%, rgba(14, 29, 54, 0.82) 55%, rgba(8, 17, 32, 0.90) 100%);
+  border: 1.5px solid rgba(217, 177, 90, 0.66);
+  box-shadow: 0 34px 88px rgba(4, 9, 20, 0.64), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   text-align: center;
 }
 
@@ -528,7 +713,7 @@ html {
   display: block;
   font-family: 'Clash Display', var(--font-display), sans-serif;
   font-weight: 600;
-  font-size: clamp(1.75rem, 3.1vw, 2.85rem);
+  font-size: clamp(1.8rem, 3.15vw, 2.9rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: #ffffff;
@@ -616,4 +801,447 @@ html {
     width: 100%;
     justify-content: center;
   }
+}
+
+/* ==========================================================================
+   PINTEREST-INSPIRED WORLD-CLASS UAE LUXURY REAL ESTATE DESIGN SYSTEM
+   (Omniyat / Sobha / Ellington / Architectural Digest Editorial Aesthetic)
+   ========================================================================== */
+
+/* 1. Replace Pastel Rainbow Section Tints with Curated Luxury Gallery Palette */
+body {
+  background: #f7f5f0 !important;
+  color: #0c1729 !important;
+}
+
+main > section:not(.page-hero):not(.hero-cine):not(.section--dark):not(.cta-section):nth-of-type(6n+1),
+main > section:not(.page-hero):not(.hero-cine):not(.section--dark):not(.cta-section):nth-of-type(6n+3),
+main > section:not(.page-hero):not(.hero-cine):not(.section--dark):not(.cta-section):nth-of-type(6n+5) {
+  --sec: 38 72% 42%;
+  background: #f7f4ee;
+}
+
+main > section:not(.page-hero):not(.hero-cine):not(.section--dark):not(.cta-section):nth-of-type(6n+2),
+main > section:not(.page-hero):not(.hero-cine):not(.section--dark):not(.cta-section):nth-of-type(6n+4),
+main > section:not(.page-hero):not(.hero-cine):not(.section--dark):not(.cta-section):nth-of-type(6n) {
+  --sec: 38 72% 42%;
+  background: #ffffff;
+}
+
+/* Dark Obsidian Architectural Showcase for Communities Section */
+main > section:not(.page-hero):not(.hero-cine):has(.communities-grid) {
+  background: linear-gradient(165deg, #07101f 0%, #0d1c36 52%, #081224 100%) !important;
+  color: #ffffff !important;
+  padding-block: clamp(4.5rem, 8vw, 7.5rem) !important;
+}
+
+main > section:has(.communities-grid) .eyebrow {
+  color: #f6d48a !important;
+}
+
+main > section:has(.communities-grid) .eyebrow::before {
+  background: #f6d48a !important;
+}
+
+main > section:has(.communities-grid) h2,
+main > section:has(.communities-grid) .cascade-text,
+main > section:has(.communities-grid) .cascade-text__char {
+  --cascade-color: #ffffff !important;
+  --cascade-hover-color: #f6d48a !important;
+  color: #ffffff !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+main > section:has(.communities-grid) .section-header p {
+  color: rgba(226, 235, 248, 0.84) !important;
+}
+
+/* Refined Section Headings (Remove heavy artificial stroke, add editorial poise) */
+h1, h2, h3, .section-header h2, .section-head-row h2 {
+  -webkit-text-stroke: 0 !important;
+  letter-spacing: -0.03em !important;
+  color: #0b1629;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.74rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase;
+  color: #9e7425 !important;
+}
+
+.eyebrow::before {
+  width: 28px !important;
+  height: 1.5px !important;
+  background: linear-gradient(90deg, #c89838, #e8c468) !important;
+}
+
+/* 2. Value Strip Under Hero -> Dark Obsidian Institutional Proof Bar */
+.value-strip {
+  background: linear-gradient(90deg, #070f1e 0%, #0c1a32 50%, #070f1e 100%) !important;
+  border-block: 1px solid rgba(217, 177, 90, 0.35) !important;
+  padding-block: clamp(2.4rem, 4.2vw, 3.6rem) !important;
+  box-shadow: 0 24px 60px rgba(5, 11, 22, 0.18);
+}
+
+.value-item {
+  position: relative;
+  padding: 0.75rem 1.5rem !important;
+  text-align: left !important;
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 0.25rem 1rem;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .value-item + .value-item {
+    border-left: 1px solid rgba(217, 177, 90, 0.22) !important;
+  }
+}
+
+.value-item__icon {
+  grid-row: 1 / 3;
+  margin: 0 !important;
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 16px !important;
+  background: rgba(217, 177, 90, 0.12) !important;
+  border: 1px solid rgba(217, 177, 90, 0.42) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  color: #f6d48a !important;
+}
+
+.value-item h3 {
+  color: #ffffff !important;
+  font-family: 'Clash Display', var(--font-display), sans-serif !important;
+  font-size: 1.06rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.25rem !important;
+}
+
+.value-item p {
+  color: rgba(220, 230, 244, 0.80) !important;
+  font-size: 0.84rem !important;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+  max-width: 28ch !important;
+}
+
+/* 3. Pinterest Editorial Developer & Project Cards (Zero Rainbow Borders) */
+.dev-card,
+.project-card {
+  border-radius: 26px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(12, 23, 41, 0.09) !important;
+  border-top: 1px solid rgba(12, 23, 41, 0.09) !important;
+  box-shadow: 0 18px 46px rgba(10, 20, 38, 0.07) !important;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease !important;
+  overflow: hidden;
+}
+
+.dev-card:hover,
+.project-card:hover {
+  transform: translateY(-8px) !important;
+  border-color: rgba(200, 152, 56, 0.55) !important;
+  box-shadow: 0 28px 64px rgba(10, 20, 38, 0.15) !important;
+}
+
+.dev-card__media,
+.project-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3 !important;
+  overflow: hidden;
+  border-radius: 22px 22px 0 0 !important;
+  background: #0d1b33 !important;
+}
+
+.dev-card__media::after,
+.project-card__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(7, 14, 28, 0.14) 0%, transparent 40%, rgba(7, 14, 28, 0.44) 100%);
+  pointer-events: none;
+}
+
+.dev-card__media img,
+.project-card__media img {
+  filter: contrast(1.07) saturate(1.10);
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.dev-card:hover .dev-card__media img,
+.project-card:hover .project-card__media img {
+  transform: scale(1.08) !important;
+}
+
+.dev-card li::before {
+  background: #c89838 !important;
+}
+
+.project-card__dev {
+  z-index: 2;
+  left: 16px !important;
+  top: 16px !important;
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  color: #f6d48a !important;
+  background: rgba(8, 16, 30, 0.82) !important;
+  border: 1px solid rgba(217, 177, 90, 0.48) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.project-card__body {
+  padding: 24px 26px 26px !important;
+  gap: 10px !important;
+}
+
+.project-card__collection {
+  color: #9e7425 !important;
+  letter-spacing: 0.14em !important;
+  font-size: 0.70rem !important;
+}
+
+.project-card h3,
+.dev-card h3 {
+  font-family: 'Clash Display', var(--font-display), sans-serif !important;
+  font-size: 1.38rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  color: #0b1528 !important;
+}
+
+.project-card__more,
+.dev-card__count {
+  margin-top: auto;
+  padding-top: 14px !important;
+  border-top: 1px solid rgba(12, 23, 41, 0.08);
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.84rem !important;
+  font-weight: 700 !important;
+  color: #0b1528 !important;
+  letter-spacing: 0.02em;
+}
+
+.project-card__more svg,
+.dev-card__count svg {
+  width: 30px !important;
+  height: 30px !important;
+  padding: 6px;
+  border-radius: 50%;
+  background: rgba(200, 152, 56, 0.14);
+  color: #8f6519;
+  transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+
+.project-card:hover .project-card__more svg,
+.dev-card:hover .dev-card__count svg {
+  background: #0b1528;
+  color: #f6d48a;
+  transform: translateX(4px);
+}
+
+/* 4. Pinterest Asymmetric Bento Gallery for Dubai Communities */
+.communities-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px !important;
+}
+
+@media (min-width: 960px) {
+  .communities-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    grid-auto-rows: 270px !important;
+    gap: 20px !important;
+  }
+  /* Featured Bento Hero Tiles: Downtown Dubai (1st) spans 2x2, Business Bay & Creek Harbour span 2 cols */
+  .communities-grid .community-card:nth-child(1) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  .communities-grid .community-card:nth-child(4) {
+    grid-column: span 2;
+  }
+  .communities-grid .community-card:nth-child(5) {
+    grid-column: span 2;
+  }
+}
+
+.community-card {
+  position: relative;
+  border-radius: 26px !important;
+  overflow: hidden;
+  border: 1px solid rgba(217, 177, 90, 0.32) !important;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.35) !important;
+  aspect-ratio: auto !important;
+  min-height: 240px;
+  background: #0b1528 !important;
+  animation: none !important;
+}
+
+.community-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.08) saturate(1.12);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.community-card:hover img {
+  transform: scale(1.08) !important;
+}
+
+.community-card__overlay {
+  background: linear-gradient(180deg, rgba(6, 12, 24, 0.04) 0%, rgba(6, 12, 24, 0.26) 48%, rgba(6, 12, 24, 0.88) 100%) !important;
+  padding: 24px 26px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.community-card__overlay h3 {
+  font-family: 'Clash Display', var(--font-display), sans-serif !important;
+  font-size: clamp(1.35rem, 2vw, 1.85rem) !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.community-card__count {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(8, 16, 30, 0.72);
+  border: 1px solid rgba(217, 177, 90, 0.55);
+  backdrop-filter: blur(8px);
+  color: #f6d48a !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* 5. Editorial Story Block & Architectural Stat Tiles */
+.story__media {
+  position: relative;
+}
+
+.story__media::before {
+  content: '';
+  position: absolute;
+  inset: -12px 12px 12px -12px;
+  border-radius: 28px;
+  border: 1.5px solid rgba(200, 152, 56, 0.45);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.story__media img {
+  position: relative;
+  z-index: 1;
+  border-radius: 26px !important;
+  box-shadow: 0 28px 68px rgba(10, 20, 38, 0.18) !important;
+  filter: contrast(1.06) saturate(1.08);
+}
+
+.story__stats {
+  border-block: 0 !important;
+  gap: 14px !important;
+}
+
+.story__stats > div {
+  padding: 18px 16px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(12, 23, 41, 0.08);
+  box-shadow: 0 12px 32px rgba(10, 20, 38, 0.05);
+}
+
+.story__num {
+  font-family: 'Clash Display', var(--font-display), sans-serif !important;
+  font-weight: 600 !important;
+  color: #0b1528 !important;
+}
+
+/* 6. Developer Partner Marquee Pills */
+.marquee__item {
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(12, 23, 41, 0.08) !important;
+  box-shadow: 0 10px 28px rgba(10, 20, 38, 0.05) !important;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.marquee__item:hover {
+  transform: translateY(-3px);
+  border-color: rgba(200, 152, 56, 0.55) !important;
+}
+
+/* 7. Services Advisory Cards & Journal Cards */
+.service-card {
+  border-radius: 24px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(12, 23, 41, 0.08) !important;
+  box-shadow: 0 16px 42px rgba(10, 20, 38, 0.06) !important;
+}
+
+.service-card:hover {
+  border-color: rgba(200, 152, 56, 0.55) !important;
+  box-shadow: 0 26px 58px rgba(10, 20, 38, 0.13) !important;
+}
+
+.blog-card {
+  border-radius: 26px !important;
+  overflow: hidden;
+  border: 1px solid rgba(12, 23, 41, 0.08) !important;
+  box-shadow: 0 16px 44px rgba(10, 20, 38, 0.07) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease !important;
+}
+
+.blog-card:hover {
+  transform: translateY(-7px) !important;
+  border-color: rgba(200, 152, 56, 0.52) !important;
+  box-shadow: 0 28px 62px rgba(10, 20, 38, 0.14) !important;
+}
+
+/* 8. Private Client Review / Commitment Showcase */
+.review-carousel {
+  padding: clamp(2rem, 4vw, 3.4rem);
+  border-radius: 28px;
+  background: linear-gradient(155deg, #081224 0%, #102240 100%);
+  border: 1px solid rgba(217, 177, 90, 0.45);
+  box-shadow: 0 28px 72px rgba(7, 14, 28, 0.22);
+}
+
+.review-slide blockquote {
+  color: #ffffff !important;
+}
+
+.review-slide figcaption,
+.review-controls span,
+.review-pause {
+  color: #f6d48a !important;
+}
+
+/* 9. CTA Band: Architectural Gold & Obsidian Finish */
+.cta-band {
+  border-radius: 30px !important;
+  background: linear-gradient(135deg, #07101f 0%, #0f2242 55%, #09152b 100%) !important;
+  border: 1.5px solid rgba(217, 177, 90, 0.48) !important;
+  box-shadow: 0 32px 80px rgba(6, 12, 24, 0.28) !important;
 }

@@ -728,7 +728,7 @@ def dev_card(dev, i=0, reveal=True):
     mono = "".join(w[0] for w in dev["name"].replace("&", " ").split()[:2]).upper()
     rv = f' data-reveal data-reveal-delay="{(i % 3) * 70}"' if reveal else ""
     return f"""<a class="dev-card" href="/properties/{dev['slug']}/"{rv} style="--dc:{dev['hue']}" aria-label="{e(dev['name'])}: {len(dev['projects'])} featured projects">
-<div class="dev-card__media">{project_media(dev, dev["projects"][0])}</div><div class="dev-card__brand">{dev_logo(dev) or f'<span class="dev-card__mono" aria-hidden="true">{mono}</span>'}</div><h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
+<div class="dev-card__media">{project_media(dev, dev["projects"][0], lazy=(i >= 6))}</div><div class="dev-card__brand">{dev_logo(dev) or f'<span class="dev-card__mono" aria-hidden="true">{mono}</span>'}</div><h3>{e(dev['name'])}</h3><p class="dev-card__tag">{e(dev['tagline'])}</p>
 <ul>{names}</ul><span class="dev-card__count">{len(dev['projects'])} featured projects {ARROW}</span></a>"""
 
 
@@ -878,7 +878,7 @@ def build_home():
         n = sum(1 for q in ALL_PROJECTS if q["community"] == c["name"])
         label = f"{n} featured project{'s' if n != 1 else ''}" if n else "Ask about launches"
         comm_cards += f"""<a class="community-card" data-reveal data-reveal-delay="{(i % 4) * 70}" href="/properties/?community={quote(c['name'])}" aria-label="View projects in {e(c['name'])}">
-{img(c['image'], f"{c['name']}, Dubai", sizes="(min-width: 1100px) 290px, (min-width: 640px) 25vw, 50vw")}<div class="community-card__overlay"><h3>{e(c['name'])}</h3><span class="community-card__count">{label}</span></div></a>"""
+{img(c['image'], f"{c['name']}, Dubai", lazy=False, sizes="(min-width: 1100px) 480px, (min-width: 640px) 50vw, 100vw")}<div class="community-card__overlay"><h3>{e(c['name'])}</h3><span class="community-card__count">{label}</span></div></a>"""
 
     svc_cards = ""
     for i, s in enumerate(SERVICES):
