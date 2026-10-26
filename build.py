@@ -913,7 +913,7 @@ def build_home():
         review_intro = "Our service commitments. Client reviews will appear here once verified and approved."
 
     body = f"""<div class="hero-cine" data-hero-cine><section class="hero" data-phase="b1" aria-label="Introduction">
-<div class="hero__bg"><video class="hero__video" data-src-4k="/assets/video/hero-swk-4k.mp4" muted playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster-hq.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk-hq.mp4" type="video/mp4"></video></div>
+<div class="hero__bg"><video class="hero__video" data-src-4k="/assets/video/hero-swk-4k.mp4" muted playsinline preload="auto" poster="/assets/images/hero/hero-swk-poster-hq.webp" width="1920" height="1080" aria-hidden="true" tabindex="-1"><source src="/assets/video/hero-swk-hq.mp4" type="video/mp4"></video><div class="hero__road-layer" aria-hidden="true"><video class="hero__road-video" muted playsinline preload="none" tabindex="-1"></video></div></div>
 <a class="hero__office-signature" href="/contact/" aria-label="Meet SWK at Al Saqr Business Tower, Sheikh Zayed Road, Dubai">
 <span class="hero__office-orbit" aria-hidden="true"><svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36"/><path d="M19 59h42M26 58V24l20-5v39M46 32h10v26M31 30h9M31 36h9M31 42h9M31 48h9M31 54h9"/><path d="M13 42h7M60 38h7M40 6v7M40 67v7"/></svg></span>
 <span class="hero__office-copy"><small>YOUR DUBAI CONNECTION</small><strong>Meet SWK in Dubai<span aria-hidden="true">{ARROW}</span></strong><span>Al Saqr Business Tower</span><em>Sheikh Zayed Road &middot; Private viewings</em></span>

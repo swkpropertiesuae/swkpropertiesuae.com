@@ -15,7 +15,7 @@ const intersects = (a,b) => a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+
     try {
       await page.route('**/assets/video/**', route=>route.abort());
       await page.goto(base, {waitUntil:'domcontentloaded'});
-      await page.evaluate(async()=>{await document.fonts.ready;const poster=new Image();poster.src=document.querySelector('video').poster;await poster.decode();});
+      await page.evaluate(async()=>{await document.fonts.ready;const poster=new Image();poster.src=document.querySelector('.hero__video').poster;await poster.decode();});
       await page.locator('.preloader').waitFor({state:'hidden',timeout:10000});
       await page.screenshot({path:`${out}/${width}x${height}.png`});
       const metrics=await page.evaluate(()=>{
@@ -47,29 +47,31 @@ const intersects = (a,b) => a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+
   const page=await browser.newPage({viewport:{width:1440,height:900}});
   try {
     await page.goto(base,{waitUntil:'domcontentloaded'});
-    await page.waitForFunction(()=>!document.querySelector('.hero__video').paused,null,{timeout:15000});
-    const t=await page.locator('video').evaluate(e=>e.currentTime);
-    await page.waitForTimeout(400);
-    assert(await page.locator('video').evaluate(e=>e.currentTime)>t,'Idle video does not advance');
-    await page.evaluate(()=>scrollTo(0,400));
-    await page.waitForFunction(()=>document.querySelector('video').paused,null,{timeout:600});
-    await page.waitForFunction(()=>!document.querySelector('.hero__video').paused,null,{timeout:5000});
-    await page.locator('video').evaluate(e=>{e.pause();e.currentTime=e.duration-0.2;e.playbackRate=1;e.play();});
-    await page.waitForFunction(()=>document.querySelector('.hero').dataset.phase==='logo',{timeout:5000});
-    await page.waitForFunction(()=>document.querySelector('video').ended,{timeout:5000});
-    assert(await page.locator('video').evaluate(e=>!e.loop),'Closing frame loops');
+    await page.waitForFunction(()=>!document.querySelector('.hero__road-video').paused,null,{timeout:15000});
+    assert(await page.locator('.hero__video').evaluate(e=>e.paused),'Scroll film autoplayed');
+    await page.waitForTimeout(3000);
+    assert(await page.locator('.hero__road-video').evaluate(e=>e.currentTime<1.4),'Idle road escaped its opening segment');
+    assert.equal(await page.locator('.hero').getAttribute('data-phase'),'b1','Idle entered aerial/interior captions');
+    await page.evaluate(()=>scrollTo({top:400,behavior:'instant'}));
+    await page.waitForFunction(()=>document.querySelector('.hero__road-video').paused,null,{timeout:600});
+    await page.waitForFunction(()=>!document.querySelector('.hero__road-video').paused,null,{timeout:5000});
+    assert(await page.locator('.hero__video').evaluate(e=>e.paused),'Scroll film resumed while idle');
+    await page.evaluate(()=>{const w=document.querySelector('.hero-cine'),h=document.querySelector('.hero');scrollTo({top:w.offsetTop+w.offsetHeight-h.offsetHeight,behavior:'instant'});});
+    await page.waitForFunction(()=>document.querySelector('.hero').dataset.phase==='logo',null,{timeout:5000});
+    await page.waitForTimeout(1000);
+    assert(await page.locator('.hero__road-video').evaluate(e=>e.paused),'Road layer covered the closing logo');
     assert(await page.locator('.hero__logo-sheen').evaluate(e=>getComputedStyle(e).animationName==='swk-logo-sheen'),'Gloss animation missing');
     await page.screenshot({path:`${out}/closing-logo.png`});
-    console.log('PASS idle playback, scroll takeover, resume, final-frame logo');
-  } catch(e) { failures.push(`playback: ${e.message}; ${JSON.stringify(await page.locator('video').evaluate(e=>({src:e.currentSrc,ready:e.readyState,paused:e.paused,time:e.currentTime,error:e.error&&e.error.message})))}`); }
+    console.log('PASS road-only idle loop, scroll takeover, resume, final-frame logo');
+  } catch(e) { failures.push(`playback: ${e.message}; ${JSON.stringify(await page.locator('.hero__video').evaluate(e=>({src:e.currentSrc,ready:e.readyState,paused:e.paused,time:e.currentTime,error:e.error&&e.error.message})))}`); }
   await page.close();
   const uhd=await browser.newPage({viewport:{width:1440,height:900},deviceScaleFactor:2});
   try {
     await uhd.goto(base,{waitUntil:'domcontentloaded'});
-    await uhd.waitForFunction(()=>document.querySelector('video').videoWidth===3840);
-    assert.equal(await uhd.locator('video').evaluate(e=>e.videoHeight),2160);
+    await uhd.waitForFunction(()=>document.querySelector('.hero__video').videoWidth===3840);
+    assert.equal(await uhd.locator('.hero__video').evaluate(e=>e.videoHeight),2160);
     console.log('PASS high-density display selects 3840x2160 delivery');
-  } catch(e) { failures.push(`4K selection: ${e.message}; ${JSON.stringify(await uhd.locator('video').evaluate(e=>({src:e.currentSrc,ready:e.readyState,width:e.videoWidth,error:e.error&&e.error.message})))}`); }
+  } catch(e) { failures.push(`4K selection: ${e.message}; ${JSON.stringify(await uhd.locator('.hero__video').evaluate(e=>({src:e.currentSrc,ready:e.readyState,width:e.videoWidth,error:e.error&&e.error.message})))}`); }
   await uhd.close();
   await browser.close();
   assert.equal(failures.length,0,failures.join('\n'));

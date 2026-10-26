@@ -37,12 +37,14 @@ delivery resolution, but does not recover native 4K camera detail. Displays
 with viewport width × pixel ratio of at least 2560 receive that encode;
 other visitors retain 1080p. Data-saver and reduced-motion users keep the poster.
 
-After 700 ms without scrolling, the muted video plays forward at 0.8× speed.
-Its captions and closing reveal follow the video timeline. Scrolling pauses
-playback and restores the scroll-position timeline; idle playback resumes
-after the gesture. The final frame holds without looping, with a masked
-gloss sweep and halo around the closing logo. Hidden tabs and an offscreen
-hero pause playback. The source film remains identified as AI-generated.
+After 700 ms without scrolling, a separate muted road layer loops only the
+first 1.05 seconds at 0.65× speed. That segment contains road traffic before
+the camera turns toward the tower. Its restart blends through the matching
+poster. The opening headline stays visible. The aerial/interior film remains
+paused and is controlled exclusively by scrolling. At the closing logo chapter,
+idle road playback stays off and the glossy finale holds. Hidden tabs and an
+offscreen hero pause motion. Reduced-motion and data-saver visitors keep the poster.
+The film remains identified as AI-generated; this edit does not add new footage.
 
 `tools/hero-qa.cjs` verifies layout at nine viewport sizes, navigation and
 mobile-menu behaviour, reduced motion, idle playback, scroll takeover and
