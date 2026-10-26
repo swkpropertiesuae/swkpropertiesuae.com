@@ -26,6 +26,10 @@ PLAYWRIGHT_PATH=/opt/node22/lib/node_modules/playwright node tools/qa.js
 
 One aerial shot of Sheikh Zayed Road plays once (`szr-dusk-720.mp4`, 1080p; `szr-dusk-480.mp4` is a 720x1280 portrait crop for phones), a single caption fades in and out, and at 10.5 s the logo, "Welcome to SWK Properties UAE", buttons and search arrive over the last frame (`src/js/modules/40-hero.js`, `.hero__reveal` in `src/css/night.css`). Reduced motion, save-data, `?nowebgl` or a blocked autoplay show the end frame with the welcome already in place. Re-grade with ffmpeg: `eq=contrast=1.06:saturation=0.88:gamma=0.92,colorbalance=bs=0.08:bm=0.06:rh=0.04:bh=0.03`.
 
+## The canyon (home, below the hero)
+
+`src/js/modules/38-canyon.js` + `src/css/canyon.css`: a pure CSS 3D scene. The camera flies down a road between two rows of towers (generated from a seeded generator, two faces each) and passes through five hook lines hung in the street. Lines live in `CANYON_QUOTES` in `build.py`. Without JS, reduced motion or `?nowebgl` the lines render as a plain typographic list. Never put `opacity` on the tower element itself: it flattens the 3D context and the side faces vanish.
+
 ## Dusk theme
 
 `src/css/night.css` (loaded last) re-scopes the colour tokens to flat navy for every page: solid header, hairline-bordered cards, a dusk photograph behind interior page titles. Component colours that earlier layers hard-coded are corrected at the end of that file; after adding components, check that text stays at roughly 3:1 or better on its surface.

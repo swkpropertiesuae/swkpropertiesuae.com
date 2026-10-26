@@ -311,7 +311,7 @@ ASSET_V = ""
 def build_assets():
     """Concatenate CSS and JS, fingerprint them, and copy vendor files."""
     global ASSET_V
-    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium", "night"]
+    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium", "night", "canyon"]
     css = "\n".join((SRC / "css" / f"{n}.css").read_text(encoding="utf-8") for n in css_order)
     css = css.replace("../assets/", "/assets/")
     mods = sorted((SRC / "js" / "modules").glob("*.js"))
@@ -860,6 +860,14 @@ def testimonials_markup(reviews):
 
 
 
+CANYON_QUOTES = ['A render shows you the tower. It never shows you the road outside at 6 p.m.', 'Every payment plan is a story about when your money moves.', 'The best unit is rarely the one on the poster.', 'Ask where the escrow account is before you ask about the view.', 'A good advisor is allowed to say: do not buy this one.']
+
+CANYON = ('<section class="canyon" aria-labelledby="canyon-title"><h2 id="canyon-title" class="sr-only">Notes from the SWK desk</h2><div class="canyon__quotes">'
+          + "".join(f'<blockquote class="canyon__quote"><p>{e(q)}</p></blockquote>' for q in CANYON_QUOTES)
+          + '</div><div class="canyon__stage"><div class="canyon__frame"><div class="canyon__road" aria-hidden="true"></div><div class="canyon__world"></div></div>'
+          '<div class="canyon__cta"><a class="btn btn-primary btn-lg" href="/contact/">Talk it through with an advisor</a></div><div class="canyon__progress" aria-hidden="true"><span></span></div></div></section>')
+
+
 def build_home():
     search = (select("s-developer", "developer", "Developer", [(d["slug"], d["name"]) for d in DEVS], "Any developer")
               + select("s-community", "community", "Community", [(c, c) for c in PROJECT_COMMUNITIES], "Any community")
@@ -929,6 +937,8 @@ def build_home():
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
 </div>
 </section></div>
+
+{CANYON}
 
 {VALUES}
 
