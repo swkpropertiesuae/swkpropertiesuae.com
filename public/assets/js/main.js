@@ -488,11 +488,13 @@
         hero.classList.add('is-pointer');
         hero.style.setProperty('--cam-x', (-nx * 14).toFixed(1) + 'px');
         hero.style.setProperty('--cam-y', (-ny * 9).toFixed(1) + 'px');
+        hero.style.setProperty('--gloss-x', ((0.5 + nx * 0.45) * 100).toFixed(1) + '%');
       });
       hero.addEventListener('pointerleave', function () {
         hero.classList.remove('is-pointer');
         hero.style.setProperty('--cam-x', '0px');
         hero.style.setProperty('--cam-y', '0px');
+        hero.style.setProperty('--gloss-x', '12%');
       });
     }
 
