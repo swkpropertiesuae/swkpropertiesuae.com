@@ -24,15 +24,11 @@ PLAYWRIGHT_PATH=/opt/node22/lib/node_modules/playwright node tools/qa.js
 
 ## Home hero
 
-One aerial shot of Sheikh Zayed Road plays once (`szr-dusk-720.mp4`, 1080p; `szr-dusk-480.mp4` is a 720x1280 portrait crop for phones), a single caption fades in and out, and at 10.5 s the logo, "Welcome to SWK Properties UAE", buttons and search arrive over the last frame (`src/js/modules/40-hero.js`, `.hero__reveal` in `src/css/night.css`). Reduced motion, save-data, `?nowebgl` or a blocked autoplay show the end frame with the welcome already in place. Re-grade with ffmpeg: `eq=contrast=1.06:saturation=0.88:gamma=0.92,colorbalance=bs=0.08:bm=0.06:rh=0.04:bh=0.03`.
+One aerial shot of Sheikh Zayed Road plays once behind a 3D scroll flight (`src/js/modules/40-hero.js`, `.hero*` and `.flight__*` in `src/css/kit.css`). The page opens on the logo and welcome; scrolling flies the welcome out through the camera, then flies the camera through five hook lines (`HOOKS` in `build.py`) hung in space over tunnel frames, and the welcome returns at the end of the 720svh runway. Video: `szr-dusk-720.mp4` (1080p) and `szr-dusk-480.mp4` (720x1280 portrait crop). Reduced motion, save-data, `?nowebgl` or blocked autoplay show the end frame and a plain list of the hook lines instead. Never put `opacity` on a parent that has `transform-style: preserve-3d`: it flattens the 3D context.
 
-## The canyon (home, below the hero)
+## UI kit
 
-`src/js/modules/38-canyon.js` + `src/css/canyon.css`: a pure CSS 3D scene. The camera flies down a road between two rows of towers (generated from a seeded generator, two faces each) and passes through five hook lines hung in the street. Lines live in `CANYON_QUOTES` in `build.py`. Without JS, reduced motion or `?nowebgl` the lines render as a plain typographic list. Never put `opacity` on the tower element itself: it flattens the 3D context and the side faces vanish.
-
-## Dusk theme
-
-`src/css/night.css` (loaded last) re-scopes the colour tokens to flat navy for every page: solid header, hairline-bordered cards, a dusk photograph behind interior page titles. Component colours that earlier layers hard-coded are corrected at the end of that file; after adding components, check that text stays at roughly 3:1 or better on its surface.
+`src/css/kit.css` is a shadcn/ui-style system (semantic tokens `--background`, `--card`, `--primary`, `--muted`, `--border`, `--ring`; buttons default/outline/ghost; badges; inputs; cards) in asphalt, limestone and one brass accent, with the small animated details of modern component libraries: sliding nav highlight and developer mega-menu (`31-header.js`), mobile sheet, blur-fade reveals that tag blocks automatically (`20-reveal.js`), pointer spotlight on cards (`51-spotlight.js`), logo marquee, number ticker, border-beam call-to-action. `src/css/chat.css` styles the concierge and the operator inbox. `components.css`, `sections.css` and `responsive.css` still supply layout for older blocks and are overridden by the kit. After adding a component, check its text stays at roughly 3:1 or better on its surface.
 
 ## Deploy
 

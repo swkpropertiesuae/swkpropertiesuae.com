@@ -276,6 +276,13 @@ def h2_cascade(text, extra_cls=""):
     return f'<h2 class="font-clash cascade-text {extra_cls}" style="{style}">{inner}</h2>'
 
 
+def sec_head(badge, title, desc="", action=None, center=False):
+    act = f'<a href="{action[0]}" class="btn btn-outline btn-sm">{action[1]}{ARROW}</a>' if action else ""
+    d = f"<p>{e(desc)}</p>" if desc else ""
+    return (f'<div class="sec-head{" sec-head--center" if center else ""}"><div class="sec-head__copy">'
+            f'<span class="badge badge-dot">{e(badge)}</span><h2>{e(title)}</h2>{d}</div>{act}</div>')
+
+
 GLOW = ('<div class="ambient-glow" aria-hidden="true"><div class="ambient-glow__blob ambient-glow__blob--a"></div>'
         '<div class="ambient-glow__blob ambient-glow__blob--b"></div></div>')
 
@@ -311,7 +318,7 @@ ASSET_V = ""
 def build_assets():
     """Concatenate CSS and JS, fingerprint them, and copy vendor files."""
     global ASSET_V
-    css_order = ["variables", "base", "components", "sections", "animations", "responsive", "cinematic", "theme", "ui", "premium", "night", "canyon"]
+    css_order = ["variables", "base", "components", "sections", "responsive", "kit", "chat"]
     css = "\n".join((SRC / "css" / f"{n}.css").read_text(encoding="utf-8") for n in css_order)
     css = css.replace("../assets/", "/assets/")
     mods = sorted((SRC / "js" / "modules").glob("*.js"))
@@ -345,25 +352,41 @@ NAV = [("/", "Home"), ("/properties/", "Properties"), ("/about/", "About"), ("/s
 def site_header(path):
     def current(h):
         return h == path or (h != "/" and path.startswith(h))
-    links = "".join(
-        f"""<a href="{h}"{' aria-current="page"' if current(h) else ""}>{l}</a>""" for h, l in NAV)
-    menu_links = "".join(
-        f"""<a href="{h}"{' aria-current="page"' if current(h) else ""}><span>{l}</span>{ARROW}</a>""" for h, l in NAV)
-    menu_icon = '<span class="nav-toggle__bars" aria-hidden="true"><i></i><i></i><i></i></span>'
-    return (f'<header class="site-header" data-site-header><div class="site-header__inner container">'
-            f'<a href="/" class="site-brand" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" class="brand-logo" width="338" height="275" decoding="async" fetchpriority="high"></a>'
-            f'<nav class="site-nav" aria-label="Primary">{links}</nav>'
-            f'<div class="site-header__actions"><a href="{WA_DEFAULT}" class="site-header__wa" target="_blank" rel="noopener noreferrer" aria-label="Chat with SWK on WhatsApp">{WHATSAPP}</a>'
-            f'<a href="/contact/" class="btn btn-primary btn-sm site-header__cta">Book a consultation<span class="site-header__go" aria-hidden="true">{ARROW}</span></a>'
-            f'<button type="button" class="nav-toggle" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">{menu_icon}</button></div></div>'
+    chev = '<svg class="hdr__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>'
+    dev_links = "".join(f'<a href="/properties/{d["slug"]}/" class="hdr__dev"><strong>{e(d["name"])}</strong><span>{len(d["projects"])} featured projects</span></a>' for d in DEVS[:8])
+    items = ""
+    for h, l in NAV:
+        cur = ' aria-current="page"' if current(h) else ""
+        if h == "/properties/":
+            items += (f'<div class="hdr__item has-panel"><a href="{h}" class="hdr__link"{cur}>{l}{chev}</a>'
+                      f'<div class="hdr__panel" role="group" aria-label="Developers"><div class="hdr__panel-inner">'
+                      f'<a href="/properties/" class="hdr__feature"><span class="badge badge-dot">Developers &amp; projects</span><strong>Every developer we work with, in one place.</strong>'
+                      f'<span class="hdr__feature-link">Browse all {ARROW}</span></a>'
+                      f'<div class="hdr__devs">{dev_links}</div></div></div></div>')
+        else:
+            items += f'<div class="hdr__item"><a href="{h}" class="hdr__link"{cur}>{l}</a></div>'
+    sheet_links = ""
+    for h, l in NAV:
+        cur = ' aria-current="page"' if current(h) else ""
+        if h == "/properties/":
+            sheet_links += (f'<details class="sheet__group"><summary>{l}{chev}</summary><div class="sheet__sub"><a href="/properties/">All developers &amp; projects</a>'
+                            + "".join(f'<a href="/properties/{d["slug"]}/">{e(d["name"])}</a>' for d in DEVS) + '</div></details>')
+        else:
+            sheet_links += f'<a href="{h}" class="sheet__link"{cur}>{l}</a>'
+    return (f'<header class="site-header hdr" data-site-header><div class="hdr__inner container">'
+            f'<a href="/" class="hdr__brand site-brand" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" class="brand-logo" width="338" height="275" decoding="async" fetchpriority="high"></a>'
+            f'<nav class="hdr__nav" aria-label="Primary" data-hdr-nav><span class="hdr__pill" aria-hidden="true"></span>{items}</nav>'
+            f'<div class="hdr__actions"><a href="tel:{SITE["phone"]}" class="hdr__phone" aria-label="Call SWK">{ICON_PHONE}<span>{SITE["phoneDisplay"]}</span></a>'
+            f'<a href="/contact/" class="btn btn-primary btn-sm hdr__cta">Book a consultation{ARROW}</a>'
+            f'<button type="button" class="hdr__burger" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu"><span aria-hidden="true"><i></i><i></i><i></i></span></button></div></div></header>'
             f'<div class="menu-scrim" data-menu-scrim hidden></div>'
-            f'<div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>'
-            f'<nav class="mobile-menu__nav" aria-label="Mobile">{menu_links}</nav>'
-            f'<div class="mobile-menu__actions">'
-            f'<a href="/contact/" class="btn btn-primary mobile-menu__cta">Book a consultation</a>'
-            f'<a href="tel:{SITE["phone"]}" class="btn btn-outline-dark">{ICON_PHONE} Call</a>'
-            f'<a href="{WA_DEFAULT}" class="btn btn-outline-dark" target="_blank" rel="noopener noreferrer">{WHATSAPP} WhatsApp</a>'
-            f'<button type="button" class="btn btn-outline-dark mobile-menu__chat" data-menu-chat>Chat with SWK</button></div></div></header>')
+            f'<aside class="sheet" id="mobile-menu" data-mobile-menu hidden aria-label="Menu"><div class="sheet__head"><img src="/assets/images/brand/swk-logo-dark.png" alt="" width="338" height="275" loading="lazy" decoding="async">'
+            f'<button type="button" class="hdr__burger is-open" data-menu-toggle aria-label="Close menu"><span aria-hidden="true"><i></i><i></i><i></i></span></button></div>'
+            f'<nav class="sheet__nav" aria-label="Mobile">{sheet_links}</nav>'
+            f'<div class="sheet__actions"><a href="/contact/" class="btn btn-primary">Book a consultation{ARROW}</a>'
+            f'<a href="tel:{SITE["phone"]}" class="btn btn-outline">{ICON_PHONE} Call</a>'
+            f'<a href="{WA_DEFAULT}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">{WHATSAPP} WhatsApp</a>'
+            f'<button type="button" class="btn btn-ghost mobile-menu__chat" data-menu-chat>Chat with SWK</button></div></aside>')
 
 
 PRELOADER = """<div class="preloader" role="status" aria-live="polite">
@@ -400,54 +423,56 @@ VALUES = ('<section class="value-strip" aria-labelledby="values-title"><h2 id="v
 
 
 STATS = [("10", "+", "Years in the UAE"), ("100", "+", "Homes Sold"), ("40", "+", "Consultants"), ("100", "%", "Client Satisfaction")]
-STORY = ('<section class="section container story ambient-glow-host">' + GLOW + '<div class="story__grid">'
-         '<div class="story__media" data-reveal>' + img("assets/images/about/swk-office.webp", "SWK Properties office in Al Saqr Business Tower, Sheikh Zayed Road, Dubai", sizes="(min-width: 900px) 600px, 100vw") + '</div>'
-         '<div class="story__copy" data-reveal><span class="eyebrow">Why SWK</span><h2>Built by agents, run for clients</h2>'
+STORY = ('<section class="section container story" data-ghost-off><div class="story__grid">'
+         '<div class="story__media">' + img("assets/images/about/swk-office.webp", "SWK Properties office in Al Saqr Business Tower, Sheikh Zayed Road, Dubai", sizes="(min-width: 900px) 600px, 100vw") + '</div>'
+         '<div class="story__copy"><span class="badge badge-dot">Why SWK</span><h2>Built by agents, run for clients</h2>'
          '<p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in the UAE could feel for outsiders. '
          'Every fee, every payment plan clause and every ROI figure gets explained in plain language before you sign anything.</p>'
-         '<div class="story__stats">' + "".join(
-             f'<div><div class="story__num" data-count="{n}" data-suffix="{sfx}">{n}{sfx}</div><div class="story__label">{lab}</div></div>' for n, sfx, lab in STATS) +
-         '</div><a href="/about/" class="btn btn-primary">Our story</a></div></div></section>')
+         '<ul class="checks"><li>Fees, commission and clauses disclosed before you sign</li><li>Yields explained from registered transaction data</li><li>One consultant from first call to handover</li></ul>'
+         '<a href="/about/" class="btn btn-primary">Our story' + ARROW + '</a></div></div></section>')
+
+STATS_BAND = ('<section class="stats-band" aria-label="SWK in numbers"><div class="container"><dl class="stats-grid">' + "".join(
+    f'<div class="stat"><dd class="stat__num"><span data-count="{n}" data-suffix="{sfx}">{n}{sfx}</span></dd><dt class="stat__label">{lab}</dt></div>' for n, sfx, lab in STATS) + '</dl></div></section>')
 
 
 def footer():
-    comm_links = DEVS[:6]
-    clinks = "".join(f'<li><a href="/properties/{d["slug"]}/">{e(d["name"])}</a></li>' for d in comm_links)
     ids = [SITE["rera"]]
     if SITE.get("brn"):
         ids.append(f"BRN {SITE['brn']}")
     if SITE.get("tradeLicense"):
         ids.append(f"Licence {SITE['tradeLicense']}")
     year = f"{SITE['founded']}–{TODAY.year}"
-    return f"""<footer class="site-footer">
+    dev_col = "".join(f'<li><a href="/properties/{d["slug"]}/">{e(d["name"])}</a></li>' for d in DEVS[:7])
+    svc_col = "".join(f'<li><a href="/services/">{e(x["title"])}</a></li>' for x in SERVICES[:6])
+    return f"""<footer class="site-footer ftr">
 <a href="{WA_DEFAULT}" class="whatsapp-float" aria-label="Chat with SWK Properties on WhatsApp" target="_blank" rel="noopener noreferrer">{WHATSAPP}</a>
-<div class="footer-glow" aria-hidden="true"><div class="footer-glow__blob footer-glow__blob--a"></div><div class="footer-glow__blob footer-glow__blob--b"></div></div>
-<div class="container footer-inner">
-<div class="footer-news">
-<div class="footer-news__copy"><h2 class="footer-news__title">Stay ahead of the market</h2><p>New launches, price moves and community guides, once a month.</p></div>
-<form class="footer-newsletter" data-form="newsletter" data-endpoint="{e(SITE['formEndpoint'])}" aria-label="Newsletter signup" novalidate>
-<div class="footer-newsletter__row"><label for="newsletter-email" class="sr-only">Email address</label>
-<input type="email" id="newsletter-email" name="email" placeholder="Your email address" autocomplete="email" required>
-<button type="submit" class="btn btn-primary">Join</button></div>
-<input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
-<label class="form-check"><input type="checkbox" name="consent" required><span>I agree to receive market updates and accept the <a href="/privacy/">Privacy Policy</a>.</span></label>
-<p class="form-status" role="status" aria-live="polite" hidden></p>
-</form></div>
-<div class="footer-grid">
-<div class="footer-col footer-col--brand"><a href="/" class="footer-logo" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" width="338" height="275" loading="lazy" decoding="async"></a>
+<div class="ftr__wordmark" aria-hidden="true">SWK</div>
+<div class="container ftr__inner">
+<div class="ftr__top">
+<div class="ftr__brand"><a href="/" class="footer-logo" aria-label="SWK Properties — Home"><img src="/assets/images/brand/swk-logo-dark.png" alt="SWK Properties" width="338" height="275" loading="lazy" decoding="async"></a>
 <p>A UAE property advisory helping investors and homeowners buy, sell and manage property with confidence.</p>
+<p class="ftr__status"><span class="ftr__dot" aria-hidden="true"></span>{e(SITE['address'])}</p>
 <div class="social-row">
 <a href="{SITE['instagram']}" target="_blank" rel="noopener noreferrer" aria-label="SWK Properties on Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
-<a href="{SITE['linkedin']}" target="_blank" rel="noopener noreferrer" aria-label="SWK Properties on LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 10v7M7 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg></a>
-</div></div>
-<div class="footer-col"><h2 class="footer-title">Explore</h2><ul><li><a href="/properties/">Properties</a></li><li><a href="/about/">About Us</a></li><li><a href="/services/">Services</a></li><li><a href="/mortgage/">Mortgage Calculator</a></li><li><a href="/blog/">Journal</a></li><li><a href="/contact/">Contact</a></li></ul></div>
-<div class="footer-col"><h2 class="footer-title">Communities</h2><ul>{clinks}</ul></div>
-<div class="footer-col"><h2 class="footer-title">Visit &amp; contact</h2><ul class="footer-contact">
+<a href="{SITE['linkedin']}" target="_blank" rel="noopener noreferrer" aria-label="SWK Properties on LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 10v7M7 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg></a></div></div>
+<div class="ftr__news"><h2>Stay ahead of the market</h2><p>New launches, price moves and community guides, once a month.</p>
+<form class="footer-newsletter" data-form="newsletter" data-endpoint="{e(SITE['formEndpoint'])}" aria-label="Newsletter signup" novalidate>
+<div class="footer-newsletter__row"><label for="newsletter-email" class="sr-only">Email address</label>
+<input type="email" id="newsletter-email" name="email" placeholder="you@company.com" autocomplete="email" required>
+<button type="submit" class="btn btn-primary">Subscribe</button></div>
+<input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+<label class="form-check"><input type="checkbox" name="consent" required><span>I agree to receive market updates and accept the <a href="/privacy/">Privacy Policy</a>.</span></label>
+<p class="form-status" role="status" aria-live="polite" hidden></p></form></div>
+</div>
+<div class="ftr__cols">
+<div class="footer-col"><h2 class="footer-title">Company</h2><ul><li><a href="/about/">About us</a></li><li><a href="/services/">Services</a></li><li><a href="/blog/">Journal</a></li><li><a href="/contact/">Contact</a></li></ul></div>
+<div class="footer-col"><h2 class="footer-title">Developers</h2><ul>{dev_col}</ul></div>
+<div class="footer-col"><h2 class="footer-title">Services</h2><ul>{svc_col}</ul></div>
+<div class="footer-col"><h2 class="footer-title">Get in touch</h2><ul class="footer-contact">
 <li>{ICON_PHONE}<a href="tel:{SITE['phone']}">{SITE['phoneDisplay']}</a></li>
 <li>{ICON_MAIL}<a href="mailto:{SITE['email']}">{SITE['email']}</a></li>
-<li>{ICON_PIN}<span>{e(SITE['address'])}</span></li>
 <li>{ICON_CLOCK}<span>{e(SITE['hours'])}</span></li>
-<li><button type="button" class="btn btn-gold" data-open-callback style="margin-top:var(--space-2)">Request a callback</button></li></ul></div>
+<li><button type="button" class="btn btn-outline btn-sm" data-open-callback>Request a callback</button></li></ul></div>
 </div>
 <div class="footer-bottom"><span>© {year} {SITE['name']}. All rights reserved. {' · '.join(e(i) for i in ids)}.</span>
 <span class="footer-legal"><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Use</a><a href="/cookies/">Cookie Policy</a><button type="button" class="link-button" data-cookie-settings>Cookie settings</button><a href="/feed.xml">RSS</a></span></div>
@@ -804,11 +829,10 @@ def calculator(analyze_href, analyze_label="Analyze"):
 
 
 def cta_section(title="Ready to find your next address in Dubai?", text="Tell us what you're looking for and one of our consultants will curate a shortlist within 24 hours."):
-    return f"""<section class="section cta-section"><div class="container"><div class="cta-band on-dark">
-<div class="cta-band__copy"><span class="eyebrow">Let's make it happen</span><h2>{e(title)}</h2><p>{e(text)}</p>
-<div class="cta-band__actions"><a href="/contact/" class="btn btn-gold btn-lg">Book a Consultation</a>
-<a href="{wa("Hello, I'd like to speak to a consultant about buying property in Dubai.")}" class="btn btn-outline btn-lg" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a></div></div>
-<div class="cta-band__art" aria-hidden="true"></div></div></div></section>"""
+    return f"""<section class="section cta-section"><div class="container"><div class="cta-band">
+<div class="cta-band__copy"><h2>{e(title)}</h2><p>{e(text)}</p></div>
+<div class="cta-band__actions"><a href="/contact/" class="btn btn-primary btn-lg">Book a consultation{ARROW}</a>
+<a href="{wa("Hello, I'd like to speak to a consultant about buying property in Dubai.")}" class="btn btn-outline btn-lg" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a></div></div></div></section>"""
 
 
 def org_ld():
@@ -860,12 +884,11 @@ def testimonials_markup(reviews):
 
 
 
-CANYON_QUOTES = ['A render shows you the tower. It never shows you the road outside at 6 p.m.', 'Every payment plan is a story about when your money moves.', 'The best unit is rarely the one on the poster.', 'Ask where the escrow account is before you ask about the view.', 'A good advisor is allowed to say: do not buy this one.']
-
-CANYON = ('<section class="canyon" aria-labelledby="canyon-title"><h2 id="canyon-title" class="sr-only">Notes from the SWK desk</h2><div class="canyon__quotes">'
-          + "".join(f'<blockquote class="canyon__quote"><p>{e(q)}</p></blockquote>' for q in CANYON_QUOTES)
-          + '</div><div class="canyon__stage"><div class="canyon__frame"><div class="canyon__road" aria-hidden="true"></div><div class="canyon__world"></div></div>'
-          '<div class="canyon__cta"><a class="btn btn-primary btn-lg" href="/contact/">Talk it through with an advisor</a></div><div class="canyon__progress" aria-hidden="true"><span></span></div></div></section>')
+HOOKS = ["A render shows you the tower. It never shows you the road outside at 6 p.m.",
+         "Every payment plan is a story about when your money moves.",
+         "The best unit is rarely the one on the poster.",
+         "Ask where the escrow account is before you ask about the view.",
+         "A good advisor is allowed to say: do not buy this one."]
 
 
 def build_home():
@@ -927,6 +950,8 @@ def build_home():
 <video class="hero__video" muted playsinline preload="auto" aria-hidden="true" tabindex="-1" data-src-wide="/assets/video/szr-dusk-720.mp4" data-src-tall="/assets/video/szr-dusk-480.mp4"></video>
 <div class="hero__scrim"></div>
 <p class="hero__caption" aria-hidden="true">Dubai, from above</p>
+<div class="hero__flight" data-hero-flight>{"".join(f'<blockquote class="flight__quote"><p>{e(q)}</p></blockquote>' for q in HOOKS)}</div>
+<div class="hero__welcome" data-hero-welcome>
 <div class="hero__reveal container">
 <img class="hero__logo" src="/assets/images/brand/swk-logo-dark.png" alt="" width="338" height="275" decoding="async">
 <span class="hero__kicker">Welcome to</span>
@@ -935,50 +960,47 @@ def build_home():
 <div class="hero__ctas"><a href="/properties/" class="btn btn-primary btn-lg">Explore Developers {ARROW}</a><a href="/contact/" class="btn btn-outline-dark btn-lg">Talk to an advisor</a></div>
 <div class="hero__search-wrap"><form class="search-bar glass-panel" action="/properties/" method="get" aria-label="Search properties">{search}
 <button type="submit" class="btn btn-primary">{SEARCH} Search</button></form></div>
-</div>
+</div></div>
+<div class="hero__progress" aria-hidden="true"><span></span></div>
 </section></div>
+<section class="hero-quotes" data-hero-quotes hidden aria-label="Notes from the SWK desk"><div class="container">{"".join(f'<blockquote><p>{e(q)}</p></blockquote>' for q in HOOKS)}</div></section>
 
-{CANYON}
+<section class="logo-cloud" data-developers aria-label="Developers we work with"><div class="container"><p class="logo-cloud__label">Straight from the source: the master developers behind the UAE skyline</p></div>
+<div class="marquee" data-developer-marquee><div class="marquee__track">{one}{two}</div></div></section>
 
 {VALUES}
 
-<section class="section section--alt featured-section ambient-glow-host">{GLOW}<div class="container">
-<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">The builders</span>{h2_cascade("Meet the people building your skyline.")}</div>
-<a href="/properties/" class="btn btn-outline-dark">All developers &amp; projects</a></div>
+<section class="section" id="developers"><div class="container">
+{sec_head("The builders", "Meet the people building your skyline", "Developer profiles with their communities, launches and what each is known for.", ("/properties/", "All developers"))}
 {row_carousel(dev_cards, "UAE developers", "developers")}</div></section>
 
-<section class="section ambient-glow-host">{GLOW}<div class="container">
-<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Spotlight</span>{h2_cascade("Six launches we keep going back to.")}</div>
-<a href="/properties/" class="btn btn-outline-dark">Browse all projects</a></div>
+{STATS_BAND}
+
+<section class="section"><div class="container">
+{sec_head("Spotlight", "Six launches we keep going back to", "", ("/properties/", "Browse all projects"))}
 {row_carousel(feat_cards, "Spotlight projects", "projects")}
 <p class="listing-note">Project details come from each developer's public information and change often. Ask SWK for current availability, payment terms and brochures; none are published on this site.</p>
 </div></section>
 
 {STORY}
 
-<section class="section ambient-glow-host" data-developers>{GLOW}<div class="container">
-<div class="section-header center"><span class="eyebrow">Trusted partners</span>{h2_cascade("Straight from the source.")}
-<p>We work directly with the master developers behind the city's skyline, so pricing and payment plans come straight from source.</p></div>
-<div class="marquee" data-developer-marquee><div class="marquee__track">{one}{two}</div></div></div></section>
+<section class="section section--alt"><div class="container">
+{sec_head("Where to live", "Where would your mornings begin?", "Every neighbourhood has a different rhythm, from Marina's waterfront energy to the quiet greenery of Arabian Ranches.", center=True)}
+<div class="communities-grid" data-communities-grid>{comm_cards}</div></div></section>
 
-<section class="section container ambient-glow-host">{GLOW}<div class="section-header center"><span class="eyebrow">Where to live</span>{h2_cascade("Where would your mornings begin?")}
-<p>Every neighbourhood has a different rhythm — from Marina's waterfront energy to the quiet greenery of Arabian Ranches.</p></div>
-<div class="communities-grid" data-communities-grid>{comm_cards}</div></section>
+<section class="section"><div class="container">
+{sec_head("How we help", "From 'maybe' to keys in hand", "From your first shortlist to renewing Ejari five years later: one team, one point of contact.", ("/services/", "All services"))}
+<div class="services-grid" data-services-teaser>{svc_cards}</div></div></section>
 
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container">
-<div class="section-header center"><span class="eyebrow">How we help</span>{h2_cascade("From 'maybe' to keys in hand.")}
-<p>From your first shortlist to renewing Ejari five years later — one team, one point of contact.</p></div>
-<div class="services-grid" data-services-teaser data-reveal>{svc_cards}</div></div></section>
-
-<section class="section ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Plan your purchase</span>{h2_cascade("What would home cost each month?")}
-<p>Adjust the figures below for an instant estimate, or get a personalised rate comparison on our mortgage page.</p></div>
+<section class="section section--alt"><div class="container">
+{sec_head("Plan your purchase", "What would home cost each month?", "Adjust the figures for an instant estimate, or get a personalised rate comparison on the mortgage page.", center=True)}
 {calculator("/mortgage/", "Analyze")}</div></section>
 
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">The SWK experience</span><h2>{review_heading}</h2><p>{review_intro}</p></div>{team}</div></section>
+<section class="section"><div class="container">
+{sec_head("The SWK experience", review_heading, review_intro, center=True)}{team}</div></section>
 
-<section class="section ambient-glow-host">{GLOW}<div class="container">
-<div class="section-head-row"><div class="section-header" style="margin-bottom:0"><span class="eyebrow">Insights</span>{h2_cascade("Questions you'll be glad you asked early.")}</div>
-<a href="/blog/" class="btn btn-outline-dark">Read all articles</a></div>
+<section class="section section--alt"><div class="container">
+{sec_head("Insights", "Questions you'll be glad you asked early", "", ("/blog/", "Read all articles"))}
 <div class="blog-grid" data-blog-preview-grid>{"".join(blog_card(p, i) for i, p in enumerate(POSTS[:3]))}</div></div></section>
 
 {cta_section()}"""
@@ -1002,10 +1024,10 @@ def build_properties():
     trail = [("Home", "/"), ("Developers & Projects", None)]
     body = f"""{page_hero("UAE Developers & Projects", "The UAE's most active developers, with the launches and communities worth knowing. Ask SWK for current availability and terms.", trail, bg="properties")}
 <section class="section container ambient-glow-host">{GLOW}
-<div class="section-header center"><span class="eyebrow">Developers</span><h2>Choose a developer</h2><p>Each profile covers who they are, what they are known for and a closer look at their latest and best-known projects.</p></div>
+<div class="section-header center"><span class="badge badge-dot">Developers</span><h2>Choose a developer</h2><p>Each profile covers who they are, what they are known for and a closer look at their latest and best-known projects.</p></div>
 <div class="dev-grid">{devs}</div></section>
 <section class="section section--alt container ambient-glow-host" id="projects">{GLOW}
-<div class="section-header center"><span class="eyebrow">All projects</span><h2>{len(ALL_PROJECTS)} projects across the UAE</h2></div>
+<div class="section-header center"><span class="badge badge-dot">All projects</span><h2>{len(ALL_PROJECTS)} projects across the UAE</h2></div>
 <form class="filter-bar" data-filters aria-label="Filter projects" novalidate>{filters}
 <button type="button" class="btn btn-outline-dark btn-sm" data-filters-reset>Reset</button>
 <span class="results-count" data-results-count role="status" aria-live="polite">{len(ALL_PROJECTS)} projects</span></form>
@@ -1034,7 +1056,7 @@ def build_developer(d):
         msg = wa(f"Hello SWK Properties, I'd like current availability and brochure details for {q['name']} by {d['name']}.")
         rows += f"""<article class="project-feature{' project-feature--flip' if i % 2 else ''}" id="{q['slug']}" style="--dc:{d['hue']}" data-reveal>
 <div class="project-feature__media">{project_media(d, q, lazy=i > 0)}<span class="project-feature__note">{e(d['name'])} &middot; {e(q['community'])}</span></div>
-<div class="project-feature__copy"><span class="eyebrow">{e(q['collection'])}</span><h3>{e(q['name'])}</h3>
+<div class="project-feature__copy"><span class="badge badge-dot">{e(q['collection'])}</span><h3>{e(q['name'])}</h3>
 <p class="project-feature__loc">{PIN} {e(q['community'])}</p><p>{e(q['blurb'])}</p><ul class="project-feature__tags">{tags}</ul>
 <div class="project-feature__actions"><a href="{msg}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Ask SWK about this project</a>
 <a href="{e(official)}" class="btn btn-outline-dark btn-sm" target="_blank" rel="noopener noreferrer">{official_label} ↗</a>
@@ -1044,13 +1066,13 @@ def build_developer(d):
     more = "".join(dev_card(x, i) for i, x in enumerate(others))
     body = f"""{page_hero(d['name'], d['tagline'], trail, local=project_art(d, d['projects'][0])[0])}
 <section class="section container ambient-glow-host" style="--dc:{d['hue']}">{GLOW}
-<div class="dev-intro"><div>{dev_logo(d, "dev-logo dev-logo--lg")}<span class="eyebrow">About the developer</span><h2>{e(d['name'])}: {e(d['knownFor'].lower())}</h2><p>{e(d['about'])}</p></div>
+<div class="dev-intro"><div>{dev_logo(d, "dev-logo dev-logo--lg")}<span class="badge badge-dot">About the developer</span><h2>{e(d['name'])}: {e(d['knownFor'].lower())}</h2><p>{e(d['about'])}</p></div>
 <aside class="dev-intro__card"><span>Known for</span><strong>{e(d['knownFor'])}</strong><span>Featured here</span><strong>{len(d['projects'])} projects</strong>
 <a href="{e(d['site'])}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-sm">Developer website ↗</a></aside></div>
 <nav class="dev-jump" aria-label="Projects by {e(d['name'])}">{jump}</nav></section>
 <section class="section section--alt ambient-glow-host">{GLOW}<div class="container project-features">{rows}
 <p class="listing-note">Project names, locations and imagery reference {e(d['name'])}'s public portfolio; check the developer's own pages for the latest status. Prices, unit details and availability are shared by SWK on enquiry and are not published here.</p></div></section>
-<section class="section container ambient-glow-host">{GLOW}<div class="section-header center"><span class="eyebrow">Keep exploring</span><h2>Other developers</h2></div><div class="dev-grid">{more}</div></section>
+<section class="section container ambient-glow-host">{GLOW}<div class="section-header center"><span class="badge badge-dot">Keep exploring</span><h2>Other developers</h2></div><div class="dev-grid">{more}</div></section>
 {cta_section("Want the current brief on " + d["name"] + "?", "Tell us what you are looking for. A consultant will send availability, brochures and a straight view of the trade-offs.")}"""
     ld = [breadcrumb_ld(trail), {"@context": "https://schema.org", "@type": "ItemList", "name": f"{d['name']} projects", "itemListElement": [
         {"@type": "ListItem", "position": i + 1, "name": q["name"], "url": f"{BASE}/properties/{d['slug']}/#{q['slug']}"} for i, q in enumerate(d["projects"])]}]
@@ -1072,13 +1094,13 @@ def build_about():
     trail = [("Home", "/"), ("About", None)]
     body = f"""{page_hero("Ten years of getting Dubai property right", "SWK Properties was founded on a simple idea: buying a home in Dubai — whether you live down the road or on the other side of the world — should feel transparent, not transactional.", trail, bg="about")}
 <section class="section container ambient-glow-host">{GLOW}<div class="split-block">{img("assets/images/about/swk-office.webp", "SWK Properties office in Al Saqr Business Tower, Sheikh Zayed Road, Dubai", sizes="(min-width: 900px) 600px, 100vw")}
-<div data-reveal><span class="eyebrow">Our Story</span><h2>Built by agents, run for clients</h2>
+<div data-reveal><span class="badge badge-dot">Our Story</span><h2>Built by agents, run for clients</h2>
 <p>SWK Properties was started in 2016 by a small team of agents frustrated with how opaque property buying in the UAE could feel for outsiders. Today we're a full-service brokerage of over 40 consultants, but the founding principle hasn't changed: every fee, every payment plan clause, and every ROI figure gets explained in plain language before you sign anything.</p>
 <p style="margin-top:var(--space-4)">We work across off-plan and secondary sales, mortgage arrangement, and long-term property management — so the relationship doesn't end at handover.</p>
 <a href="/contact/" class="btn btn-dark" style="margin-top:var(--space-5)">Talk to our team</a></div></div></section>
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Our Values</span><h2>What guides every deal we close</h2></div><div class="step-list">{steps}</div></div></section>
+<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="badge badge-dot">Our Values</span><h2>What guides every deal we close</h2></div><div class="step-list">{steps}</div></div></section>
 <section class="section section--dark ambient-glow-host">{GLOW}<div class="container"><div class="stat-strip">{stat_html}</div></div></section>
-<section class="section ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Our People</span><h2>Meet a few of our consultants</h2>
+<section class="section ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="badge badge-dot">Our People</span><h2>Meet a few of our consultants</h2>
 <p>Every client is paired with a dedicated consultant for the life of their purchase.</p></div><div class="team-grid">{cards}</div></div></section>
 {cta_section("Let's find your next Dubai address", "Book a no-obligation consultation and we'll come prepared with listings matched to your budget.")}"""
     write("/about/", page("/about/", "About Us | SWK Properties",
@@ -1097,7 +1119,7 @@ def build_services():
     trail = [("Home", "/"), ("Services", None)]
     body = f"""{page_hero("Full-service support, start to handover", "Buying, selling, financing or managing a Dubai property — one team handles every step, with a single consultant as your point of contact throughout.", trail, bg="services")}
 <section class="section container ambient-glow-host">{GLOW}<h2 class="sr-only">Our services</h2><div class="services-grid" data-reveal>{cards}</div></section>
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">How It Works</span><h2>Our process</h2></div><div class="step-list">{steps}</div></div></section>
+<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="badge badge-dot">How It Works</span><h2>Our process</h2></div><div class="step-list">{steps}</div></div></section>
 {cta_section("Not sure which service you need?", "Start with a free consultation — we'll recommend the right path for your goals.")}"""
     write("/services/", page("/services/", "Our Services | SWK Properties",
                              "From buying and selling to mortgage arrangement, legal documentation and property management — SWK Properties supports Dubai real estate clients end to end.",
@@ -1115,8 +1137,8 @@ def build_mortgage():
     trail = [("Home", "/"), ("Mortgage", None)]
     body = f"""{page_hero("Mortgage Calculator", "Get an instant estimate of your monthly payment, then let our lending partners find you the sharpest rate available.", trail, bg="mortgage")}
 <section class="section container ambient-glow-host">{GLOW}<h2 class="sr-only">Calculate your repayments</h2><div class="mortgage-layout">{calculator("/contact/", "Analyze")}</div></section>
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="eyebrow">Getting Approved</span><h2>What you'll need for a UAE mortgage</h2></div><div class="step-list">{steps}</div></div></section>
-<section class="section container ambient-glow-host">{GLOW}<div class="section-header center"><span class="eyebrow">Questions</span><h2>Mortgage &amp; buying costs FAQ</h2></div>
+<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header center"><span class="badge badge-dot">Getting Approved</span><h2>What you'll need for a UAE mortgage</h2></div><div class="step-list">{steps}</div></div></section>
+<section class="section container ambient-glow-host">{GLOW}<div class="section-header center"><span class="badge badge-dot">Questions</span><h2>Mortgage &amp; buying costs FAQ</h2></div>
 <div style="max-width:760px; margin-inline:auto" data-faq-list>{faq}</div></section>"""
     ld = [breadcrumb_ld(trail), {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
         {"@type": "Question", "name": f["question"], "acceptedAnswer": {"@type": "Answer", "text": f["answer"]}} for f in FAQ]}]
@@ -1139,7 +1161,7 @@ def build_contact():
 <button type="button" class="quick-tile quick-tile--cb" data-open-callback><span class="quick-tile__icon">{ic('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')}</span><span class="quick-tile__txt"><small>We call you</small><strong>Request a callback</strong></span><span class="quick-tile__go" aria-hidden="true">&rarr;</span></button>
 </div>
 <div class="contact-layout">
-<div class="ui-card" data-reveal><div class="ui-card__head"><span class="eyebrow">Send a message</span><h2>Tell us what you're looking for</h2><p>Share a few details and a consultant will reply within one business day.</p></div>
+<div class="ui-card" data-reveal><div class="ui-card__head"><span class="badge badge-dot">Send a message</span><h2>Tell us what you're looking for</h2><p>Share a few details and a consultant will reply within one business day.</p></div>
 <form id="contact-form" data-form="contact" data-endpoint="{e(SITE['formEndpoint'])}" novalidate class="ui-card__body"><div class="form-grid">
 <div class="form-field"><label for="cf-name">Full name</label><input id="cf-name" name="name" autocomplete="name" placeholder="Your full name" required></div>
 <div class="form-grid cols-2" style="gap:var(--space-5)"><div class="form-field"><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required></div>
@@ -1164,7 +1186,7 @@ def build_contact():
 
 
 def build_chat_inbox():
-    body = '''<section class="section container inbox-shell"><div class="section-header"><span class="eyebrow">SWK Workspace</span><h1>Live chat inbox</h1><p>Private operator access. Only authorised SWK team members may sign in.</p></div>
+    body = '''<section class="section container inbox-shell"><div class="section-header"><span class="badge badge-dot">SWK Workspace</span><h1>Live chat inbox</h1><p>Private operator access. Only authorised SWK team members may sign in.</p></div>
 <p data-inbox-status role="status"></p><form class="inbox-login ui-card" data-inbox-login><label for="inbox-password">Inbox password</label><input id="inbox-password" type="password" autocomplete="current-password" required><button type="submit" class="btn btn-primary">Sign in</button></form>
 <div data-inbox-workspace hidden><div class="inbox-toolbar"><label><input type="checkbox" data-inbox-online> Available for live chat</label><button type="button" class="btn btn-outline-dark" data-inbox-logout>Sign out</button></div><p class="listing-note">Available status lasts while this inbox is open and active. Reply only after reviewing the customer’s message. Conversations expire 7 days after their last message.</p><div class="inbox-layout"><nav class="inbox-threads" data-inbox-threads aria-label="Customer conversations"></nav><section class="inbox-conversation"><h2 data-inbox-name>Select a conversation</h2><div data-inbox-messages role="log" aria-live="polite" aria-relevant="additions"></div><form data-inbox-reply hidden><label class="sr-only" for="inbox-reply">Reply to customer</label><textarea id="inbox-reply" maxlength="2000" required placeholder="Your reply…"></textarea><button type="submit" class="btn btn-primary">Send reply</button><button type="button" class="btn btn-outline-dark" data-inbox-close>Close conversation</button></form></section></div></div></section>'''
     write("/swk-inbox/", page("/swk-inbox/", "SWK Live Chat | Private Operator Inbox", "Private SWK operator workspace for customer conversations and live chat support.", body, robots="noindex, nofollow"))
@@ -1198,7 +1220,7 @@ def build_blog():
 <div class="pd-actions"><button type="button" class="btn btn-outline-dark" data-share>Share this article</button></div></div></section>
 <article class="section container ambient-glow-host">{GLOW}<div class="prose"><p class="article-answer">{e(p['content'])}</p>{sections}{source_block}
 <p style="font-size:var(--fs-xs)">This article is general information, not financial, legal or investment advice. Market conditions and regulations change — speak to a consultant before you decide.</p></div></article>
-<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header"><span class="eyebrow">Keep reading</span><h2>More from the journal</h2></div>
+<section class="section section--alt ambient-glow-host">{GLOW}<div class="container"><div class="section-header"><span class="badge badge-dot">Keep reading</span><h2>More from the journal</h2></div>
 <div class="blog-grid">{"".join(blog_card(q, i) for i, q in enumerate(others))}</div></div></section>
 {cta_section()}"""
         ld = [breadcrumb_ld(tr), {"@context": "https://schema.org", "@type": "Article", "headline": p["title"], "datePublished": p["date"], "dateModified": p.get("updated", p["date"]),

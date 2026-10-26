@@ -84,13 +84,27 @@
   });
 })();
 
-// Scroll reveal for [data-reveal] (paired with the .js-gated CSS in base.css).
+// Scroll reveal ("blur fade"): blocks ease in once as they enter the viewport; siblings stagger a little.
 (function () {
   'use strict';
   var SWK = window.SWK;
 
+  var AUTO = [
+    '.sec-head', '.logo-cloud__label', '.value-item', '.dev-card', '.project-card', '.stat', '.story__media', '.story__copy', '.community-card', '.service-card',
+    '.calculator', '.review-carousel', '.blog-card', '.blog-feature', '.cta-band', '.ftr__top > *', '.ftr__cols > *', '.team-card', '.split-block > *', '.faq-item',
+    '.contact-tile', '.quick-tile', '.property-card', '.page-hero .container > *', '.prose > *', '.checks li'
+  ].join(',');
+
   SWK.reg('reveal', function () {
     var items = SWK.$$('[data-reveal]');
+    SWK.$$(AUTO).forEach(function (el) {
+      if (el.closest('.hero, .row-carousel__track') && !el.matches('.dev-card, .project-card')) return;
+      if (el.hasAttribute('data-reveal') || el.closest('[data-reveal]')) return;
+      var sib = Array.prototype.filter.call(el.parentNode.children, function (c) { return c.matches(AUTO); });
+      var i = Math.min(sib.indexOf(el), 6);
+      el.setAttribute('data-reveal', ''); el.setAttribute('data-reveal-delay', String(i * 70));
+      items.push(el);
+    });
     if (!items.length) return;
     if (!('IntersectionObserver' in window) || SWK.reduced) {
       items.forEach(function (el) { el.classList.add('is-visible'); });
@@ -104,14 +118,14 @@
         if (delay) el.style.transitionDelay = delay + 'ms';
         el.classList.add('is-visible');
         io.unobserve(el);
+        setTimeout(function () { el.style.transitionDelay = ''; }, delay + 900);
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
     items.forEach(function (el) { io.observe(el); });
   });
 })();
 
-// Top navigation bar: a white bar that gains a shadow once the page scrolls.
-// Below 1024px the links, call/WhatsApp actions and chat live in a header menu.
+// Header: scroll state, a sliding highlight under the nav, and the mobile sheet.
 (function () {
   'use strict';
   var SWK = window.SWK;
@@ -122,35 +136,55 @@
     var update = SWK.raf(function () { bar.classList.toggle('is-scrolled', window.scrollY > 12); });
     window.addEventListener('scroll', update, { passive: true });
     update();
+
+    // sliding highlight: follows hover/focus, rests on the current page
+    var nav = SWK.$('[data-hdr-nav]', bar), pill = nav && SWK.$('.hdr__pill', nav);
+    if (!nav || !pill) return;
+    var links = SWK.$$('.hdr__link', nav);
+    function to(link) {
+      if (!link) { pill.style.opacity = '0'; return; }
+      var n = nav.getBoundingClientRect(), r = link.getBoundingClientRect();
+      pill.style.opacity = '1';
+      pill.style.width = r.width + 'px'; pill.style.height = r.height + 'px';
+      pill.style.transform = 'translate(' + (r.left - n.left) + 'px,' + (r.top - n.top) + 'px)';
+    }
+    function rest() { to(SWK.$('.hdr__link[aria-current="page"]', nav)); }
+    links.forEach(function (l) {
+      l.addEventListener('pointerenter', function () { pill.classList.add('is-live'); to(l); });
+      l.addEventListener('focus', function () { pill.classList.add('is-live'); to(l); });
+    });
+    nav.addEventListener('pointerleave', rest);
+    nav.addEventListener('focusout', function (ev) { if (!nav.contains(ev.relatedTarget)) rest(); });
+    window.addEventListener('resize', rest);
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () { pill.classList.remove('is-live'); rest(); setTimeout(function () { pill.classList.add('is-live'); }, 60); });
+    rest();
   });
 
   SWK.reg('mobile-menu', function () {
-    var btn = SWK.$('[data-menu-toggle]');
+    var btns = SWK.$$('[data-menu-toggle]');
     var menu = SWK.$('[data-mobile-menu]');
     var scrim = SWK.$('[data-menu-scrim]');
-    if (!btn || !menu) return;
+    if (!btns.length || !menu) return;
     var wide = window.matchMedia('(min-width: 1024px)');
+    var first = btns[0];
 
     function set(open, returnFocus) {
-      btn.setAttribute('aria-expanded', String(open));
-      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      btns.forEach(function (b) { b.setAttribute('aria-expanded', String(open)); });
+      first.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       menu.hidden = !open;
       if (scrim) scrim.hidden = !open;
+      requestAnimationFrame(function () { menu.classList.toggle('is-open', open); if (scrim) scrim.classList.toggle('is-open', open); });
       document.documentElement.classList.toggle('menu-open', open);
-      if (!open && returnFocus) btn.focus();
+      if (!open && returnFocus) first.focus();
     }
-
-    btn.addEventListener('click', function () { set(menu.hidden); });
+    btns.forEach(function (b) { b.addEventListener('click', function () { set(menu.hidden); }); });
     if (scrim) scrim.addEventListener('click', function () { set(false); });
     document.addEventListener('keydown', function (ev) {
       if (ev.key === 'Escape' && !menu.hidden) { ev.preventDefault(); set(false, true); }
     });
-    // In-page links and the external actions all dismiss the menu.
     menu.addEventListener('click', function (ev) { if (ev.target.closest('a')) set(false); });
     var onResize = function () { if (wide.matches && !menu.hidden) set(false); };
     if (wide.addEventListener) wide.addEventListener('change', onResize); else wide.addListener(onResize);
-
-    // The floating chat button is retired on small screens; the menu opens the same panel.
     var chat = SWK.$('[data-menu-chat]');
     if (chat) chat.addEventListener('click', function () {
       set(false);
@@ -244,122 +278,6 @@
   });
 })();
 
-// The canyon: a 3D scroll scene. The camera moves down a street between two rows of towers (CSS 3D, no library) and
-// passes through five hook lines hung in the road. Geometry is authored for a 1180x760 stage and scaled to cover.
-(function () {
-  'use strict';
-  var SWK = window.SWK;
-
-  SWK.reg('canyon', function () {
-    var sec = SWK.$('.canyon');
-    if (!sec) return;
-    if (SWK.reduced || /[?&]nowebgl\b/.test(location.search) || !window.CSS || !CSS.supports('transform-style', 'preserve-3d')) return;
-
-    var stage = SWK.$('.canyon__stage', sec), frame = SWK.$('.canyon__frame', sec), world = SWK.$('.canyon__world', sec);
-    var road = SWK.$('.canyon__road', sec), bar = SWK.$('.canyon__progress span', sec), cta = SWK.$('.canyon__cta', sec);
-    var quotes = SWK.$$('.canyon__quote', sec);
-    if (!stage || !frame || !world || !quotes.length) return;
-
-    var P = 900, GROUND = 250, STEP = 1500, FIRST = 700;
-    var RANGE = FIRST + STEP * (quotes.length - 1) + 380;
-    var towers = [], planes = [], cam = 0, target = 0, running = false, raf = 0, narrow = false, ptrX = 0, ptrY = 0, curX = 0, curY = 0;
-
-    function rng(seed) { return function () { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }; }
-    function el(tag, cls) { var e = document.createElement(tag); if (cls) e.className = cls; return e; }
-
-    function build() {
-      var vw = stage.clientWidth, vh = stage.clientHeight;
-      narrow = vw / vh < 0.85;
-      var s = Math.max(vw / 1180, vh / 760);
-      frame.style.setProperty('--s', s.toFixed(4));
-      var half = narrow ? 250 : 520;
-      road.style.setProperty('--rh', half + 'px');
-      world.textContent = ''; towers = []; planes = [];
-      var rand = rng(7);
-      for (var side = -1; side <= 1; side += 2) {
-        var z = -240 - rand() * 120;
-        while (z > -(RANGE + 2000)) {
-          var w = 170 + rand() * 230, d = 200 + rand() * 160, h = 760 + rand() * 1700;
-          var x = side * (half + 26 + w / 2 + (rand() < 0.3 ? 90 + rand() * 140 : 0));
-          var t = el('div', 'cw'); t.setAttribute('aria-hidden', 'true');
-          t.style.cssText = 'width:' + w + 'px;height:' + h + 'px;margin:' + (GROUND - h) + 'px 0 0 ' + (-w / 2) + 'px;transform:translate3d(' + x.toFixed(1) + 'px,0,' + z.toFixed(1) + 'px)';
-          var f = el('i', 'f'); f.style.cssText = 'left:0;top:0;width:' + w + 'px;height:' + h + 'px;transform:translateZ(' + (d / 2) + 'px)';
-          var sd = el('i', 's'); sd.style.cssText = 'left:50%;top:0;width:' + d + 'px;height:' + h + 'px;margin-left:' + (-d / 2) + 'px;transform:rotateY(' + (side < 0 ? 90 : -90) + 'deg) translateZ(' + (w / 2) + 'px)';
-          t.appendChild(f); t.appendChild(sd); world.appendChild(t);
-          towers.push({ e: t, f: f, s: sd, z: z });
-          z -= 250 + rand() * 170;
-        }
-      }
-      var qw = narrow ? 330 : 760;
-      quotes.forEach(function (q, i) {
-        var zq = -(FIRST + STEP * i);
-        q.classList.remove('canyon__quote'); q.classList.add('cq');
-        q.style.cssText = 'width:' + qw + 'px;margin:' + (narrow ? -150 : -110) + 'px 0 0 ' + (-qw / 2) + 'px;transform:translate3d(0,0,' + zq + 'px)';
-        q.firstElementChild.style.fontSize = (narrow ? 38 : 66) + 'px';
-        world.appendChild(q); planes.push({ e: q, z: zq });
-      });
-    }
-
-    function smooth(a, b, x) { var t = SWK.clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
-
-    function draw() {
-      cam += (target - cam) * 0.14;
-      if (Math.abs(target - cam) < 0.4) cam = target;
-      world.style.transform = 'translateZ(' + cam.toFixed(1) + 'px)';
-      road.style.setProperty('--by', (cam % 380).toFixed(1) + 'px');
-      for (var i = 0; i < towers.length; i++) {
-        var zt = towers[i].z + cam;
-        var o = SWK.clamp(1 - (-zt - 2600) / 3600, 0, 1) * (1 - smooth(P * 0.55, P * 0.9, zt));
-        // opacity goes on the faces: opacity on the 3D parent would flatten it
-        var os = o.toFixed(3), vis = o < 0.01 ? 'hidden' : 'visible';
-        towers[i].f.style.opacity = os; towers[i].s.style.opacity = os; towers[i].e.style.visibility = vis;
-      }
-      for (var j = 0; j < planes.length; j++) {
-        var q = planes[j], zq = q.z + cam;
-        var op = smooth(-1350, -850, zq) * (1 - smooth(-20, 300, zq));
-        q.e.style.opacity = op.toFixed(3);
-        q.e.style.visibility = op < 0.01 ? 'hidden' : 'visible';
-      }
-      var p = cam / RANGE;
-      stage.style.setProperty('--cp', SWK.clamp(p, 0, 1).toFixed(4));
-      if (cta) { var co = smooth(0.9, 0.99, p); cta.style.setProperty('--co', co.toFixed(3)); var b = SWK.$('.btn', cta); if (b) b.tabIndex = co > 0.6 ? 0 : -1; }
-      if (SWK.fine) {
-        curX += (ptrX - curX) * 0.06; curY += (ptrY - curY) * 0.06;
-        frame.style.perspectiveOrigin = (50 + curX * 4).toFixed(2) + '% ' + (42 + curY * 2.5).toFixed(2) + '%';
-      }
-    }
-
-    function read() {
-      var r = sec.getBoundingClientRect(), total = sec.offsetHeight - stage.clientHeight;
-      target = SWK.clamp(-r.top / total, 0, 1) * RANGE;
-    }
-    function loop() {
-      if (!running) return;
-      read(); draw();
-      raf = requestAnimationFrame(loop);
-    }
-
-    build();
-    sec.classList.add('is-3d');
-    build();                                   // measure again now the stage is displayed
-    read(); cam = target; draw();
-
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (e) {
-        running = e[0].isIntersecting;
-        if (running) { cancelAnimationFrame(raf); raf = requestAnimationFrame(loop); }
-      }, { rootMargin: '10% 0px' }).observe(sec);
-    } else { running = true; loop(); }
-    window.addEventListener('resize', function () { build(); read(); cam = target; draw(); });
-    if (SWK.fine) {
-      stage.addEventListener('pointermove', function (ev) {
-        var r = stage.getBoundingClientRect();
-        ptrX = ((ev.clientX - r.left) / r.width) * 2 - 1; ptrY = ((ev.clientY - r.top) / r.height) * 2 - 1;
-      });
-    }
-  });
-})();
-
 // Hero: headline reveal and the scroll-scrubbed WebGL fly-through.
 (function () {
   'use strict';
@@ -402,18 +320,33 @@
     });
   }
 
-  // ---- Hero: one aerial shot plays once, then the logo and welcome arrive ------------------------------------------
+  // ---- Hero: one aerial shot behind a 3D scroll flight ---------------------------------------------------------------
+  // The video plays once. Scrolling flies the camera forward through five hook lines hung in space (CSS 3D, no library);
+  // the welcome block flies out first and comes back at the end of the runway.
   var REVEAL_AT = 10.5;   // seconds into the shot
+  var P = 900, STEP = 1500, FIRST = 1500, FRAMES = 14, FSTEP = 560;
+
+  function smooth(a, b, x) { var t = SWK.clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
 
   SWK.reg('hero', function () {
     var hero = SWK.$('.hero');
     if (!hero) return;
+    var wrap = SWK.$('.hero-cine');
     var video = SWK.$('.hero__video', hero);
-
-    function still() { hero.classList.add('is-still', 'is-revealed'); if (video) video.remove(); }
+    var flight = SWK.$('[data-hero-flight]', hero), welcome = SWK.$('[data-hero-welcome]', hero);
+    var bar = SWK.$('.hero__progress span', hero);
 
     var nav = navigator;
     var plain = SWK.reduced || /[?&]nowebgl\b/.test(location.search) || (nav.connection && nav.connection.saveData) || (nav.deviceMemory && nav.deviceMemory < 2);
+
+    function still() {
+      hero.classList.add('is-still', 'is-revealed');
+      if (video) video.remove();
+      if (flight) flight.remove();
+      var list = SWK.$('[data-hero-quotes]'); if (list) list.hidden = false;
+    }
+
+    // ---- video
     if (!video || plain) { still(); }
     else {
       var tall = window.matchMedia('(max-width: 767px)').matches;
@@ -430,73 +363,100 @@
       video.src = tall ? video.getAttribute('data-src-tall') : video.getAttribute('data-src-wide');
       var started = video.play();
       if (started && started.catch) started.catch(function () { clearTimeout(fallback); still(); });
-      // Pause while the hero is off screen; resume where it left off.
+    }
+
+    // ---- 3D flight
+    if (flight && welcome && wrap && !plain && CSS && CSS.supports && CSS.supports('transform-style', 'preserve-3d')) {
+      wrap.classList.add('has-flight');
+      var quotes = SWK.$$('.flight__quote', flight);
+      var RANGE = FIRST + STEP * (quotes.length - 1) + 420;
+      var frames = [], cam = 0, target = 0, p = 0, running = true, raf = 0;
+
+      var tunnel = document.createElement('div'); tunnel.className = 'flight__tunnel'; tunnel.setAttribute('aria-hidden', 'true');
+      for (var k = 0; k < FRAMES; k++) { var f = document.createElement('i'); tunnel.appendChild(f); frames.push(f); }
+      flight.insertBefore(tunnel, flight.firstChild);
+
+      var read = function () {
+        var total = wrap.offsetHeight - hero.offsetHeight;
+        p = total > 0 ? SWK.clamp(-wrap.getBoundingClientRect().top / total, 0, 1) : 0;
+        target = smooth(0.07, 0.9, p) * RANGE;
+      };
+
+      var draw = function () {
+        cam += (target - cam) * 0.12;
+        if (Math.abs(target - cam) < 0.4) cam = target;
+        var span = FRAMES * FSTEP;
+        for (var i = 0; i < FRAMES; i++) {
+          var zt = -((i * FSTEP - cam) % span + span) % span;      // distance ahead, looping
+          var z = zt + FSTEP * 2;
+          var o = SWK.clamp(1 - (-z - 400) / (span - 900), 0, 1) * (1 - smooth(P * 0.5, P * 0.85, z)) * 0.5;
+          frames[i].style.transform = 'translate(-50%,-50%) translateZ(' + z.toFixed(0) + 'px)';
+          frames[i].style.opacity = o.toFixed(3);
+        }
+        for (var j = 0; j < quotes.length; j++) {
+          var zq = -(FIRST + STEP * j) + cam;
+          var op = smooth(-1350, -850, zq) * (1 - smooth(-20, 300, zq));
+          quotes[j].style.transform = 'translate(-50%,-50%) translateZ(' + zq.toFixed(0) + 'px)';
+          quotes[j].style.opacity = op.toFixed(3);
+          quotes[j].style.visibility = op < 0.01 ? 'hidden' : 'visible';
+        }
+        // welcome: out through the camera first, back from the distance at the end
+        var out = smooth(0.0, 0.07, p), back = smooth(0.9, 0.99, p);
+        var wz = p < 0.5 ? out * 650 : -1400 + back * 1400;
+        var wo = p < 0.5 ? 1 - out : back;
+        hero.style.setProperty('--wz', wz.toFixed(0) + 'px');
+        hero.style.setProperty('--wo', wo.toFixed(3));
+        hero.classList.toggle('welcome-off', wo < 0.35);
+        if (p > 0.85) hero.classList.add('is-revealed');
+        var vs = 1 + 0.14 * p;
+        if (video) video.style.transform = 'scale(' + vs.toFixed(4) + ')';
+        hero.style.setProperty('--q', smooth(0.02, 0.12, p) * (1 - smooth(0.9, 0.99, p)));
+        if (bar) bar.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+      };
+
+      var loop = function () { if (!running) return; read(); draw(); raf = requestAnimationFrame(loop); };
       if ('IntersectionObserver' in window) {
-        new IntersectionObserver(function (e) {
-          if (!video.parentNode || video.ended) return;
-          if (e[0].isIntersecting) { var r = video.play(); if (r && r.catch) r.catch(function () {}); } else video.pause();
-        }, { threshold: 0.15 }).observe(hero);
+        new IntersectionObserver(function (e) { running = e[0].isIntersecting; if (running) { cancelAnimationFrame(raf); raf = requestAnimationFrame(loop); } else if (video && !video.ended && !video.paused) video.pause(); if (running && video && !video.ended) { var r = video.play(); if (r && r.catch) r.catch(function () {}); } }, { threshold: 0.05 }).observe(hero);
       }
+      read(); cam = target; draw(); raf = requestAnimationFrame(loop);
+    } else if (video && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) {
+        if (!video.parentNode || video.ended) return;
+        if (e[0].isIntersecting) { var r = video.play(); if (r && r.catch) r.catch(function () {}); } else video.pause();
+      }, { threshold: 0.15 }).observe(hero);
     }
 
     // Tilt the glass search panel toward the pointer.
-    var bar = SWK.$('.search-bar', hero);
-    if (bar && SWK.fine) {
-      bar.addEventListener('pointermove', function (ev) {
-        var r = bar.getBoundingClientRect();
-        bar.classList.add('is-tilting');
-        bar.style.setProperty('--ry', ((((ev.clientX - r.left) / r.width - 0.5) * 2) * 2.2).toFixed(2) + 'deg');
-        bar.style.setProperty('--rx', (-(((ev.clientY - r.top) / r.height - 0.5) * 2) * 3.2).toFixed(2) + 'deg');
+    var sb = SWK.$('.search-bar', hero);
+    if (sb && SWK.fine) {
+      sb.addEventListener('pointermove', function (ev) {
+        var r = sb.getBoundingClientRect();
+        sb.classList.add('is-tilting');
+        sb.style.setProperty('--ry', ((((ev.clientX - r.left) / r.width - 0.5) * 2) * 2.2).toFixed(2) + 'deg');
+        sb.style.setProperty('--rx', (-(((ev.clientY - r.top) / r.height - 0.5) * 2) * 3.2).toFixed(2) + 'deg');
       });
-      bar.addEventListener('pointerleave', function () {
-        bar.classList.remove('is-tilting');
-        bar.style.setProperty('--ry', '0deg'); bar.style.setProperty('--rx', '0deg');
+      sb.addEventListener('pointerleave', function () {
+        sb.classList.remove('is-tilting');
+        sb.style.setProperty('--ry', '0deg'); sb.style.setProperty('--rx', '0deg');
       });
     }
   });
 })();
 
-// Pointer-driven 3D tilt + moving glare for [data-tilt] cards (fine pointers only).
+// Pointer spotlight on cards: a soft brass glow follows the cursor (fine pointers only).
 (function () {
   'use strict';
   var SWK = window.SWK;
-
-  SWK.reg('tilt', function () {
+  SWK.reg('spotlight', function () {
     if (!SWK.fine || SWK.reduced) return;
-    SWK.$$('[data-tilt]').forEach(function (el) {
-      var max = parseFloat(el.getAttribute('data-tilt')) || 6;
-      var pending = null;
-
-      function apply() {
-        var p = pending;
-        pending = null;
-        if (!p) return;
-        el.style.setProperty('--ry', (p.nx * max).toFixed(2) + 'deg');
-        el.style.setProperty('--rx', (-p.ny * max).toFixed(2) + 'deg');
-        el.style.setProperty('--px', p.nx.toFixed(3));
-        el.style.setProperty('--py', p.ny.toFixed(3));
-        el.style.setProperty('--gx', ((p.nx + 1) * 50).toFixed(1) + '%');
-        el.style.setProperty('--gy', ((p.ny + 1) * 50).toFixed(1) + '%');
-        el.style.setProperty('--go', '1');
-      }
-
-      el.addEventListener('pointermove', function (ev) {
-        if (ev.pointerType === 'touch') return;
-        var r = el.getBoundingClientRect();
-        pending = { nx: ((ev.clientX - r.left) / r.width - 0.5) * 2, ny: ((ev.clientY - r.top) / r.height - 0.5) * 2 };
-        el.classList.add('is-tilting');
-        requestAnimationFrame(apply);
-      });
-      el.addEventListener('pointerleave', function () {
-        pending = null;
-        el.classList.remove('is-tilting');
-        el.style.setProperty('--rx', '0deg');
-        el.style.setProperty('--ry', '0deg');
-        el.style.setProperty('--px', '0');
-        el.style.setProperty('--py', '0');
-        el.style.setProperty('--go', '0');
-      });
-    });
+    var sel = '.dev-card, .project-card, .service-card, .value-item, .blog-card, .team-card, .quick-tile, .calc-card, .stat, .contact-tile, .cta-band';
+    document.addEventListener('pointermove', function (ev) {
+      var el = ev.target.closest && ev.target.closest(sel);
+      if (!el) return;
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (ev.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (ev.clientY - r.top) + 'px');
+    }, { passive: true });
   });
 })();
 

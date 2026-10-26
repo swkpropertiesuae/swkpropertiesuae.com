@@ -93,42 +93,30 @@ function pagesFromSitemap() {
   console.log(`  ${urls.length} pages checked`);
 
   // ---------------------------------------------------------------- home deep dive
-  sect('Home: night-aerial hero, scroll scrub, logo reveal');
+  sect('Home: hero video, 3D flight, welcome');
   msgs.length = 0;
-  await page.goto(L.BASE + '/?hold', { waitUntil: 'load' });
-  await page.waitForFunction(() => document.querySelector('.hero.is-gl'), null, { timeout: 20000 }).catch(() => {});
-  ok(await page.evaluate(() => !!document.querySelector('.hero.is-gl')), 'hero reached is-gl');
-  await page.waitForTimeout(3600);
+  await page.goto(L.BASE + '/', { waitUntil: 'load' });
+  await page.waitForFunction(() => document.querySelector('.hero.is-playing'), null, { timeout: 20000 }).catch(() => {});
+  ok(await page.evaluate(() => !!document.querySelector('.hero.is-playing')), 'hero video is playing');
+  await page.waitForTimeout(1500);
   await shot(page, 'home-top');
-  const cvs = await page.evaluate(() => { const c = document.querySelector('.hero__gl'); return { w: c.width, h: c.height, cw: c.clientWidth }; });
-  ok(cvs.w > 800 && cvs.h > 400, `canvas size ${cvs.w}x${cvs.h}`);
-  const png = (await page.screenshot({ clip: { x: 0, y: 0, width: 1440, height: 640 } })).toString('base64');
-  const lit = await page.evaluate(async (b64) => { // sample the composited frame for real, varied content
-    const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode();
-    const t = document.createElement('canvas'); t.width = 96; t.height = 40; const x = t.getContext('2d'); x.drawImage(img, 0, 0, 96, 40);
-    const d = x.getImageData(0, 0, 96, 40).data; let bright = 0; const set = new Set();
-    for (let i = 0; i < d.length; i += 4) { if (d[i] + d[i + 1] + d[i + 2] > 150) bright++; set.add((d[i] >> 4) + ',' + (d[i + 1] >> 4) + ',' + (d[i + 2] >> 4)); }
-    return { bright, colors: set.size };
-  }, png);
-  ok(lit.colors > 25 && lit.bright > 40, `hero frame has real 3D content ${JSON.stringify(lit)}`);
-  const progs = [];
+  const flight = [];
   for (const f of [0, 0.35, 0.65, 1]) {
     await page.evaluate((f) => { const w = document.querySelector('.hero-cine'); scrollTo({ top: w.offsetTop + (w.offsetHeight - innerHeight) * f, behavior: 'instant' }); }, f);
-    await page.waitForTimeout(900);
-    progs.push(await page.evaluate(() => ({ p: parseFloat(document.querySelector('.hero').style.getPropertyValue('--p')), caps: [...document.querySelectorAll('.hero__caption')].map((c) => parseFloat(c.style.getPropertyValue('--o') || 0)) })));
+    await page.waitForTimeout(1200);
+    flight.push(await page.evaluate(() => ({ q: [...document.querySelectorAll('.flight__quote')].filter((q) => parseFloat(q.style.opacity || 0) > 0.6).length, wo: parseFloat(document.querySelector('.hero').style.getPropertyValue('--wo')) })));
   }
-  ok(progs[0].p < 0.01 && progs[3].p > 0.99 && progs[1].p > 0.3 && progs[1].p < 0.4, `scroll progress ${JSON.stringify(progs.map((x) => x.p))}`);
-  const rv = await page.evaluate(() => parseFloat(document.querySelector('.hero').style.getPropertyValue('--rv')));
-  ok(rv > 0.99, `logo reveal complete at the end of the shot (--rv ${rv})`);
+  ok(flight[0].wo > 0.95 && flight[3].wo > 0.95 && flight[1].wo < 0.1, `welcome leaves and returns ${JSON.stringify(flight)}`);
+  ok(flight.slice(1, 3).some((x) => x.q === 1), 'a hook line is in focus mid-flight');
   await shot(page, 'home-fly');
   await page.evaluate(() => scrollTo(0, 0));
-  ok(L.clean(msgs).length === 0, 'home console clean after scrub: ' + JSON.stringify(L.clean(msgs)));
+  ok(L.clean(msgs).length === 0, 'home console clean after flight: ' + JSON.stringify(L.clean(msgs)));
 
-  sect('Home: nav bar, tilt, slider');
+  sect('Home: nav bar');
   await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(500);
   // Desktop uses the top navigation bar; tablet/phone use the header menu (no floating bottom buttons).
-  const navInfo = await page.evaluate(() => { const h = document.querySelector('.site-header'), n = [...document.querySelectorAll('.site-nav a')]; const cur = n.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent);
-    return { links: n.map((a) => a.textContent), cur, headerH: Math.round(h.getBoundingClientRect().height), menuToggleShown: getComputedStyle(document.querySelector('.nav-toggle')).display !== 'none' }; });
+  const navInfo = await page.evaluate(() => { const h = document.querySelector('.site-header'), n = [...document.querySelectorAll('.hdr__link')]; const cur = n.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent);
+    return { links: n.map((a) => a.textContent), cur, headerH: Math.round(h.getBoundingClientRect().height), menuToggleShown: getComputedStyle(document.querySelector('.hdr__burger')).display !== 'none' }; });
   ok(navInfo.links.length === 7 && navInfo.cur.join() === 'Home' && !navInfo.menuToggleShown, `desktop nav bar ${JSON.stringify(navInfo)}`);
   const heroBox = await page.evaluate(() => { const t = document.querySelector('.hero__title').getBoundingClientRect(), h = document.querySelector('.site-header').getBoundingClientRect(), s = document.querySelector('.hero__search-wrap').getBoundingClientRect(); return { titleBelowHeader: t.top > h.bottom + 40, searchInView: s.bottom <= innerHeight }; });
   ok(heroBox.titleBelowHeader && heroBox.searchInView, `hero text clears the header and search fits ${JSON.stringify(heroBox)}`);
@@ -138,33 +126,8 @@ function pagesFromSitemap() {
   await page.mouse.move(10, 400);
   await page.setViewportSize({ width: 1440, height: 900 }); await page.waitForTimeout(400);
 
-  // featured slider
-  await page.evaluate(() => document.querySelector('[data-feature-slider]').scrollIntoView({ block: 'center' }));
-  await page.waitForTimeout(1200);
-  await shot(page, 'home-featured');
-  const sl = await page.evaluate(() => ({ dots: document.querySelectorAll('.feature-slider__dot').length, prev: document.querySelector('[data-fs-prev]').disabled, next: document.querySelector('[data-fs-next]').disabled, slides: document.querySelectorAll('.property-card--feature').length }));
-  ok(sl.slides === 6 && sl.dots === 3 && sl.prev && !sl.next, `slider initial ${JSON.stringify(sl)}`);
-  await page.click('[data-fs-next]'); await page.waitForTimeout(700);
-  const tx = await page.evaluate(() => document.querySelector('.feature-slider__track').style.transform);
-  ok(/translate3d\(-[1-9]/.test(tx), `slider moved ${tx}`);
-  await page.click('[data-fs-next]'); await page.waitForTimeout(500);
-  ok(await page.evaluate(() => document.querySelector('[data-fs-next]').disabled), 'slider next disabled at end');
-  // tilt
-  const card = await page.$('.property-card--feature:nth-child(3)');
-  await card.scrollIntoViewIfNeeded(); const cb = await card.boundingBox();
-  await page.mouse.move(cb.x + cb.width * 0.8, cb.y + cb.height * 0.25, { steps: 6 }); await page.waitForTimeout(300);
-  const tilt = await card.evaluate((el) => ({ rx: el.style.getPropertyValue('--rx'), ry: el.style.getPropertyValue('--ry') }));
-  ok(parseFloat(tilt.ry) > 2 && parseFloat(tilt.rx) > 1, `3D tilt ${JSON.stringify(tilt)}`);
-  await page.mouse.move(5, 5);
-
-  // Text-only stories and the site assistant.
-  await page.locator('[data-review-carousel]').scrollIntoViewIfNeeded();
-  if ((await page.getAttribute('[data-review-pause]', 'aria-pressed')) === 'false') await page.click('[data-review-pause]');
-  const storyBefore = parseInt(await page.textContent('[data-review-count]'));
-  await page.click('[data-review-next]');
-  ok((await page.textContent('[data-review-count]')) === ((storyBefore % 8) + 1) + ' / 8', 'story carousel next');
-  await page.click('[data-review-prev]'); await page.click('[data-review-prev]');
-  ok((await page.textContent('[data-review-count]')) === ((storyBefore + 6) % 8 + 1) + ' / 8', 'story carousel wraps');
+  // Client testimonials and the site assistant.
+  ok(await page.locator('[data-testi], [data-review-carousel]').count() > 0, 'testimonials or commitments block present');
   await page.click('[data-chat-toggle]');
   ok(await page.locator('#swk-chat-panel').isVisible(), 'concierge opens');
   await page.fill('#swk-chat-input', '<script>alert(1)</script> buy a home');
@@ -268,7 +231,7 @@ function pagesFromSitemap() {
   const mo = await m.page.evaluate(() => {
     const r = (s) => { const e = document.querySelector(s); return e && e.getBoundingClientRect(); };
     const bar = r('.search-bar'), btn = r('.search-bar button');
-    return { overflow: document.documentElement.scrollWidth > innerWidth + 1, menuToggle: (() => { const t = r('.nav-toggle'); return !!t && t.width >= 40 && t.height >= 40; })(), bottomButtons: ['.whatsapp-float', '.back-top'].filter((q) => getComputedStyle(document.querySelector(q)).display !== 'none'), searchInView: bar && bar.bottom <= innerHeight && bar.top >= 0, btnInView: btn && btn.bottom <= innerHeight, gl: !!document.querySelector('.hero.is-gl') };
+    return { overflow: document.documentElement.scrollWidth > innerWidth + 1, menuToggle: (() => { const t = r('.hdr__burger'); return !!t && t.width >= 40 && t.height >= 40; })(), bottomButtons: ['.whatsapp-float', '.back-top'].filter((q) => getComputedStyle(document.querySelector(q)).display !== 'none'), searchInView: bar && bar.bottom <= innerHeight && bar.top >= 0, btnInView: btn && btn.bottom <= innerHeight, gl: !!document.querySelector('.hero.is-gl') };
   });
   ok(!mo.overflow, 'no horizontal overflow'); ok(mo.menuToggle && mo.bottomButtons.length === 0, `header menu button with touch target, no floating bottom buttons ${JSON.stringify(mo)}`);
   ok(mo.searchInView && mo.btnInView, `search bar fits first screen ${JSON.stringify(mo)}`);
