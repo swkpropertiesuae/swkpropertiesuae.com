@@ -1,0 +1,133 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Official SWK Properties (swkpropertiesuae.com) Light Corporate Palette:
+ * Warm Ivory Paper (#faf7f2), Crisp White Surface (#ffffff), Soft Sand (#f4efe6),
+ * Deep Corporate Navy Ink (#0f2244 / #1b3a6b), Rich Architectural Bronze-Gold (#94652c / #b07a38)
+ */
+:root {
+  --paper-0: #ffffff;
+  --paper-50: #faf7f2;
+  --paper-100: #f4efe6;
+  --paper-200: #ebe3d5;
+  --navy-950: #0f2244;
+  --navy-900: #14305c;
+  --navy-800: #1b3a6b;
+  --navy-700: #2a4a7d;
+  --gold-700: #94652c;
+  --gold-600: #b07a38;
+  --gold-500: #c99a63;
+  --gold-400: #dcb888;
+  --gold-100: #f6ead7;
+
+  --background: #faf7f2;
+  --foreground: #0f2244;
+  --card: #ffffff;
+  --card-foreground: #0f2244;
+  --popover: #ffffff;
+  --popover-foreground: #0f2244;
+  --primary: #0f2244;
+  --primary-foreground: #ffffff;
+  --secondary: #f4efe6;
+  --secondary-foreground: #0f2244;
+  --muted: #f4efe6;
+  --muted-foreground: #5f6a82;
+  --accent: #f6ead7;
+  --accent-foreground: #94652c;
+  --destructive: #a52437;
+  --border: #e6dfd2;
+  --input: #e6dfd2;
+  --ring: #94652c;
+  --chart-1: #0f2244;
+  --chart-2: #94652c;
+  --chart-3: #2f5d3a;
+  --chart-4: #b07a38;
+  --chart-5: #1b3a6b;
+  --swk-gold: #94652c;
+  --swk-gold-deep: #7a4f1d;
+  --swk-red: #a52437;
+  --swk-green: #2f5d3a;
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-gold: var(--swk-gold);
+  --color-gold-deep: var(--swk-gold-deep);
+  --color-swk-red: var(--swk-red);
+  --color-swk-green: var(--swk-green);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-serif-display);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  line-height: 1.65;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-serif {
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+/* Native CSS Scroll-Driven Header Polish (modern-web-guidance: shrinking-header-on-scroll) */
+@keyframes swk-header-elevate {
+  to {
+    box-shadow: 0 12px 32px -12px rgba(15, 34, 68, 0.12);
+    background-color: rgba(255, 255, 255, 0.98);
+  }
+}
+
+@supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+  .swk-scroll-header {
+    animation: swk-header-elevate auto linear both;
+    animation-timeline: scroll(block root);
+    animation-range: 0px 120px;
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+}
