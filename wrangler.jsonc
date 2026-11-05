@@ -1,0 +1,39 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "swkpropertiesuae-site",
+  "account_id": "2fc58155145f61a3365728a8e49582f7",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "not_found_handling": "none",
+    "run_worker_first": [
+      "/index.html",
+      "/property-details.html",
+      "/blog-post.html",
+      "/properties.html",
+      "/about.html",
+      "/services.html",
+      "/mortgage.html",
+      "/blog.html",
+      "/contact.html",
+      "/assets/video/*",
+      "/properties/*",
+      "/blog/*"
+    ]
+  },
+  "r2_buckets": [
+    { "binding": "MEDIA", "bucket_name": "swk-media" }
+  ],
+  "routes": [
+    { "pattern": "swkpropertiesuae.com", "custom_domain": true },
+    { "pattern": "www.swkpropertiesuae.com", "custom_domain": true }
+  ],
+  "observability": {
+    "enabled": true,
+    "traces": { "enabled": true, "head_sampling_rate": 0.01 }
+  }
+}

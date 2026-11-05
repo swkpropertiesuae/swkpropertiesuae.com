@@ -1,5 +1,32 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Cloudflare production deployment
+
+The existing `swkpropertiesuae-site` Worker serves this Next.js application through
+the OpenNext Cloudflare adapter. Keep the Workers Builds settings in sync:
+
+| Setting | Value |
+| --- | --- |
+| Production branch | `main` |
+| Root directory | `/` |
+| Build command | `npm run build:cloudflare` |
+| Deploy command | `npm run deploy` |
+
+Cloudflare installs dependencies from `package-lock.json` before the build.
+The old `python3 build.py` command belonged to the retired static site and must
+not be used for this app. `npm run build` remains the normal Next.js build;
+the Cloudflare build also packages its output for the Workers runtime.
+
+For local validation, run `npm ci`, `npm run build:cloudflare`, and
+`npx wrangler deploy --dry-run`. `npm run preview:cloudflare` serves the resulting
+Worker locally. `npm run cf-typegen` regenerates binding types after config changes.
+
+`wrangler.jsonc` retains both production custom domains and the existing
+`MEDIA` binding to the `swk-media` R2 bucket. `worker/index.js` preserves the
+legacy redirects and video byte-range responses, then forwards application
+requests to Next.js. The server-side `/api/enquiries` handler requires this
+Worker deployment; a static-only export cannot replace it.
+
 ## Getting Started
 
 First, run the development server:
