@@ -39,7 +39,7 @@ export function InfiniteHorizontalTrack({
     setReady(true);
   }, []);
 
-  const duration = speed === "fast" ? "32s" : speed === "normal" ? "52s" : "78s";
+  const duration = speed === "fast" ? "70s" : speed === "normal" ? "105s" : "145s";
 
   return (
     <div
@@ -59,10 +59,10 @@ export function InfiniteHorizontalTrack({
           100% { transform: translate3d(0, 0, 0); }
         }
         .swk-animate-left {
-          animation: swk-marquee-left var(--marquee-duration, 52s) linear infinite;
+          animation: swk-marquee-left var(--marquee-duration, 105s) linear infinite;
         }
         .swk-animate-right {
-          animation: swk-marquee-right var(--marquee-duration, 52s) linear infinite;
+          animation: swk-marquee-right var(--marquee-duration, 105s) linear infinite;
         }
         .group\\/marquee:hover .swk-pause-on-hover {
           animation-play-state: paused;

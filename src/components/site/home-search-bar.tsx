@@ -90,19 +90,19 @@ export function HomeSearchBar() {
 
   return (
     <div className="mx-auto w-full max-w-7xl">
-      <div className="rounded-3xl border border-[#e6dfd2] bg-white/95 backdrop-blur-xl p-4 md:p-6 shadow-[0_24px_70px_rgba(15,34,68,0.18)]">
+      <div className="rounded-2xl border border-white/30 bg-white/95 backdrop-blur-xl p-3 md:px-4 md:py-3 shadow-[0_20px_50px_rgba(15,34,68,0.22)]">
         {/* Single-Line Search Form with Mandate Dropdown */}
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 md:grid-cols-12 items-end">
-          {/* 1. Mandate Type Dropdown (Replaces separate Buy/Rent/Off-Plan buttons) */}
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-2.5 md:grid-cols-12 items-end">
+          {/* 1. Mandate Type Dropdown */}
           <div className="md:col-span-2">
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#94652c] whitespace-nowrap">
+            <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-[#0f2244] whitespace-nowrap">
               Property Mandate
             </label>
             <select
               value={purpose}
               onChange={(e) => setPurpose(e.target.value as typeof purpose)}
               aria-label="Select property mandate type"
-              className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-3 py-3 text-xs font-bold text-[#0f2244] focus:border-[#94652c] focus:bg-white focus:outline-none"
+              className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-3 py-2 text-xs font-bold text-[#0f2244] focus:border-[#0f2244] focus:bg-white focus:outline-none"
             >
               <option value="all">All Properties</option>
               <option value="buy">Buy Ready Homes</option>
@@ -114,11 +114,11 @@ export function HomeSearchBar() {
 
           {/* 2. Location / Building / Project Autocomplete */}
           <div className="relative md:col-span-3">
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#5f6a82] whitespace-nowrap">
+            <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-[#5f6a82] whitespace-nowrap">
               Location, Building or Project
             </label>
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#94652c]" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#0f2244]" />
               <input
                 type="text"
                 value={query}
@@ -126,12 +126,12 @@ export function HomeSearchBar() {
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 180)}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Downtown, Palm Jumeirah, Emaar..."
-                className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] pl-9 pr-3 py-3 text-xs font-medium text-[#0f2244] placeholder:text-[#5f6a82]/70 focus:border-[#94652c] focus:bg-white focus:outline-none"
+                className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] pl-9 pr-3 py-2 text-xs font-medium text-[#0f2244] placeholder:text-[#5f6a82]/70 focus:border-[#0f2244] focus:bg-white focus:outline-none"
               />
             </div>
 
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-2xl border border-[#e6dfd2] bg-white p-2 shadow-2xl">
+              <div className="absolute left-0 right-0 bottom-full mb-1.5 z-50 rounded-2xl border border-[#e6dfd2] bg-white p-2 shadow-2xl">
                 {suggestions.map((s, idx) => (
                   <div
                     key={idx}
@@ -150,7 +150,7 @@ export function HomeSearchBar() {
                     </button>
                     <Link
                       href={s.href}
-                      className="rounded-full border border-[#94652c]/30 bg-[#f6ead7] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#94652c] whitespace-nowrap"
+                      className="rounded-full bg-[#0f2244] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white whitespace-nowrap"
                     >
                       {s.type} →
                     </Link>
@@ -162,13 +162,13 @@ export function HomeSearchBar() {
 
           {/* 3. Community Select */}
           <div className="md:col-span-2">
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#5f6a82] whitespace-nowrap">
+            <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-[#5f6a82] whitespace-nowrap">
               Community
             </label>
             <select
               value={community}
               onChange={(e) => setCommunity(e.target.value)}
-              className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-3 py-3 text-xs font-medium text-[#0f2244] focus:border-[#94652c] focus:bg-white focus:outline-none"
+              className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-3 py-2 text-xs font-medium text-[#0f2244] focus:border-[#0f2244] focus:bg-white focus:outline-none"
             >
               <option value="">All 8 Districts</option>
               {communities.map((c) => (
@@ -181,13 +181,13 @@ export function HomeSearchBar() {
 
           {/* 4. Property Type */}
           <div className="md:col-span-2">
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#5f6a82] whitespace-nowrap">
+            <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-[#5f6a82] whitespace-nowrap">
               Property Type
             </label>
             <select
               value={propertyType}
               onChange={(e) => setPropertyType(e.target.value)}
-              className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-3 py-3 text-xs font-medium text-[#0f2244] focus:border-[#94652c] focus:bg-white focus:outline-none"
+              className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-3 py-2 text-xs font-medium text-[#0f2244] focus:border-[#0f2244] focus:bg-white focus:outline-none"
             >
               <option value="">All Types</option>
               <option value="Apartment">Apartment</option>
@@ -200,13 +200,13 @@ export function HomeSearchBar() {
           {/* 5. Bedrooms & Max Budget */}
           <div className="grid grid-cols-2 gap-2 md:col-span-2">
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#5f6a82] whitespace-nowrap">
+              <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-[#5f6a82] whitespace-nowrap">
                 Beds
               </label>
               <select
                 value={beds}
                 onChange={(e) => setBeds(e.target.value)}
-                className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-2 py-3 text-xs font-medium text-[#0f2244] focus:border-[#94652c] focus:bg-white focus:outline-none"
+                className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-2 py-2 text-xs font-medium text-[#0f2244] focus:border-[#0f2244] focus:bg-white focus:outline-none"
               >
                 <option value="">Any</option>
                 <option value="1">1+ BR</option>
@@ -216,13 +216,13 @@ export function HomeSearchBar() {
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#5f6a82] whitespace-nowrap">
+              <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-[#5f6a82] whitespace-nowrap">
                 Max Price
               </label>
               <select
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
-                className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-2 py-3 text-xs font-medium text-[#0f2244] focus:border-[#94652c] focus:bg-white focus:outline-none"
+                className="w-full rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-2 py-2 text-xs font-medium text-[#0f2244] focus:border-[#0f2244] focus:bg-white focus:outline-none"
               >
                 <option value="">No Limit</option>
                 <option value="300000">AED 300K</option>
@@ -234,33 +234,17 @@ export function HomeSearchBar() {
             </div>
           </div>
 
-          {/* 6. Submit CTA */}
+          {/* 6. Submit CTA — Brand Navy Blue */}
           <div className="md:col-span-1 flex items-end">
             <button
               type="submit"
-              className="flex w-full whitespace-nowrap items-center justify-center gap-1.5 rounded-xl bg-[#0f2244] px-3.5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white shadow-sm transition hover:bg-[#94652c]"
+              className="flex w-full whitespace-nowrap items-center justify-center gap-1.5 rounded-xl bg-[#0f2244] px-3.5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white shadow-sm transition hover:bg-[#14305c]"
             >
-              <Search className="h-4 w-4 shrink-0" />
+              <Search className="h-3.5 w-3.5 shrink-0" />
               <span>Search</span>
             </button>
           </div>
         </form>
-
-        {/* Compact Single-Line Regulatory & Calculator Footer */}
-        <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-[#e6dfd2] pt-3 text-[11px]">
-          <div className="inline-flex items-center gap-2 font-semibold text-[#0f2244]">
-            <ShieldCheck className="h-3.5 w-3.5 text-[#94652c]" />
-            <span>DLD Trakheesi & Escrow Verified · RERA ORN 51517 · 20 Master Developers · 108 Active Projects</span>
-          </div>
-
-          <Link
-            href="/calculators"
-            className="inline-flex items-center gap-1.5 font-bold text-[#94652c] hover:underline whitespace-nowrap"
-          >
-            <Calculator className="h-3.5 w-3.5" />
-            DLD 4%, Mortgage & Net Yield Calculators →
-          </Link>
-        </div>
       </div>
     </div>
   );

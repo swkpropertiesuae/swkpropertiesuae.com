@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Building2, MapPin, ShieldCheck } from "lucide-react";
-import { HeroParallax } from "@/components/ui/hero-parallax";
+import { ArrowRight, Building2, MapPin, ShieldCheck } from "lucide-react";
 import {
   DeveloperInfiniteMarquee,
   ProjectInfiniteMarquee,
 } from "@/components/ui/infinite-moving-cards";
+import { LivelyPageHero } from "@/components/ui/lively-page-hero";
 import { EnquiryForm } from "@/components/site/enquiry-form";
 import { JsonLd } from "@/components/seo/json-ld";
 import { developers, projects } from "@/lib/developers";
@@ -13,21 +13,15 @@ import { breadcrumbLd, buildMeta, itemListLd, KEYWORDS } from "@/lib/seo";
 import { SITE } from "@/lib/swk";
 
 export const metadata: Metadata = buildMeta({
-  title: "Top 20 UAE Real Estate Developers | Emaar, DAMAC, Sobha, Nakheel, Omniyat & Aldar",
+  title: "27+ UAE Real Estate Developers | Emaar, DAMAC, Sobha, Azizi, Binghatti, Ellington & Aldar",
   description:
-    "Explore factual profiles, delivery track records, flagship communities, and 108 off-plan & ready developments across 20 leading Dubai and UAE developers with SWK Properties (RERA ORN 51517).",
+    "Explore factual profiles, delivery track records, flagship communities, and 108+ off-plan & ready developments across 27+ leading Dubai and UAE developers with SWK Properties.",
   path: "/developers",
   image: "/img/hero/dubai-skyline-hero.webp",
   keywords: KEYWORDS.developers,
 });
 
 export default function DevelopersPage() {
-  const parallaxProducts = projects.slice(0, 15).map((p) => ({
-    title: `${p.name} · ${p.developer}`,
-    link: `/off-plan/${p.slug}`,
-    thumbnail: p.images[0],
-  }));
-
   const signatureProjects = developers
     .map((d) => projects.find((p) => p.developerSlug === d.slug))
     .filter((p): p is (typeof projects)[number] => Boolean(p))
@@ -55,7 +49,7 @@ export default function DevelopersPage() {
             { name: "UAE Developers", path: "/developers" },
           ]),
           itemListLd(
-            "Top 20 UAE Real Estate Developers",
+            "Top 27+ UAE Real Estate Developers",
             developers.map((d) => ({
               name: d.name,
               url: `${SITE.url}/developers/${d.slug}`,
@@ -64,18 +58,33 @@ export default function DevelopersPage() {
         ]}
       />
 
-      {/* 21st.dev HeroParallax */}
-      <HeroParallax
-        products={parallaxProducts}
-        heading="20 UAE Master Developers & 108 Verified Developments"
-        subheading="Independent, factual developer profiles covering delivery history, flagship communities, escrow compliance, and active releases across Dubai, Abu Dhabi, Sharjah, and Ras Al Khaimah."
+      <LivelyPageHero
+        badge="27+ Partner Developers · 108+ Verified Projects"
+        title="27+ UAE Master Developers &"
+        highlight="108+ Verified Releases"
+        description="Compare delivery track records, flagship communities, and active releases across Dubai, Abu Dhabi, Sharjah, Ras Al Khaimah, and Umm Al Quwain."
+        backgroundImage="/img/hero/slides/03-azizi-florence-desktop.webp"
+        primaryCta={{ label: "Browse All 27+ Developers", href: "#developers-grid" }}
+        secondaryCta={{ label: "View 108+ Off-Plan Releases", href: "/off-plan" }}
+        sideImages={[
+          {
+            src: "/img/hero/slides/01-dubai-horizon-desktop.webp",
+            label: "Emaar · Sobha · DAMAC · Azizi",
+            sublabel: "Escrow-Verified Master Developers",
+          },
+          {
+            src: "/img/hero/slides/02-imtiaz-kore-desktop.webp",
+            label: "Binghatti · Ellington · Imtiaz",
+            sublabel: "Architectural Waterfront & Urban Releases",
+          },
+        ]}
       />
 
-      {/* Dual Infinite Horizontal Marquee of All 20 Developers + Signature Projects */}
+      {/* Dual Infinite Horizontal Marquee of All 27+ Developers + Signature Projects */}
       <section className="mx-auto max-w-7xl px-4 py-12 md:px-6 space-y-8">
         <div>
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-[#94652c]">
-            Interactive Infinite Stream · 20 Master Developers &amp; Flagship Releases
+            Interactive Infinite Stream · 27+ Master Developers &amp; Flagship Releases
           </p>
           <DeveloperInfiniteMarquee items={developers} direction="left" speed="slow" />
         </div>
@@ -84,18 +93,18 @@ export default function DevelopersPage() {
         </div>
       </section>
 
-      {/* Complete 20 UAE Developers Grid (§10) with Cover Photography & Official Developer Logos */}
+      {/* Complete 27+ UAE Developers Grid */}
       <section className="mx-auto max-w-7xl px-4 py-12 md:px-6">
         <div className="mb-10 max-w-3xl">
           <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.24em] text-[#94652c]">
             <ShieldCheck className="h-4 w-4" />
-            Independent Brokerage Directory · RERA ORN {SITE.reraOrn}
+            UAE Developer Directory · 18+ Years Advisory Experience
           </span>
           <h2 className="mt-2 font-serif text-3xl md:text-5xl font-semibold text-[#0f2244]">
             UAE Master Developers Directory
           </h2>
           <p className="mt-2 text-sm md:text-base text-[#39455a] leading-relaxed">
-            Inspect each developer&apos;s founding background, flagship master communities, delivery history, and current off-plan &amp; ready projects.
+            Inspect each developer&apos;s background, flagship master communities, delivery history, and current off-plan &amp; ready projects.
           </p>
         </div>
 
@@ -107,7 +116,6 @@ export default function DevelopersPage() {
               className="group flex flex-col justify-between overflow-hidden rounded-3xl border border-[#e6dfd2] bg-white shadow-sm transition hover:-translate-y-1 hover:border-[#94652c] hover:shadow-lg"
             >
               <div>
-                {/* High-Res Developer Project Cover Photo + Official Developer Logo Plate */}
                 <div className="relative h-48 w-full overflow-hidden bg-[#0f2244]">
                   {dev.coverImage && (
                     <img
@@ -120,7 +128,6 @@ export default function DevelopersPage() {
                   <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
                     <span className="rounded-full bg-[#0f2244]/90 backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#dcb888]">
                       {dev.headquarters || "Dubai, UAE"}
-                      {dev.founded ? ` · Est. ${dev.founded}` : ""}
                     </span>
                     <span className="rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-[#0f2244] shadow-xs">
                       {dev.projectCount} Projects
@@ -171,22 +178,17 @@ export default function DevelopersPage() {
                   <Building2 className="h-3.5 w-3.5 text-[#94652c]" />
                   Inspect Profile &amp; {dev.projectCount} Releases
                 </span>
-                <span>→</span>
+                <ArrowRight className="h-4 w-4" />
               </div>
             </Link>
           ))}
-        </div>
-
-        {/* §10 Trademark & No-False-Official-Partnership Disclosure */}
-        <div className="mt-12 rounded-3xl border border-[#e6dfd2] bg-white p-6 text-xs text-[#39455a] leading-relaxed shadow-sm">
-          <strong className="text-[#0f2244]">Regulatory &amp; Trademark Disclosure (§10):</strong> SWK Properties LLC (RERA ORN {SITE.reraOrn}) is an independent real estate brokerage licensed by the Dubai Land Department. Developer names, trademarks, and project visuals remain the property of their respective developers and are presented for factual market identification. SWK Properties does not claim exclusive or official developer-ownership status; we represent buyers and landlords independently across primary and secondary transactions.
         </div>
       </section>
 
       <section className="mx-auto max-w-4xl px-4 py-12 md:px-6">
         <EnquiryForm
           context="investment"
-          heading="Compare Developers, Escrow Track Records & Payment Plans"
+          heading="Compare Developers, Track Records & Payment Plans"
           subheading="Tell us which UAE developers or launches you are comparing and receive an independent side-by-side breakdown."
         />
       </section>

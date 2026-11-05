@@ -180,7 +180,7 @@ export const organizationLd = {
   name: SITE.name,
   legalName: "SWK Properties LLC",
   url: SITE_URL,
-  logo: abs("/brand/SWK_Properties_Horizontal_Logo_Light.svg"),
+  logo: abs("/brand/swk-horizontal-lockup.png"),
   image: abs(OG_DEFAULT),
   description:
     "SWK Properties is a RERA-registered Dubai real estate brokerage advising on off-plan launches, secondary-market sales, leasing, investment, mortgages and property management across the UAE.",

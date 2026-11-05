@@ -4,6 +4,7 @@ import { Building2, CheckCircle2, FileCheck2, KeyRound, ShieldCheck, Sparkles } 
 import { SITE } from "@/lib/swk"
 import { buildMetadata, breadcrumbSchema } from "@/lib/seo"
 import { JsonLd } from "@/components/seo/json-ld"
+import { LivelyPageHero } from "@/components/ui/lively-page-hero"
 import { EnquiryForm } from "@/components/site/enquiry-form"
 
 export const metadata: Metadata = buildMetadata({
@@ -72,20 +73,27 @@ export default function ListYourPropertyPage() {
         ])}
       />
 
-      {/* Hero */}
-      <section className="border-b border-[#e6dfd2] bg-[#f4efe6] py-16">
-        <div className="mx-auto max-w-7xl px-4">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#94652c]/35 bg-[#f6ead7] px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#94652c]">
-            <ShieldCheck className="h-3.5 w-3.5" /> Seller & Landlord Desk · Checklist §48 · RERA ORN {SITE.orn}
-          </span>
-          <h1 className="mt-4 font-serif text-3xl md:text-6xl font-semibold text-[#0f2244] max-w-4xl leading-tight">
-            Sell or Lease Your Dubai Property With Verified DLD Permits & Honest Pricing
-          </h1>
-          <p className="mt-4 max-w-3xl text-sm md:text-base text-[#39455a] leading-relaxed">
-            Whether you are selling a ready villa, assigning an off-plan unit subject to developer NOC rules, or leasing out an apartment with Ejari management, our Sheikh Zayed Road team handles valuation, RERA Form A compliance, photography, and transfer coordination.
-          </p>
-        </div>
-      </section>
+      <LivelyPageHero
+        badge={`Seller & Landlord Desk · RERA ORN ${SITE.orn}`}
+        title="Sell or Lease Your Dubai Property With"
+        highlight="Verified DLD Permits & Honest Pricing"
+        description="Whether you are selling a ready villa, assigning an off-plan unit subject to developer NOC rules, or leasing out an apartment with Ejari management, our Sheikh Zayed Road team handles valuation, RERA Form A compliance, photography, and transfer coordination."
+        backgroundImage="/img/hero/slides/06-damac-islands-desktop.webp"
+        primaryCta={{ label: "Submit Your Property Mandate", href: "#mandate-form" }}
+        secondaryCta={{ label: "Speak With Landlord Desk", href: "/contact" }}
+        sideImages={[
+          {
+            src: "/img/communities/palm-jumeirah.webp",
+            label: "Secondary Sales & Off-Plan Assignments",
+            sublabel: "DLD Comparable Valuation · Form A & Form F",
+          },
+          {
+            src: "/img/communities/dubai-marina.webp",
+            label: "Annual Leasing & Ejari Management",
+            sublabel: "Tenant Vetting · Cheque Custody · Inspections",
+          },
+        ]}
+      />
 
       {/* Sale vs Lease-Out Scope + 4-Step Process */}
       <section className="mx-auto max-w-7xl px-4 py-16 space-y-14">

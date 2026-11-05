@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Hero12 } from "@/components/ui/hero-12";
+import { LivelyPageHero } from "@/components/ui/lively-page-hero";
 import { PropertyCard } from "@/components/site/property-card";
 import { EnquiryForm } from "@/components/site/enquiry-form";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -38,24 +38,29 @@ export default function RentPage() {
         ])}
       />
 
-      {/* Requested 21st.dev Hero12 */}
-      <div className="mx-auto max-w-7xl px-4 pt-6">
-        <div className="overflow-hidden rounded-3xl border border-[#e6dfd2]">
-          <Hero12
-            title="Annual & Executive Leasing With Official Ejari Registration"
-            established={`RERA ORN ${SITE.reraOrn} · DUBAI`}
-            description="Every rental listing displays its annual rate, cheque flexibility, security deposit percentage, furnishing state, and DLD Trakheesi permit. We handle tenancy contracts, Ejari, and DEWA move-in coordination."
-            backgroundImage="/img/communities/dubai-marina.webp"
-            backgroundAlt="Dubai Marina Waterfront Leasing"
-            animation="subtle"
-            primaryCTA={{
-              ctaEnabled: true,
-              text: "Filter All Rental Listings",
-              link: "/properties?purpose=rent",
-            }}
-          />
-        </div>
-      </div>
+      <LivelyPageHero
+        badge="Annual & Executive Leasing · Official Ejari Registration"
+        title="Annual & Executive Leasing With"
+        highlight="Official Ejari Registration"
+        description="Every rental listing displays its annual rate, cheque flexibility, security deposit percentage, furnishing state, and DLD Trakheesi permit. We handle tenancy contracts, Ejari, and DEWA move-in coordination."
+        backgroundImage="/img/communities/dubai-marina.webp"
+        primaryCta={{ label: "Filter All Rental Listings", href: "/properties?purpose=rent" }}
+        secondaryCta={{ label: "Read Dubai Tenant Guide", href: "/guides/renting" }}
+        sideImages={[
+          {
+            src: "/img/communities/dubai-marina.webp",
+            label: "Dubai Marina & Sheikh Zayed Road",
+            sublabel: "1 to 4 Cheques · Furnished & Unfurnished",
+            href: "/properties?purpose=rent",
+          },
+          {
+            src: "/img/communities/downtown-dubai.webp",
+            label: "Downtown Dubai & Dubai Hills",
+            sublabel: "Immediate Move-In · Full Ejari & DEWA Setup",
+            href: "/properties?purpose=rent",
+          },
+        ]}
+      />
 
       {/* Verified Rental Listings */}
       <section className="mx-auto max-w-7xl px-4 py-16">

@@ -181,7 +181,7 @@ export function Hero10({
   const titleElement = title && (
     <h1
       className={cn(
-        'text-foreground font-serif font-normal tracking-tight text-balance',
+        'text-foreground font-hero-raleway font-light uppercase tracking-[0.08em] text-balance',
         vs.title,
       )}
     >

@@ -1,6 +1,5 @@
-﻿"use client";
+"use client";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { HalomotButton } from "@/components/ui/project-showcase-utils/halomot-button";
 
@@ -551,11 +550,11 @@ const ImageContainer = ({
         borderRadius: innerRounding,
       }}
     >
-      <Image
+      <img
         src={src}
         alt={alt}
-        layout="fill"
-        objectFit="cover"
+        loading="eager"
+        decoding="sync"
         draggable={false}
         className="h-full w-full object-cover object-center"
       />

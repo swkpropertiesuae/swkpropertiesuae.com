@@ -20,33 +20,51 @@ const AGENT_DETAILS: Record<
 > = {
   "mohammad-haseeb": {
     brn: "BRN-51517-MH",
-    communities: ["Downtown Dubai", "Dubai Hills Estate", "Palm Jumeirah", "Dubai Creek Harbour"],
-    bio: "Mohammad Haseeb leads off-plan and secondary acquisitions for families and international investors relocating to or investing in Dubai. He specialises in side-by-side developer track-record checks, escrow verification, and full cash-flow calendars.",
-    backupAgent: "Talha Shabbir (Off-Plan Desk)",
+    communities: ["Downtown Dubai", "Dubai Hills Estate", "Dubai South", "Palm Jumeirah"],
+    bio: "Mohammad Haseeb brings 10+ years of UAE real estate experience and 140+ verified transactions across Emaar, Azizi, Sobha Realty, DAMAC, and Imtiaz Developments.",
+    backupAgent: "Mohammed Islam (Rex) · Assistant Director",
+  },
+  "mohammed-islam": {
+    brn: "BRN-51517-MI",
+    communities: ["Dubai Islands", "Downtown Dubai", "Yas Island", "Al Marjan Island"],
+    bio: "Mohammed Islam (Rex) brings over a decade of international real estate experience across the United Kingdom and Dubai with 165+ verified transactions in sales, investment advisory, and client relationships.",
+    backupAgent: "Mohammad Haseeb · Sales & Operations Manager",
   },
   "issaadi-chahrazed": {
     brn: "BRN-51517-IC",
     communities: ["Palm Jumeirah", "Dubai Marina", "Downtown Dubai", "Business Bay"],
     bio: "Issaadi Chahrazed advises French-, Arabic-, and English-speaking buyers across waterfront residences, branded developments, and high-yield city-centre apartments, coordinating remote viewings and power-of-attorney handovers.",
-    backupAgent: "Rahma Tahir (Multilingual Desk)",
+    backupAgent: "Talha Shabbir · Business Development Manager",
   },
   "talha-shabbir": {
     brn: "BRN-51517-TS",
     communities: ["Dubai Creek Harbour", "Dubai Hills Estate", "Mohammed Bin Rashid City", "Dubai South"],
-    bio: "Talha Shabbir focuses on verified UAE developer launches, payment-plan structuring, and Oqood registration milestones across Emaar, Sobha, Ellington, Meraas, and Aldar communities.",
-    backupAgent: "Mohammad Haseeb (Senior Advisory Desk)",
+    bio: "Talha Shabbir focuses on verified UAE developer launches, payment-plan structuring, and Oqood registration milestones across Emaar, Sobha, Imtiaz, DAMAC, and Azizi communities.",
+    backupAgent: "Mohammad Haseeb · Sales & Operations Manager",
   },
   "fareed-choudhary": {
     brn: "BRN-51517-FC",
-    communities: ["Dubai Hills Estate", "Arabian Ranches", "Jumeirah Village Circle", "Business Bay"],
+    communities: ["Dubai Hills Estate", "Masaar Sharjah", "Jumeirah Village Circle", "Business Bay"],
     bio: "Fareed Choudhary advises secondary-market buyers and portfolio landlords on ready villas, townhouses, and tenanted investments, preparing DLD transaction comparables and net-yield worksheets.",
-    backupAgent: "Mohammad Haseeb (Senior Advisory Desk)",
+    backupAgent: "Mohammad Haseeb · Sales & Operations Manager",
   },
-  "rahma-tahir": {
-    brn: "BRN-51517-RT",
-    communities: ["Dubai Marina", "Downtown Dubai", "Jumeirah Village Circle", "Dubai Hills Estate"],
-    bio: "Rahma Tahir guides relocating families and corporate tenants through residential leasing, Ejari registration, cheque schedules, and handover snagging across Dubai's most connected neighbourhoods.",
-    backupAgent: "Issaadi Chahrazed (Multilingual Desk)",
+  saifullah: {
+    brn: "BRN-51517-SF",
+    communities: ["Dubai South", "Al Jaddaf", "Dubailand", "Business Bay"],
+    bio: "Saifullah specialises in high-demand off-plan launches including Imtiaz Kore, Azizi Florence, and Azizi Venice with flexible developer payment schedules.",
+    backupAgent: "Talha Shabbir · Business Development Manager",
+  },
+  "mohammad-umar": {
+    brn: "BRN-51517-MU",
+    communities: ["Dubailand", "Dubai Islands", "Al Furjan", "Umm Al Quwain"],
+    bio: "Mohammad Umar guides residential buyers and landlords through off-plan reservations and secondary resales across emerging UAE corridors.",
+    backupAgent: "Fareed Choudhary · Senior Property Consultant",
+  },
+  "mohd-shahid-khan": {
+    brn: "BRN-51517-MSK",
+    communities: ["Sheikh Zayed Road", "Downtown Dubai", "Business Bay"],
+    bio: "Mohd Shahid Khan manages transaction operations, developer portal allocations, and SPA documentation across 500+ coordinated filings at SWK Properties.",
+    backupAgent: "Mohammad Haseeb · Sales & Operations Manager",
   },
 }
 

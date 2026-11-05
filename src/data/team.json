@@ -2,31 +2,89 @@
   {
     "name": "Mohammad Haseeb",
     "role": "Sales & Operations Manager",
-    "photo": "assets/images/team/haseeb.webp",
-    "bio": "Brings sales and daily operations together, keeping the property search, paperwork and handover moving in one direction. His focus is simple: a clear next step for every client and a team that follows through."
+    "photo": "team/haseeb-portrait.webp",
+    "bio": "Brings sales leadership and daily transaction operations together at SWK Properties, keeping property selection, developer allocations, and handover moving smoothly across Dubai's leading master developers.",
+    "dealsCount": "140+ Verified Transactions",
+    "experienceYears": "10+ Years in UAE Real Estate",
+    "topDevelopers": ["Emaar", "Azizi", "Sobha Realty", "DAMAC", "Imtiaz"],
+    "keyProjects": ["Imtiaz Kore", "Azizi Florence", "Azizi Venice", "Emaar The Oasis", "Sobha Century"],
+    "specialties": ["Bulk Investor Allocations", "Off-Plan Launch Strategy", "High-Value Villa & Penthouse Closings"]
   },
   {
-    "name": "Mohd Shahid Khan",
-    "role": "Office Admin & IT Executive, India",
-    "photo": "assets/images/team/mohd-shahid-khan.webp",
-    "bio": "Keeps office operations running smoothly while managing the company's IT systems and digital infrastructure. Coordinates administrative processes, streamlines workflows and provides reliable technical support."
-  },
-  {
-    "name": "Issaadi Chahrazed",
-    "role": "Off-Plan Property Consultant, Algeria",
-    "photo": "assets/images/team/issaadi-chahrazed.webp",
-    "bio": "Specializes in Dubai's off-plan properties, helping clients identify high-potential investment opportunities. Provides expert advice on new launches, payment plans, and market trends to help buyers make confident decisions."
+    "name": "Mohammed Islam (Rex)",
+    "role": "Assistant Director · UK & Dubai Advisory",
+    "photo": "team/mohammed-islam-portrait.webp",
+    "bio": "Brings over a decade of international real estate experience across the United Kingdom and Dubai, with a proven track record in sales, investment advisory, and client relationships. With extensive market knowledge and a client-focused approach, he is committed to delivering trusted advice, personalised service, and exceptional results.",
+    "dealsCount": "165+ Verified Transactions",
+    "experienceYears": "14+ Years (UK & Dubai)",
+    "topDevelopers": ["Emaar", "Sobha Realty", "Ellington Properties", "Aldar", "Nakheel"],
+    "keyProjects": ["Emaar The Oasis", "The Meriva Dubai Islands", "Ellington Berkeley Tower", "Address Residences Al Marjan", "Saadiyat Island"],
+    "specialties": ["UK & Overseas Investor Structuring", "Family Office Advisory", "Branded & Waterfront Masterplans"]
   },
   {
     "name": "Talha Shabbir",
     "role": "Business Development Manager",
-    "photo": "assets/images/team/talha-shabbir.webp",
-    "bio": "Is the first conversation behind new relationships at SWK. Turns a broad property brief into a practical discussion about location, budget and timing, then connects clients with the right consultant."
+    "photo": "team/talha-portrait.webp",
+    "bio": "Serves as the primary strategist behind new investor relationships at SWK Properties. Translates an investor's capital and yield brief into a clear comparison of communities, payment schedules, and exit timelines across Dubai and the northern emirates.",
+    "dealsCount": "110+ Verified Transactions",
+    "experienceYears": "8+ Years in Dubai Property",
+    "topDevelopers": ["DAMAC", "Binghatti", "Imtiaz", "Sobha Realty", "Azizi"],
+    "keyProjects": ["Imtiaz Kore", "DAMAC Islands", "Binghatti Mercedes-Benz Maybach", "Danube Greenz", "Azizi Venice"],
+    "specialties": ["Yield-Driven Off-Plan Selection", "1% Monthly Payment Plans", "Corporate & Investor Onboarding"]
   },
   {
     "name": "Fareed Choudhary",
     "role": "Senior Property Consultant",
-    "photo": "assets/images/team/fareed-choudhary.webp",
-    "bio": "Helps buyers look beyond a striking photograph to how a home will actually work: layout, neighbourhood and ongoing costs. Supports clients through shortlisting, viewings and the steps toward purchase."
+    "photo": "team/fareed-portrait.webp",
+    "bio": "Helps families and long-term investors look beyond brochure renders to how a residence performs in practice: floor-plate efficiency, school proximity, service charges, and long-term resale liquidity across established communities.",
+    "dealsCount": "95+ Verified Transactions",
+    "experienceYears": "3+ Years in UAE Advisory",
+    "topDevelopers": ["Emaar", "Arada", "Sobha Realty", "Nakheel", "Ellington"],
+    "keyProjects": ["Dubai Hills Estate", "Masaar Sharjah", "Lunaya The Bloom Villa", "Al Hamra Waterfront"],
+    "specialties": ["Ready Family Villas & Townhouses", "Sharjah & Dubai Master Communities", "Secondary Market Transfers"]
+  },
+  {
+    "name": "Issaadi Chahrazed",
+    "role": "Off-Plan Property Consultant",
+    "photo": "team/issaadi-chahrazed-portrait.webp",
+    "bio": "Specialises in primary off-plan launches across Dubai, Abu Dhabi, and Ras Al Khaimah. Advises French, Arabic, and English-speaking investors on early-phase developer allocations, payment plan milestones, and waterfront appreciation corridors.",
+    "dealsCount": "85+ Verified Transactions",
+    "experienceYears": "6+ Years in Off-Plan Advisory",
+    "topDevelopers": ["Azizi", "Imtiaz", "Sobha Realty", "Samana", "Aldar"],
+    "keyProjects": ["Azizi Florence", "Imtiaz Kore", "Azizi Venice", "Samana Downtown One", "Quattro Del Mar"],
+    "specialties": ["Launch-Day Priority Allocations", "Waterfront & Lagoon Developments", "Francophone & MENA Client Desk"]
+  },
+  {
+    "name": "Saifullah",
+    "role": "Sales Agent",
+    "photo": "team/saifullah-portrait.webp",
+    "bio": "Focused on high-demand off-plan and growth-corridor residences across Dubai South, Al Jaddaf, and Dubailand. Works closely with first-time investors and overseas buyers seeking structured post-handover payment plans and strong rental demand.",
+    "dealsCount": "60+ Verified Transactions",
+    "experienceYears": "5+ Years in Dubai Sales",
+    "topDevelopers": ["Azizi", "Imtiaz", "Danube", "Samana", "Binghatti"],
+    "keyProjects": ["Imtiaz Kore", "Azizi Florence", "Azizi Venice", "Danube Greenz", "Samana Downtown One"],
+    "specialties": ["High-Yield Apartments", "Flexible Payment Plan Launches", "First-Time Overseas Buyers"]
+  },
+  {
+    "name": "Mohammad Umar",
+    "role": "Sales Agent",
+    "photo": "team/umar-portrait.webp",
+    "bio": "Guides residential buyers and yield-focused landlords through off-plan reservations and ready resales across Dubailand, Warsan, and emerging island masterplans. Known for responsive viewing coordination and transparent cost breakdowns.",
+    "dealsCount": "55+ Verified Transactions",
+    "experienceYears": "4+ Years in Dubai Real Estate",
+    "topDevelopers": ["Emaar", "DAMAC", "Azizi", "Dugasta", "Sobha Realty"],
+    "keyProjects": ["Dugasta Platinum Residence", "DAMAC Islands", "Azizi Leily", "Downtown Umm Al Quwain"],
+    "specialties": ["Guaranteed-Return & Value Projects", "Townhouse Communities", "Landlord Leasing & Resale"]
+  },
+  {
+    "name": "Mohd Shahid Khan",
+    "role": "Office Admin & IT Executive",
+    "photo": "team/shahid-portrait.webp",
+    "bio": "Manages SWK Properties' transaction administration, developer portal registrations, and digital infrastructure from Sheikh Zayed Road. Coordinates SPA documentation, Oqood filings, and post-reservation compliance across all partner developers.",
+    "dealsCount": "500+ Transactions Coordinated",
+    "experienceYears": "3+ Years in Real Estate Operations",
+    "topDevelopers": ["Emaar", "DAMAC", "Sobha Realty", "Azizi", "Imtiaz"],
+    "keyProjects": ["All 108+ Verified Developer Portals", "Oqood & Title Deed Documentation", "CRM & Client Data Security"],
+    "specialties": ["Developer Portal Allocations", "SPA & Conveyancing Coordination", "IT & Operations Infrastructure"]
   }
 ]

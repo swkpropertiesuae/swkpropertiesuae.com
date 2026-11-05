@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Calculator, AlertCircle, Building2, Percent, Wallet, Calendar } from "lucide-react"
 import { usePrefs } from "@/lib/prefs"
+import { LivelyPageHero } from "@/components/ui/lively-page-hero"
 import { EnquiryForm } from "@/components/site/enquiry-form"
 
 export default function CalculatorsPage() {
@@ -72,20 +73,27 @@ export default function CalculatorsPage() {
 
   return (
     <div className="min-h-screen bg-[#faf7f2] text-[#0f2244]">
-      {/* Header */}
-      <section className="border-b border-[#e6dfd2] bg-[#f4efe6] py-14">
-        <div className="mx-auto max-w-7xl px-4">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#94652c]/35 bg-[#f6ead7] px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#94652c]">
-            <Calculator className="h-3.5 w-3.5" /> Interactive Dubai Property Calculators · §45 Compliant
-          </span>
-          <h1 className="mt-4 font-serif text-3xl md:text-5xl font-semibold text-[#0f2244]">
-            Mortgage, DLD 4% Purchase Cost, Net Yield & Off-Plan Calculators
-          </h1>
-          <p className="mt-3 max-w-3xl text-sm md:text-base text-[#39455a] leading-relaxed">
-            All figures are calculated primarily in UAE Dirhams (AED) and mirrored in your active display currency ({currency}). Adjust the sliders below to model upfront acquisition fees, monthly mortgage obligations, true net rental yield after service charges, and off-plan milestone schedules.
-          </p>
-        </div>
-      </section>
+      <LivelyPageHero
+        badge="Interactive Dubai Property Calculators"
+        title="Mortgage, DLD 4% Purchase Cost,"
+        highlight="Net Yield & Off-Plan Calculators"
+        description={`All figures are calculated primarily in UAE Dirhams (AED) and mirrored in your active display currency (${currency}). Adjust the sliders below to model upfront acquisition fees, monthly mortgage obligations, true net rental yield after service charges, and off-plan milestone schedules.`}
+        backgroundImage="/img/hero/slides/02-imtiaz-kore-desktop.webp"
+        primaryCta={{ label: "Explore 108+ Off-Plan Projects", href: "/off-plan" }}
+        secondaryCta={{ label: "Request Custom DLD Cost Sheet", href: "/contact" }}
+        sideImages={[
+          {
+            src: "/img/hero/slides/01-dubai-horizon-desktop.webp",
+            label: "DLD 4% & Oqood Fee Breakdown",
+            sublabel: "Exact Transfer & Registration Worksheet",
+          },
+          {
+            src: "/img/hero/slides/05-sobha-century-desktop.webp",
+            label: "Gross vs Net Rental Yield Model",
+            sublabel: "Service Charge & Vacancy Adjusted ROI",
+          },
+        ]}
+      />
 
       <div className="mx-auto max-w-7xl px-4 py-12 space-y-12">
         {/* Shared Property Price & Ready/Off-Plan Controls */}

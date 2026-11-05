@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { Building2, MapPin, Search, ShieldCheck } from "lucide-react";
-import { Hero10 } from "@/components/ui/hero-10";
+import { LivelyPageHero } from "@/components/ui/lively-page-hero";
 import Timeline from "@/components/ui/timeline";
 import { PropertyCard } from "@/components/site/property-card";
 import { EnquiryForm } from "@/components/site/enquiry-form";
@@ -35,35 +35,34 @@ export default function OffPlanHubPage() {
 
   return (
     <div className="space-y-16 pb-20">
-      {/* Requested 21st.dev Hero10 */}
-      <Hero10
-        title="108 Escrow-Verified Off-Plan Launches Across"
-        titleLine2Prefix="20 UAE"
-        titleHighlight="Master Developers"
-        description="Explore direct developer releases from Emaar, DAMAC, Sobha, Nakheel, Omniyat, Binghatti, Aldar, Arada, Meraas, Ellington, and more. Every project is checked for DLD escrow registration and milestone payment transparency."
-        socialProof={`RERA Licensed Advisory · ORN ${SITE.reraOrn} · 0% Buyer Agency Commission on Primary Developer Bookings`}
-        images={[
-          "/img/projects/emaar/avarra-by-palace.webp",
-          "/img/projects/sobha/sobha-seahaven.webp",
-          "/img/projects/binghatti/mercedes-benz-places.webp",
-        ]}
-        imageAlts={[
-          "Avarra by Palace by Emaar Properties",
-          "Sobha SeaHaven Dubai Harbour",
-          "Mercedes-Benz Places by Binghatti",
-        ]}
-        animation="subtle"
-        primaryCTA={{
-          ctaEnabled: true,
-          text: "Browse All 108 Projects Below",
-          link: "#projects-directory",
+      <LivelyPageHero
+        badge="108+ Escrow-Verified Launches · 0% Buyer Commission"
+        title="108+ Verified Off-Plan Launches Across"
+        highlight="27+ UAE Master Developers"
+        description="Explore direct developer releases including Azizi Venice, Emaar The Oasis, DAMAC Islands, Sobha Century, Binghatti Maybach Benz, Ellington Berkeley Tower, The Meriva Dubai Islands, Masaar Sharjah, Yas Island, Saadiyat Island, and Al Marjan Island."
+        backgroundImage="/img/hero/slides/04-azizi-venice-desktop.webp"
+        primaryCta={{
+          label: `Browse All ${projects.length} Projects Below`,
+          href: "#projects-directory",
         }}
-        secondaryCTA={{
-          ctaEnabled: true,
-          text: "Off-Plan Payment Calculator",
-          link: "/calculators",
-          variant: "outline",
+        secondaryCta={{
+          label: "Off-Plan Payment Calculator",
+          href: "/calculators",
         }}
+        sideImages={[
+          {
+            src: "/img/hero/slides/02-imtiaz-kore-desktop.webp",
+            label: "Imtiaz Kore & Azizi Florence",
+            sublabel: "10%–20% Down · 60/40 & 50/50 Payment Plans",
+            href: "/off-plan/imtiaz-kore",
+          },
+          {
+            src: "/img/hero/slides/06-damac-islands-desktop.webp",
+            label: "DAMAC Islands & Emaar The Oasis",
+            sublabel: "Waterfront Lagoon Townhouses & Canal Villas",
+            href: "/off-plan/damac-islands",
+          },
+        ]}
       />
 
       {/* Featured Off-Plan Units with Complete DLD Escrow & Floor Plan Specs */}
@@ -139,7 +138,7 @@ export default function OffPlanHubPage() {
               onChange={(e) => setSelectedDeveloper(e.target.value)}
               className="rounded-xl border border-[#e6dfd2] bg-[#faf7f2] px-3.5 py-2.5 text-xs text-[#0f2244]"
             >
-              <option value="">All 20 UAE Developers</option>
+              <option value="">All {developers.length} UAE Developers</option>
               {developers.map((d) => (
                 <option key={d.slug} value={d.slug}>
                   {d.name} ({d.projectCount})

@@ -27,12 +27,12 @@ export const SITE = {
     saturday: "Sat 10:00 AM – 4:00 PM GST",
     full: "Sun–Thu 9:00–19:00 · Sat 10:00–16:00 GST",
   },
-  founded: 2016,
+  founded: 2008,
   orn: "51517",
   reraOrn: "51517",
   rera: "RERA ORN 51517",
   announcement:
-    "RERA ORN 51517 · Verified Off-Plan, Secondary & Leasing Advisory at Al Saqr Business Tower, Sheikh Zayed Road",
+    "18+ Years Experience · 27+ Partner Developers · 108+ Verified Projects Across Dubai, Abu Dhabi, Sharjah, RAK & UAQ",
   geo: {
     lat: 25.213925,
     lng: 55.277978,
@@ -43,14 +43,14 @@ export const SITE = {
     instagram: "https://www.instagram.com/swk.properties/",
     linkedin: "https://www.linkedin.com/company/swk-properties-llc",
   },
-  tagline: "Property advisory across the UAE",
+  tagline: "Property advisory across Dubai & the UAE",
 } as const;
 
 export const stats = [
-  { label: "UAE Developers Tracked", value: 20, suffix: "+" },
-  { label: "Verified Launches & Projects", value: 108, suffix: "" },
-  { label: "Advisory Languages Spoken", value: 7, suffix: "" },
-  { label: "RERA Office Registration", value: 51517, suffix: "" },
+  { label: "Years of Experience", value: 18, suffix: "+" },
+  { label: "Partner Developers", value: 27, suffix: "+" },
+  { label: "Verified Projects", value: 108, suffix: "+" },
+  { label: "UAE Emirates Covered", value: 5, suffix: "" },
 ];
 
 const img = (p: string) => `/img/${p}`;
@@ -69,14 +69,21 @@ export const services = servicesJson;
 
 const TEAM_LANGUAGES: Record<string, string[]> = {
   "mohammad-haseeb": ["English", "Urdu", "Hindi", "Punjabi"],
-  "mohd-shahid-khan": ["English", "Hindi", "Urdu"],
-  "issaadi-chahrazed": ["English", "French", "Arabic"],
+  "mohammed-islam": ["English", "Arabic", "Urdu", "Hindi"],
   "talha-shabbir": ["English", "Urdu", "Punjabi"],
   "fareed-choudhary": ["English", "Urdu", "Hindi"],
+  "issaadi-chahrazed": ["English", "French", "Arabic"],
+  saifullah: ["English", "Urdu", "Hindi", "Pashto"],
+  "mohammad-umar": ["English", "Urdu", "Hindi"],
+  "mohd-shahid-khan": ["English", "Hindi", "Urdu"],
 };
 
 export const team = teamJson.map((m) => {
-  const slug = m.name.toLowerCase().replace(/\s+/g, "-");
+  const slug = m.name
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
   return {
     ...m,
     slug,

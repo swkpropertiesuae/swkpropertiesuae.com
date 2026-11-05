@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Hero04 } from "@/components/ui/hero-04";
+import { LivelyPageHero } from "@/components/ui/lively-page-hero";
 import { PropertyCard } from "@/components/site/property-card";
 import { EnquiryForm } from "@/components/site/enquiry-form";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -39,28 +39,28 @@ export default function BuyPage() {
         ])}
       />
 
-      {/* 21st.dev Hero04 */}
-      <Hero04
+      <LivelyPageHero
+        badge="Secondary Market Desk · Title Deed & Trakheesi Verified"
         title="Acquire Ready Homes Across"
-        titleLine2="Dubai's Freehold Districts"
-        description="Every secondary market listing presented by SWK Properties (RERA ORN 51517) is cross-checked for Title Deed validity, DLD Trakheesi marketing permit, service-charge history, and recent comparable transfers."
-        washImage="/img/hero/dubai-skyline-hero.webp"
-        primaryImage="/img/communities/downtown-dubai.webp"
-        secondaryImage="/img/communities/palm-jumeirah.webp"
-        primaryAlt="Downtown Dubai Ready Residences"
-        secondaryAlt="Palm Jumeirah Waterfront Villas"
-        animation="subtle"
-        primaryCTA={{
-          ctaEnabled: true,
-          text: "Filter All Ready Inventory",
-          link: "/properties?purpose=buy",
-        }}
-        secondaryCTA={{
-          ctaEnabled: true,
-          text: "Read Dubai Buying Guide",
-          link: "/guides/buying",
-          variant: "outline",
-        }}
+        highlight="Dubai's Freehold Districts"
+        description="Every secondary market listing presented by SWK Properties is cross-checked for Title Deed validity, DLD Trakheesi marketing permit, service-charge history, and recent comparable transfers."
+        backgroundImage="/img/communities/downtown-dubai.webp"
+        primaryCta={{ label: "Filter All Ready Inventory", href: "/properties?purpose=buy" }}
+        secondaryCta={{ label: "Read Dubai Buying Guide", href: "/guides/buying" }}
+        sideImages={[
+          {
+            src: "/img/communities/palm-jumeirah.webp",
+            label: "Palm Jumeirah & Waterfront Villas",
+            sublabel: "Ready Title Deed · Private Beach & Marina",
+            href: "/communities/palm-jumeirah",
+          },
+          {
+            src: "/img/communities/downtown-dubai.webp",
+            label: "Downtown Dubai & Dubai Hills Estate",
+            sublabel: "Immediate Key Handover · Form F & Trustee Support",
+            href: "/communities/downtown-dubai",
+          },
+        ]}
       />
 
       {/* Verified Ready Listings Grid */}

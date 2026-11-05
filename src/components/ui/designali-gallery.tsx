@@ -1,7 +1,6 @@
 "use client";
 
-import { Ref, forwardRef, useState, useEffect } from "react";
-import Image, { ImageProps } from "next/image";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, useMotionValue, type Variants } from "framer-motion";
 
@@ -9,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export const PhotoGallery = ({
-  animationDelay = 0.3,
+  animationDelay = 0.1,
   eyebrow = "Architectural Curation · RERA ORN 51517",
   heading = "Inside SWK's",
   highlight = "Dubai Portfolio",
@@ -23,8 +22,8 @@ export const PhotoGallery = ({
   ctaLabel?: string;
   ctaHref?: string;
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(true);
 
   useEffect(() => {
     const visibilityTimer = setTimeout(() => {
@@ -133,24 +132,24 @@ export const PhotoGallery = ({
   return (
     <div className="relative py-16">
       <div className="absolute inset-0 max-md:hidden top-[120px] -z-10 h-[300px] w-full bg-transparent bg-[linear-gradient(to_right,#57534e_1px,transparent_1px),linear-gradient(to_bottom,#57534e_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-20 [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-      <p className="my-2 text-center text-xs font-medium uppercase tracking-[0.28em] text-[#94652c]">
+      <p className="my-2 text-center text-xs font-semibold uppercase tracking-[0.28em] text-[#0f2244]">
         {eyebrow}
       </p>
       <h3 className="z-20 mx-auto max-w-3xl py-3 text-center font-serif text-4xl text-[#0f2244] md:text-6xl">
-        {heading} <span className="text-[#94652c]">{highlight}</span>
+        {heading} <span className="text-[#1b437e]">{highlight}</span>
       </h3>
       <div className="relative mb-8 h-[320px] w-full items-center justify-center flex overflow-hidden">
         <motion.div
           className="relative mx-auto flex w-full max-w-7xl justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isVisible ? 1 : 0 }}
+          initial={{ opacity: 1 }}
+          animate={{ opacity: isVisible ? 1 : 1 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
           <motion.div
             className="relative flex w-full justify-center"
             variants={containerVariants}
-            initial="hidden"
-            animate={isLoaded ? "visible" : "hidden"}
+            initial="visible"
+            animate={isLoaded ? "visible" : "visible"}
           >
             <div className="relative h-[220px] w-[220px]">
               {[...photos].reverse().map((photo) => (
@@ -187,15 +186,6 @@ export const PhotoGallery = ({
   );
 };
 
-const MotionImage = motion(
-  forwardRef(function MotionImage(
-    props: ImageProps,
-    ref: Ref<HTMLImageElement>
-  ) {
-    return <Image ref={ref} {...props} />;
-  })
-);
-
 type Direction = "left" | "right";
 
 export const Photo = ({
@@ -205,7 +195,6 @@ export const Photo = ({
   direction,
   width,
   height,
-  ...props
 }: {
   src: string;
   alt: string;
@@ -268,13 +257,13 @@ export const Photo = ({
       draggable={false}
       tabIndex={0}
     >
-      <div className="relative h-full w-full overflow-hidden rounded-3xl border border-[#94652c]/30 shadow-2xl">
-        <MotionImage
-          className="rounded-3xl object-cover"
-          fill
+      <div className="relative h-full w-full overflow-hidden rounded-3xl border border-[#0f2244]/25 shadow-2xl">
+        <img
+          className="h-full w-full rounded-3xl object-cover"
           src={src}
           alt={alt}
-          {...props}
+          loading="eager"
+          decoding="sync"
           draggable={false}
         />
       </div>

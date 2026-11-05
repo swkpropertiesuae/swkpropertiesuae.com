@@ -7,7 +7,6 @@ import {
   useSpring,
   MotionValue,
 } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 
 export const HeroParallax = ({
@@ -47,15 +46,15 @@ export const HeroParallax = ({
     springConfig
   );
   const opacity = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [0.25, 1]),
+    useTransform(scrollYProgress, [0, 0.2], [0.88, 1]),
     springConfig
   );
   const rotateZ = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [20, 0]),
+    useTransform(scrollYProgress, [0, 0.2], [10, 0]),
     springConfig
   );
   const translateY = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [-650, 420]),
+    useTransform(scrollYProgress, [0, 0.2], [-220, 260]),
     springConfig
   );
   return (
@@ -152,11 +151,11 @@ export const ProductCard = ({
         href={product.link}
         className="block group-hover/product:shadow-2xl h-full w-full"
       >
-        <Image
+        <img
           src={product.thumbnail}
-          height="600"
-          width="600"
-          className="object-cover object-left-top absolute h-full w-full inset-0"
+          loading="eager"
+          decoding="sync"
+          className="object-cover object-center absolute h-full w-full inset-0"
           alt={product.title}
         />
       </Link>

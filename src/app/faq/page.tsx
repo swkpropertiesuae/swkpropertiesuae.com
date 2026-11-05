@@ -42,7 +42,7 @@ export default function FaqPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-[#94652c]/35 bg-[#f6ead7] px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#94652c]">
             <HelpCircle className="h-3.5 w-3.5" /> Answer-First AEO Knowledge Base · RERA ORN 51517
           </span>
-          <h1 className="mt-4 font-serif text-3xl md:text-5xl font-semibold text-[#0f2244]">
+          <h1 className="mt-4 font-hero-raleway text-3xl md:text-5xl font-light uppercase tracking-[0.08em] text-[#0f2244]">
             Frequently Asked Questions About Dubai & UAE Real Estate
           </h1>
           <p className="mt-3 text-sm md:text-base text-[#39455a] leading-relaxed">

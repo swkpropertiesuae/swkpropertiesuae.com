@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono, Cormorant_Garamond, Raleway } from "next/font/google";
 import "./globals.css";
 import { PrefsProvider } from "@/lib/prefs";
 import { SiteHeader } from "@/components/site/site-header";
@@ -16,6 +16,19 @@ const serif = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
 });
+const raleway = Raleway({
+  variable: "--font-raleway",
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#0f2244",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -38,12 +51,15 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
       { url: "/favicon.ico" },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: ["/favicon-32.png"],
   },
   openGraph: {
     type: "website",
@@ -73,9 +89,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="overflow-x-clip">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} min-h-screen bg-[#faf7f2] text-[#0f2244] antialiased selection:bg-[#0f2244] selection:text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} ${raleway.variable} min-h-screen overflow-x-clip bg-[#faf7f2] text-[#0f2244] antialiased selection:bg-[#0f2244] selection:text-white`}
       >
         <JsonLd data={[organizationLd, websiteLd]} />
         <PrefsProvider>

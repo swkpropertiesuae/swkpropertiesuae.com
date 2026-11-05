@@ -17,6 +17,7 @@ import { LISTINGS, type PropertyListing } from "@/lib/listings";
 import { communities } from "@/lib/swk";
 import { developers } from "@/lib/developers";
 import { PropertyCard } from "@/components/site/property-card";
+import { LivelyPageHero } from "@/components/ui/lively-page-hero";
 import { usePrefs } from "@/lib/prefs";
 
 function PropertiesSearchInner() {
@@ -193,41 +194,42 @@ function PropertiesSearchInner() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12">
-      {/* Page Header */}
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#94652c]/35 bg-[#f6ead7] px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#94652c]">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            DLD Trakheesi & Escrow Verified Search · ORN 51517
-          </span>
-          <h1 className="mt-3 font-serif text-3xl md:text-5xl font-semibold text-[#0f2244]">
-            Dubai Property Search (Buy, Rent & Off-Plan)
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm text-[#39455a]">
-            Filter verified ready homes, Ejari-registered rentals, and developer off-plan allocations across Dubai. Use the currency & sq ft/sq m controls in the top bar at any time.
-          </p>
-        </div>
+    <div>
+      <LivelyPageHero
+        badge="DLD Trakheesi & Escrow Verified Search"
+        title="Dubai & UAE Property Search"
+        highlight="Buy Ready, Rent & Off-Plan"
+        description="Filter verified ready homes, Ejari-registered rentals, and developer off-plan allocations across Dubai and the UAE. Use the currency and sq ft / sq m controls in the top bar at any time."
+        backgroundImage="/img/hero/slides/01-dubai-horizon-desktop.webp"
+        primaryCta={{ label: "Browse Off-Plan Launches", href: "/off-plan" }}
+        secondaryCta={{ label: "Open DLD & Yield Calculators", href: "/calculators" }}
+      />
+      <div className="mx-auto max-w-7xl px-4 py-12">
+        {/* Save & Share Bar */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#0f2244]">
+            Interactive Property Filter &amp; Map Directory
+          </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={handleSaveSearch}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[#e6dfd2] bg-[#faf7f2] px-4 py-2 text-xs font-medium text-[#0f2244] hover:border-[#94652c]"
-          >
-            <BookmarkPlus className="h-3.5 w-3.5 text-[#94652c]" />
-            Save Search
-          </button>
-          <button
-            type="button"
-            onClick={handleCopyShareUrl}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[#e6dfd2] bg-[#faf7f2] px-4 py-2 text-xs font-medium text-[#0f2244] hover:border-[#94652c]"
-          >
-            <Share2 className="h-3.5 w-3.5 text-[#94652c]" />
-            Share Search URL
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={handleSaveSearch}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#e6dfd2] bg-white px-4 py-2 text-xs font-semibold text-[#0f2244] shadow-sm hover:border-[#0f2244]"
+            >
+              <BookmarkPlus className="h-3.5 w-3.5 text-[#0f2244]" />
+              Save Search
+            </button>
+            <button
+              type="button"
+              onClick={handleCopyShareUrl}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#e6dfd2] bg-white px-4 py-2 text-xs font-semibold text-[#0f2244] shadow-sm hover:border-[#0f2244]"
+            >
+              <Share2 className="h-3.5 w-3.5 text-[#0f2244]" />
+              Share Search URL
+            </button>
+          </div>
         </div>
-      </div>
 
       {/* Core Search & Filter Panel (§04) */}
       <div className="rounded-3xl border border-[#e6dfd2] bg-white p-5 md:p-7 shadow-2xl">
@@ -676,6 +678,7 @@ function PropertiesSearchInner() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

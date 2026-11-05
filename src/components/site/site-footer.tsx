@@ -42,18 +42,24 @@ export function SiteFooter() {
     <footer className="w-full border-t border-[#e6dfd2] bg-[#0f2244] text-white">
       <div className="mx-auto max-w-7xl px-4 py-16 md:px-6">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
-          {/* Brand & RERA Registration */}
+          {/* Brand & Advisory Credentials */}
           <div className="lg:col-span-2 space-y-5">
-            <Link href="/" className="inline-block rounded-2xl bg-white/95 px-4 py-2.5 shadow-sm">
-              <img
-                src="/brand/SWK_Properties_Horizontal_Logo_Light.svg"
-                alt="SWK Properties Dubai"
-                className="h-11 w-auto object-contain"
-              />
-            </Link>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link
+                href="/"
+                className="inline-flex items-center py-1 transition-transform duration-200 hover:scale-[1.02]"
+              >
+                <img
+                  src="/brand/swk-horizontal-lockup.png"
+                  alt="SWK Properties Dubai"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-16 sm:h-20 md:h-24 w-auto object-contain [filter:drop-shadow(0_2px_6px_rgba(15,34,68,0.75))_drop-shadow(0_8px_18px_rgba(15,34,68,0.45))]"
+                />
+              </Link>
+            </div>
             <p className="max-w-md text-sm text-white/80 leading-relaxed">
-              {SITE.tagline}. SWK Properties is a RERA-licensed real estate brokerage in Dubai (ORN{" "}
-              <strong className="text-[#dcb888]">{SITE.reraOrn}</strong>) specialising in off-plan developer launches, ready secondary market sales, residential & commercial leasing, and portfolio management.
+              Backed by 18+ years of UAE market experience across 27+ partner developers and 108+ verified projects, SWK Properties advises private buyers, family offices, and landlords from Al Saqr Business Tower on Sheikh Zayed Road, Dubai.
             </p>
 
             <div className="space-y-2.5 text-xs text-white/80">
@@ -108,8 +114,8 @@ export function SiteFooter() {
               <li><Link href="/rent" className="hover:text-[#dcb888]">Rent & Lease (Annual / Monthly)</Link></li>
               <li><Link href="/off-plan" className="hover:text-[#dcb888]">Verified Off-Plan Launches</Link></li>
               <li><Link href="/list-your-property" className="hover:text-[#dcb888]">List Your Property (Sell / Lease)</Link></li>
-              <li><Link href="/developers" className="hover:text-[#dcb888]">20 UAE Master Developers</Link></li>
-              <li><Link href="/communities" className="hover:text-[#dcb888]">8 Dubai Community Guides</Link></li>
+              <li><Link href="/developers" className="hover:text-[#dcb888]">27+ UAE Master Developers</Link></li>
+              <li><Link href="/communities" className="hover:text-[#dcb888]">Dubai &amp; UAE Community Guides</Link></li>
             </ul>
           </div>
 

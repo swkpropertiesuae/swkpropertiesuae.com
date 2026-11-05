@@ -114,7 +114,7 @@ export function Hero12({
 
   const titleElement = title && (
     <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-      <h1 className={cn("font-normal tracking-tight text-white", vs.title)}>
+      <h1 className={cn("font-hero-raleway font-light uppercase tracking-[0.08em] text-white", vs.title)}>
         <Balancer>{title}</Balancer>
       </h1>
       {established && (
