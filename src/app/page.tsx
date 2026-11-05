@@ -111,7 +111,29 @@ export default function Home() {
 
   return (
     <>
-      {/* Sequential Two-Part 21st.dev Storyboard Hero + Single-Line Property Search */}
+      {/* Preload First Hero Slide for Instant Mobile & Desktop Paint */}
+      <link
+        rel="preload"
+        as="image"
+        href="/img/hero/slides/04-azizi-venice-mobile.webp"
+        media="(max-width: 767px)"
+        fetchPriority="high"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/img/hero/slides/04-azizi-venice-desktop.webp"
+        media="(min-width: 768px)"
+        fetchPriority="high"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/img/hero/slides/04-azizi-venice-thumb.webp"
+        fetchPriority="high"
+      />
+
+      {/* Dish Orbit Carousel Hero */}
       <Hero />
 
       {/* 18+ Years Experience · 27+ Partner Developers · 108+ Verified Projects · 5 UAE Emirates */}

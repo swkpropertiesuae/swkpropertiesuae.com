@@ -163,51 +163,52 @@ export function SiteHeader() {
           : "bg-[#0b1220]/94 backdrop-blur-2xl shadow-[0_18px_42px_rgba(0,0,0,0.42)]"
       }`}
     >
-      {/* Top Corporate Utility & Regulatory Bar (§02) — Only at Top of Page; Retracts on Scroll */}
+      {/* Top Corporate Utility & Regulatory Bar (§02) — Single-Line Non-Overlapping Bar */}
       {!bannerDismissed && (
         <div
-          className={`border-0 bg-transparent px-4 text-xs text-white transition-all duration-200 overflow-hidden ${
+          className={`border-b border-white/10 bg-[#081224]/75 backdrop-blur-md px-3 sm:px-4 text-xs text-white transition-all duration-200 overflow-hidden ${
             isScrolled
-              ? "max-h-0 opacity-0 py-0 pointer-events-none"
-              : "max-h-14 opacity-100 py-1.5"
+              ? "max-h-0 opacity-0 py-0 border-b-0 pointer-events-none"
+              : "max-h-9 opacity-100 py-1"
           }`}
         >
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#0f2244]/90 border border-white/25 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white">
+          <div className="mx-auto flex h-7 max-w-7xl flex-nowrap items-center justify-between gap-2 sm:gap-3">
+            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#0f2244]/95 border border-white/25 px-2 py-0.5 text-[9.5px] sm:text-[10px] font-bold uppercase tracking-[0.15em] text-white">
                 <ShieldCheck className="h-3 w-3 text-white" />
                 RERA ORN {SITE.reraOrn}
               </span>
               <Link
                 href="/off-plan"
-                className="truncate text-xs font-medium text-white/95 hover:text-white transition"
+                className="min-w-0 flex-1 truncate text-[11px] sm:text-xs font-medium text-white/95 hover:text-white transition"
               >
-                {SITE.announcement}
+                <span className="sm:hidden">18+ Yrs · 27+ Developers · 108+ Projects</span>
+                <span className="hidden sm:inline">{SITE.announcement}</span>
               </Link>
             </div>
 
             {/* Utility Controls: Calculators, Currency, Area Unit, Language, Dismiss */}
-            <div className="flex flex-wrap items-center gap-2.5 text-[11px]">
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-[11px] whitespace-nowrap">
               <Link
                 href="/calculators"
-                className="hidden md:inline-flex items-center gap-1.5 font-semibold text-white hover:underline"
+                className="hidden lg:inline-flex items-center gap-1.5 font-semibold text-white hover:underline"
               >
                 <Sparkles className="h-3 w-3" />
                 DLD 4% & Yield Calculators
               </Link>
 
-              <span className="hidden md:inline text-white/30">|</span>
+              <span className="hidden lg:inline text-white/30">|</span>
 
               {/* Currency Selector (§02, §44) */}
               <select
                 aria-label="Select display currency"
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
-                className="rounded-md border border-white/25 bg-[#0f2244]/85 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md focus:border-white focus:outline-none"
+                className="h-6 rounded-md border border-white/25 bg-[#0f2244]/90 px-1.5 text-[10px] sm:text-[11px] font-semibold text-white backdrop-blur-md focus:border-white focus:outline-none"
               >
                 {(Object.keys(CURRENCY_RATES) as CurrencyCode[]).map((code) => (
                   <option key={code} value={code} className="bg-[#0f2244] text-white">
-                    {code === "AED" ? "AED (Primary)" : `${code} (Approx.)`}
+                    {code === "AED" ? "AED" : code}
                   </option>
                 ))}
               </select>
@@ -216,7 +217,7 @@ export function SiteHeader() {
               <button
                 type="button"
                 onClick={() => setAreaUnit(areaUnit === "sqft" ? "sqm" : "sqft")}
-                className="rounded-md border border-white/25 bg-[#0f2244]/85 px-2.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md hover:bg-[#14305c]"
+                className="h-6 rounded-md border border-white/25 bg-[#0f2244]/90 px-2 text-[10px] sm:text-[11px] font-semibold text-white backdrop-blur-md hover:bg-[#14305c]"
                 title="Toggle area unit between square feet and square metres"
               >
                 {areaUnit === "sqft" ? "sq ft" : "sq m"}
@@ -226,7 +227,7 @@ export function SiteHeader() {
               <button
                 type="button"
                 onClick={() => setLang(lang === "en" ? "ar" : "en")}
-                className="rounded-md border border-white/25 bg-[#0f2244]/85 px-2.5 py-0.5 text-[11px] font-bold text-white backdrop-blur-md hover:bg-[#14305c]"
+                className="h-6 rounded-md border border-white/25 bg-[#0f2244]/90 px-2 text-[10px] sm:text-[11px] font-bold text-white backdrop-blur-md hover:bg-[#14305c]"
                 title="Switch website language / direction"
               >
                 {lang === "en" ? "العربية" : "EN"}
@@ -236,7 +237,7 @@ export function SiteHeader() {
                 type="button"
                 onClick={() => setBannerDismissed(true)}
                 aria-label="Dismiss announcement bar"
-                className="ml-1 text-white/70 hover:text-white"
+                className="ml-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full text-white/75 hover:bg-white/15 hover:text-white"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -248,7 +249,7 @@ export function SiteHeader() {
       {/* Main Sticky Corporate Navigation Bar (§02) — Merged with Hero */}
       <div
         className={`mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4 md:px-6 transition-all duration-300 ${
-          isScrolled ? "py-1.5" : "py-2"
+          isScrolled ? "py-1.5" : "py-1.5 sm:py-2"
         }`}
       >
         {/* 1. Prominent High-Clarity 3D Metallic Rose-Gold SWK Horizontal Portal Lockup — Zero Shadow Filter */}
@@ -264,8 +265,8 @@ export function SiteHeader() {
             decoding="async"
             className={`w-auto object-contain transition-all duration-300 ${
               isScrolled
-                ? "h-11 sm:h-12 md:h-14"
-                : "h-13 sm:h-15 md:h-16 lg:h-[4.25rem]"
+                ? "h-10 sm:h-11 md:h-13"
+                : "h-11 sm:h-13 md:h-15 lg:h-16"
             }`}
           />
         </Link>

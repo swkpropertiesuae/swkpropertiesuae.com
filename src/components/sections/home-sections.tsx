@@ -27,7 +27,6 @@ import {
 } from "lucide-react"
 
 import DishOrbitCarousel from "@/components/ui/dish-orbit-carousel"
-import { HomeSearchBar } from "@/components/site/home-search-bar"
 import InteractiveSelector from "@/components/ui/interactive-selector"
 import { TestimonialInfiniteMarquee } from "@/components/ui/infinite-moving-cards"
 import { SectionHeading } from "@/components/site/site-footer"
@@ -46,7 +45,6 @@ export function Hero() {
   return (
     <div className="relative bg-[#0b1528]">
       <DishOrbitCarousel />
-      <HomeSearchBar />
     </div>
   )
 }

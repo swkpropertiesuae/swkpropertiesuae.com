@@ -29,6 +29,8 @@ export type Dish = {
   image: string
   /** Optional full-bleed high-resolution backdrop per slide. */
   backdropImage?: string
+  /** Optional lightweight portrait backdrop for mobile viewports. */
+  mobileBackdropImage?: string
   alt?: string
   /** Small highlighted badge line above the title. */
   eyebrow?: string
@@ -77,6 +79,7 @@ export const SWK_HERO_DISHES: Dish[] = [
     eyebrow: "DUBAI SOUTH · 10% DOWN · 50/50 PAYMENT PLAN",
     image: "/img/hero/slides/04-azizi-venice-thumb.webp",
     backdropImage: "/img/hero/slides/04-azizi-venice-desktop.webp",
+    mobileBackdropImage: "/img/hero/slides/04-azizi-venice-mobile.webp",
     alt: "Azizi Venice Crystal Lagoon Waterfront Community in Dubai South",
     rating: 4.9,
     chef: "Azizi Developments",
@@ -105,6 +108,7 @@ export const SWK_HERO_DISHES: Dish[] = [
     eyebrow: "SOBHA HARTLAND & MBR CITY · 60/40 PAYMENT PLAN",
     image: "/img/hero/slides/05-sobha-century-thumb.webp",
     backdropImage: "/img/hero/slides/05-sobha-century-desktop.webp",
+    mobileBackdropImage: "/img/hero/slides/05-sobha-century-mobile.webp",
     alt: "Sobha Century & Sobha One Golf & Lagoon Residences",
     rating: 5.0,
     chef: "Sobha Realty",
@@ -133,6 +137,7 @@ export const SWK_HERO_DISHES: Dish[] = [
     eyebrow: "DUBAILAND WATERFRONT · 75/25 PAYMENT PLAN",
     image: "/img/hero/slides/06-damac-islands-thumb.webp",
     backdropImage: "/img/hero/slides/06-damac-islands-desktop.webp",
+    mobileBackdropImage: "/img/hero/slides/06-damac-islands-mobile.webp",
     alt: "DAMAC Islands Tropical Lagoon Townhouses and Villas",
     rating: 4.9,
     chef: "DAMAC Properties",
@@ -161,6 +166,7 @@ export const SWK_HERO_DISHES: Dish[] = [
     eyebrow: "EMAAR FLAGSHIP · 10% DOWN · 80/20 PAYMENT PLAN",
     image: "/img/hero/slides/05-emaar-the-oasis-thumb.webp",
     backdropImage: "/img/hero/slides/05-emaar-the-oasis-desktop.webp",
+    mobileBackdropImage: "/img/hero/slides/05-emaar-the-oasis-mobile.webp",
     alt: "Emaar The Oasis & Dubai Hills Estate Waterfront Villas",
     rating: 5.0,
     chef: "Emaar Properties",
@@ -189,6 +195,7 @@ export const SWK_HERO_DISHES: Dish[] = [
     eyebrow: "NEW LAUNCH ALERT · 60/40 FLEXIBLE PAYMENT PLAN",
     image: "/img/hero/slides/02-imtiaz-kore-thumb.webp",
     backdropImage: "/img/hero/slides/02-imtiaz-kore-desktop.webp",
+    mobileBackdropImage: "/img/hero/slides/02-imtiaz-kore-mobile.webp",
     alt: "Imtiaz Kore & Wynwood Horizon Waterfront Residences",
     rating: 4.8,
     chef: "Imtiaz Developments",
@@ -217,6 +224,7 @@ export const SWK_HERO_DISHES: Dish[] = [
     eyebrow: "METRO-CONNECTED · AL FURJAN & MEYDAN · 50/50 PLAN",
     image: "/img/hero/slides/03-azizi-florence-thumb.webp",
     backdropImage: "/img/hero/slides/03-azizi-florence-desktop.webp",
+    mobileBackdropImage: "/img/hero/slides/03-azizi-florence-mobile.webp",
     alt: "Azizi Florence Italian-Inspired Waterfront Residences",
     rating: 4.8,
     chef: "Azizi Developments",
@@ -324,7 +332,7 @@ const CSS =
   "background:radial-gradient(62% 52% at 64% 16%,rgba(255,250,236,.26) 0%,rgba(255,255,255,.08) 42%,transparent 74%)," +
   "radial-gradient(520px circle at var(--spot-x,50%) var(--spot-y,32%),rgba(255,252,242,.16) 0%,transparent 70%)}" +
   ".dsh-root:focus-visible{outline:2px solid #ffffff;outline-offset:-4px}" +
-  ".dsh-canvas{position:absolute;left:50%;top:55%;width:1040px;height:520px;transform:translate(-50%,-50%) scale(var(--dsh-s,1));transform-origin:50% 50%;z-index:2}" +
+  ".dsh-canvas{position:absolute;left:50%;top:calc(50% + 46px);width:1040px;height:520px;transform:translate(-50%,-50%) scale(var(--dsh-s,1));transform-origin:50% 50%;z-index:2}" +
   ".dsh-arc{position:absolute;left:0;top:0;width:1040px;height:520px;overflow:visible;pointer-events:none}" +
   ".dsh-btn{appearance:none;border:0;background:none;color:inherit;font:inherit;padding:0;margin:0;cursor:pointer}" +
   ".dsh-btn:focus-visible{outline:2px solid #ffffff;outline-offset:3px;border-radius:10px}" +
@@ -437,16 +445,19 @@ const CSS =
   ".dsh-th span{font-size:10.5px;line-height:1.2;text-align:center;font-weight:700;color:#ffffff;max-width:112px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}" +
   ".dsh-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}" +
   "@container (max-width:767px){" +
-  ".dsh-canvas{position:relative;left:auto;top:auto;width:100%;height:auto;transform:none;display:flex;flex-direction:column;align-items:center;padding:96px 16px 20px}" +
-  ".dsh-arc{width:180%;height:auto;left:-40%;top:20px}" +
-  ".dsh-pager{left:12px;top:140px}" +
-  ".dsh-plates{position:relative;left:auto;top:auto;width:min(46vw,26svh);height:min(46vw,26svh);margin-top:0}" +
+  ".dsh-canvas{position:relative;left:auto;top:auto;width:100%;height:auto;transform:none;display:flex;flex-direction:column;align-items:center;padding:96px 14px 16px}" +
+  ".dsh-arc{width:180%;height:auto;left:-40%;top:24px}" +
+  ".dsh-pager{left:10px;top:132px}" +
+  ".dsh-plates{position:relative;left:auto;top:auto;width:min(38vw,20svh);height:min(38vw,20svh);margin-top:2px}" +
   ".dsh-medallion{width:100%;height:100%}" +
-  ".dsh-head{position:relative;left:auto;top:auto;width:100%;height:152px;margin-top:8px}" +
-  ".dsh-hd{text-align:center;transform:scale(.82);transform-origin:50% 0}" +
-  ".dsh-kpis{justify-content:center;flex-wrap:wrap}" +
-  ".dsh-acts{position:relative;left:auto;top:auto;width:100%;margin-top:8px;flex-wrap:wrap;justify-content:center}" +
-  ".dsh-card{position:relative;left:auto;top:auto;width:100%;max-width:420px;margin-top:12px;padding:14px 16px}" +
+  ".dsh-head{position:relative;left:auto;top:auto;width:100%;height:122px;margin-top:6px}" +
+  ".dsh-hd{text-align:center;transform:scale(.78);transform-origin:50% 0}" +
+  ".dsh-kpis{justify-content:center;flex-wrap:nowrap}" +
+  ".dsh-acts{position:relative;left:auto;top:auto;width:100%;margin-top:4px;gap:8px;flex-wrap:nowrap;justify-content:center}" +
+  ".dsh-card{position:relative;left:auto;top:auto;width:100%;max-width:420px;margin-top:10px;padding:12px 14px}" +
+  ".dsh-rate{height:44px;margin:0 0 6px 2px}" +
+  ".dsh-desc,.dsh-ing{min-height:46px}" +
+  ".dsh-react{margin-top:10px}" +
   ".dsh-strip{display:none}" +
   "}" +
   "@media (prefers-reduced-motion:reduce){.dsh-track,.dsh-dot,.dsh-dot i,.dsh-th .dsh-btn,.dsh-th img,.dsh-like,.dsh-sunlight{transition:none;animation:none}}"
@@ -515,9 +526,9 @@ export function DishOrbitCarousel({
     const fit = () => {
       const w = el.clientWidth
       const h = el.clientHeight
-      // Leave room at the top for the transparent SiteHeader (~92px)
-      const usableH = Math.max(420, h - 88)
-      el.style.setProperty("--dsh-s", String(Math.min(w / 1080, usableH / 535, 1.32)))
+      // Leave generous room at the top for the single-line announcement bar + SiteHeader (~104px)
+      const usableH = Math.max(380, h - 134)
+      el.style.setProperty("--dsh-s", String(Math.min(w / 1080, usableH / 520, 1.12)))
     }
     fit()
     const ro = new ResizeObserver(fit)
@@ -532,6 +543,27 @@ export function DishOrbitCarousel({
     mq.addEventListener("change", on)
     return () => mq.removeEventListener("change", on)
   }, [])
+
+  // Preload remaining hero slides in the background after Slide 0 paints
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const isMobile = window.innerWidth <= 767
+      dishes.slice(1).forEach((d) => {
+        const bgUrl = (isMobile && d.mobileBackdropImage) ? d.mobileBackdropImage : d.backdropImage
+        if (bgUrl) {
+          const bgImg = new Image()
+          bgImg.decoding = "async"
+          bgImg.src = bgUrl
+        }
+        if (d.image) {
+          const thumbImg = new Image()
+          thumbImg.decoding = "async"
+          thumbImg.src = d.image
+        }
+      })
+    }, 180)
+    return () => window.clearTimeout(timer)
+  }, [dishes])
 
   // The swap. Every dish is in the DOM; GSAP only moves the outgoing and incoming ones.
   useLayoutEffect(() => {
@@ -785,26 +817,31 @@ export function DishOrbitCarousel({
       >
         <style>{CSS}</style>
 
-        {/* Crossfading Full-Bleed Ultra-HD Daylight Project Backdrops */}
+        {/* Crossfading Full-Bleed Ultra-HD Daylight Project Backdrops (Mobile Portrait + Desktop Landscape) */}
         {dishes.map((d, i) => (
-          <img
-            key={d.title + i}
-            className="dsh-bd"
-            src={d.backdropImage || backdrop}
-            alt={d.alt || d.title}
-            loading="eager"
-            decoding="sync"
-            onError={(e) => {
-              const target = e.currentTarget
-              if (target.src !== window.location.origin + backdrop) {
-                target.src = backdrop
-              }
-            }}
-            style={{
-              opacity: i === index ? 1 : 0,
-              transform: i === index ? "scale(1.03)" : "scale(1.08)",
-            }}
-          />
+          <picture key={d.title + i}>
+            {d.mobileBackdropImage && (
+              <source media="(max-width: 767px)" srcSet={d.mobileBackdropImage} />
+            )}
+            <img
+              className="dsh-bd"
+              src={d.backdropImage || backdrop}
+              alt={d.alt || d.title}
+              fetchPriority={i === 0 ? "high" : "low"}
+              loading={i === 0 || i === index ? "eager" : "lazy"}
+              decoding={i === 0 ? "sync" : "async"}
+              onError={(e) => {
+                const target = e.currentTarget
+                if (target.src !== window.location.origin + backdrop) {
+                  target.src = backdrop
+                }
+              }}
+              style={{
+                opacity: i === index ? 1 : 0,
+                transform: i === index ? "scale(1.03)" : "scale(1.08)",
+              }}
+            />
+          </picture>
         ))}
         <div className="dsh-scrim" />
         <div className="dsh-sunlight" />
@@ -856,8 +893,9 @@ export function DishOrbitCarousel({
                     alt={d.alt ?? d.title + " " + d.subtitle}
                     width={240}
                     height={240}
-                    loading="eager"
-                    decoding="sync"
+                    fetchPriority={i === 0 ? "high" : "low"}
+                    loading={i === 0 || i === index ? "eager" : "lazy"}
+                    decoding={i === 0 ? "sync" : "async"}
                     draggable={false}
                     onError={(e) => {
                       const target = e.currentTarget
@@ -1044,8 +1082,8 @@ export function DishOrbitCarousel({
                         alt={d.label ?? d.title}
                         width={54}
                         height={54}
-                        loading="eager"
-                        decoding="sync"
+                        loading="lazy"
+                        decoding="async"
                         draggable={false}
                         onError={(e) => {
                           const target = e.currentTarget
